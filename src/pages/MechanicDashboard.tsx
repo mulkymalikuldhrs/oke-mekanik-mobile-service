@@ -96,7 +96,7 @@ const MechanicDashboard = () => {
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium" {currentJob.status === 'offline' ? 'text-gray-500' : 'text-green-600'}>
+              <span className={`text-sm font-medium ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
                 {isOnline ? 'Online' : 'Offline'}
               </span>
               <Switch checked={isOnline} onCheckedChange={setIsOnline} />
