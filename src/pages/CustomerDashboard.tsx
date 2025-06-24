@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, SOS } from 'lucide-react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -101,7 +100,7 @@ const CustomerDashboard = () => {
                 className="bg-red-600 hover:bg-red-700 font-semibold"
                 onClick={handleEmergencyCall}
               >
-                <SOS className="h-5 w-5 mr-2" />
+                <AlertTriangle className="h-5 w-5 mr-2" />
                 🚨 DARURAT
               </Button>
             </div>
