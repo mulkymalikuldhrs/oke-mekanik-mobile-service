@@ -8,6 +8,11 @@ import { LanguageProvider } from "@/hooks/useLanguage";
 import Index from "./pages/Index";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import MechanicDashboard from "./pages/MechanicDashboard";
+import MechanicRegistration from "./pages/MechanicRegistration";
+import BookingPage from "./pages/BookingPage";
+import TrackingPage from "./pages/TrackingPage";
+import ChatPage from "./pages/ChatPage";
+import PaymentPage from "./pages/PaymentPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,7 +27,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+            <Route path="/customer/booking" element={<BookingPage />} />
+            <Route path="/customer/tracking" element={<TrackingPage />} />
+            <Route path="/customer/chat" element={<ChatPage />} />
+            <Route path="/customer/payment" element={<PaymentPage />} />
             <Route path="/mechanic/dashboard" element={<MechanicDashboard />} />
+            <Route path="/mechanic/registration" element={<MechanicRegistration />} />
+            <Route path="/mechanic/chat" element={<ChatPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

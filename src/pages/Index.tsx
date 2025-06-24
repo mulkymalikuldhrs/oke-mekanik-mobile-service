@@ -40,7 +40,7 @@ const Index = () => {
     if (role === 'customer') {
       navigate('/customer/dashboard');
     } else {
-      navigate('/mechanic/dashboard');
+      navigate('/mechanic/registration');
     }
   };
 

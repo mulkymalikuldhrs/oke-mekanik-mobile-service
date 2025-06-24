@@ -1,15 +1,23 @@
 
 import React, { useState } from 'react';
-import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus } from 'lucide-react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, SOS } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
 
 const CustomerDashboard = () => {
   const { t } = useLanguage();
-  const [activeService, setActiveService] = useState(null);
+  const navigate = useNavigate();
+  const [activeService, setActiveService] = useState({
+    id: 'JOB001',
+    mechanic: 'Ahmad Rizki',
+    status: 'otw',
+    eta: '12 menit',
+    vehicle: 'Toyota Avanza 2019'
+  });
 
   const recentServices = [
     {
@@ -51,6 +59,10 @@ const CustomerDashboard = () => {
     }
   ];
 
+  const handleEmergencyCall = () => {
+    navigate('/customer/booking');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -75,13 +87,24 @@ const CustomerDashboard = () => {
           <CardContent className="p-6">
             <h2 className="text-2xl font-bold mb-4">Butuh Bantuan Mekanik?</h2>
             <p className="mb-6 opacity-90">Panggil mekanik terdekat dalam hitungan detik</p>
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Panggil Mekanik Sekarang
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Button 
+                size="lg" 
+                className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
+                onClick={() => navigate('/customer/booking')}
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Panggil Mekanik Sekarang
+              </Button>
+              <Button 
+                size="lg" 
+                className="bg-red-600 hover:bg-red-700 font-semibold"
+                onClick={handleEmergencyCall}
+              >
+                <SOS className="h-5 w-5 mr-2" />
+                🚨 DARURAT
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
@@ -97,15 +120,26 @@ const CustomerDashboard = () => {
             <CardContent>
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-semibold">Ahmad Rizki sedang menuju lokasi Anda</p>
-                  <p className="text-sm text-gray-600">Estimasi tiba: 15 menit</p>
+                  <p className="font-semibold">{activeService.mechanic} sedang menuju lokasi Anda</p>
+                  <p className="text-sm text-gray-600">Estimasi tiba: {activeService.eta}</p>
+                  <p className="text-sm text-gray-600">Kendaraan: {activeService.vehicle}</p>
                 </div>
                 <div className="flex space-x-2">
-                  <Button size="sm" variant="outline">
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    onClick={() => navigate('/customer/chat')}
+                  >
                     <MessageSquare className="h-4 w-4" />
                   </Button>
                   <Button size="sm" variant="outline">
                     <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="sm"
+                    onClick={() => navigate('/customer/tracking')}
+                  >
+                    Tracking
                   </Button>
                 </div>
               </div>
@@ -142,7 +176,11 @@ const CustomerDashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-blue-600">{mechanic.price}</p>
-                  <Button size="sm" className="mt-2">
+                  <Button 
+                    size="sm" 
+                    className="mt-2"
+                    onClick={() => navigate('/customer/booking')}
+                  >
                     Pilih
                   </Button>
                 </div>
@@ -154,9 +192,14 @@ const CustomerDashboard = () => {
         {/* Recent Services */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="h-5 w-5 mr-2 text-green-600" />
-              Riwayat Layanan
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center">
+                <History className="h-5 w-5 mr-2 text-green-600" />
+                Riwayat Layanan
+              </div>
+              <Button size="sm" variant="outline">
+                Lihat Semua
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
