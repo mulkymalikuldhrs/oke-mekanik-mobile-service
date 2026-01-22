@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Wrench, 
   Clock, 
@@ -18,67 +19,47 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import LanguageToggle from '@/components/LanguageToggle';
+import LoadingSpinner from '@/components/ui/components/LoadingSpinner';
+import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
 
+/**
+ * Fetches the mechanic dashboard data from the API.
+ * @returns {Promise<any>} A promise that resolves to the mechanic dashboard data.
+ */
+const fetchMechanicDashboard = async () => {
+  const response = await fetch('/api/mechanic/dashboard');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
+/**
+ * Renders the mechanic dashboard, displaying the mechanic's active and pending job requests.
+ */
 const MechanicDashboard = () => {
   const { t } = useLanguage();
   const [isOnline, setIsOnline] = useState(true);
-  const [currentJob, setCurrentJob] = useState({
-    id: 1,
-    customer: 'Budi Santoso',
-    location: 'Jl. Sudirman No. 45, Jakarta',
-    issue: 'Mesin mobil mati mendadak',
-    vehicle: 'Toyota Avanza 2019 - B 1234 XYZ',
-    status: 'otw', // otw, arrived, working, completed
-    estimatedEarning: 'Rp 200.000'
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['mechanicDashboard'],
+    queryFn: fetchMechanicDashboard,
   });
-
-  const pendingOrders = [
-    {
-      id: 2,
-      customer: 'Siti Aminah',
-      location: 'Jl. Thamrin No. 12, Jakarta',
-      issue: 'Ban mobil kempes',
-      vehicle: 'Honda Jazz 2020 - B 5678 ABC',
-      estimatedEarning: 'Rp 100.000',
-      distance: '2.5 km'
-    },
-    {
-      id: 3,
-      customer: 'Ahmad Rahman',
-      location: 'Jl. Gatot Subroto No. 88, Jakarta',
-      issue: 'Aki soak',
-      vehicle: 'Suzuki Ertiga 2021 - B 9012 DEF',
-      estimatedEarning: 'Rp 150.000',
-      distance: '1.8 km'
-    }
-  ];
-
-  const todayStats = {
-    completedJobs: 3,
-    totalEarnings: 'Rp 450.000',
-    rating: 4.8,
-    onlineHours: '6.5 jam'
-  };
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
-      otw: { label: 'Menuju Lokasi', variant: 'default' as const, color: 'bg-blue-500' },
-      arrived: { label: 'Sampai Lokasi', variant: 'secondary' as const, color: 'bg-yellow-500' },
-      working: { label: 'Sedang Mengerjakan', variant: 'outline' as const, color: 'bg-orange-500' },
-      completed: { label: 'Selesai', variant: 'outline' as const, color: 'bg-green-500' }
+      'In Progress': { label: 'Sedang Dikerjakan', color: 'bg-orange-500' },
+      Completed: { label: 'Selesai', color: 'bg-green-500' }
     };
-    return statusMap[status as keyof typeof statusMap] || statusMap.otw;
+    return statusMap[status as keyof typeof statusMap] || { label: 'Unknown', color: 'bg-gray-500' };
   };
 
-  const handleAcceptOrder = (orderId: number) => {
-    console.log('Accepting order:', orderId);
-    // Handle order acceptance logic
-  };
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorDisplay message={error.message} />;
 
-  const handleRejectOrder = (orderId: number) => {
-    console.log('Rejecting order:', orderId);
-    // Handle order rejection logic
-  };
+  const { name, jobs } = data;
+  const currentJob = jobs.find(job => job.status === 'In Progress');
+  const pendingOrders = jobs.filter(job => job.status !== 'In Progress' && job.status !== 'Completed');
+  const completedJobsCount = jobs.filter(job => job.status === 'Completed').length;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -91,7 +72,7 @@ const MechanicDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Mekanik</h1>
-              <p className="text-sm text-gray-600">Selamat datang, Ahmad Rizki!</p>
+              <p className="text-sm text-gray-600">Selamat datang, {name}!</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -107,33 +88,33 @@ const MechanicDashboard = () => {
       </header>
 
       <div className="container mx-auto p-4 space-y-6">
-        {/* Today's Stats */}
+        {/* Today's Stats (partially placeholder) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
               <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.completedJobs}</p>
+              <p className="text-2xl font-bold text-gray-900">{completedJobsCount}</p>
               <p className="text-sm text-gray-600">Pekerjaan Selesai</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <DollarSign className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.totalEarnings}</p>
+              <p className="text-2xl font-bold text-gray-900">Rp 0</p>
               <p className="text-sm text-gray-600">Pendapatan Hari Ini</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.rating}</p>
+              <p className="text-2xl font-bold text-gray-900">N/A</p>
               <p className="text-sm text-gray-600">Rating</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <Clock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.onlineHours}</p>
+              <p className="text-2xl font-bold text-gray-900">N/A</p>
               <p className="text-sm text-gray-600">Jam Online</p>
             </CardContent>
           </Card>
@@ -148,7 +129,7 @@ const MechanicDashboard = () => {
                   <Wrench className="h-5 w-5 mr-2" />
                   Pekerjaan Aktif
                 </div>
-                <Badge className={getStatusBadge(currentJob.status).color + ' text-white'}>
+                <Badge className={`${getStatusBadge(currentJob.status).color} text-white`}>
                   {getStatusBadge(currentJob.status).label}
                 </Badge>
               </CardTitle>
@@ -157,15 +138,9 @@ const MechanicDashboard = () => {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <h3 className="font-semibold text-lg">{currentJob.customer}</h3>
-                  <p className="text-sm text-gray-600 flex items-center mt-1">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    {currentJob.location}
-                  </p>
-                  <p className="text-sm mt-2"><strong>Masalah:</strong> {currentJob.issue}</p>
-                  <p className="text-sm"><strong>Kendaraan:</strong> {currentJob.vehicle}</p>
+                  <p className="text-sm mt-2"><strong>Layanan:</strong> {currentJob.service}</p>
                 </div>
-                <div className="flex flex-col justify-between">
-                  <p className="text-lg font-semibold text-green-600">{currentJob.estimatedEarning}</p>
+                <div className="flex flex-col justify-between items-end">
                   <div className="flex space-x-2 mt-4">
                     <Button size="sm" variant="outline">
                       <MessageSquare className="h-4 w-4 mr-1" />
@@ -182,15 +157,12 @@ const MechanicDashboard = () => {
                   </div>
                 </div>
               </div>
-              
-              {currentJob.status === 'working' && (
-                <div className="flex justify-center">
-                  <Button size="lg" className="bg-green-600 hover:bg-green-700">
-                    <CheckCircle className="h-5 w-5 mr-2" />
-                    Selesai Pekerjaan
-                  </Button>
-                </div>
-              )}
+              <div className="flex justify-center">
+                <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                  <CheckCircle className="h-5 w-5 mr-2" />
+                  Selesai Pekerjaan
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
@@ -204,27 +176,17 @@ const MechanicDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {pendingOrders.map((order) => (
+            {pendingOrders.length > 0 ? pendingOrders.map((order) => (
               <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">{order.customer}</h3>
-                    <p className="text-sm text-gray-600 flex items-center mt-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {order.location}
-                    </p>
-                    <p className="text-sm mt-2"><strong>Masalah:</strong> {order.issue}</p>
-                    <p className="text-sm"><strong>Kendaraan:</strong> {order.vehicle}</p>
-                    <div className="flex items-center space-x-4 mt-2">
-                      <Badge variant="outline">{order.distance}</Badge>
-                      <span className="text-lg font-semibold text-green-600">{order.estimatedEarning}</span>
-                    </div>
+                    <p className="text-sm mt-2"><strong>Layanan:</strong> {order.service}</p>
                   </div>
                   <div className="flex space-x-2 ml-4">
                     <Button 
                       size="sm" 
                       variant="outline" 
-                      onClick={() => handleRejectOrder(order.id)}
                       className="text-red-600 border-red-200 hover:bg-red-50"
                     >
                       <XCircle className="h-4 w-4 mr-1" />
@@ -232,7 +194,6 @@ const MechanicDashboard = () => {
                     </Button>
                     <Button 
                       size="sm" 
-                      onClick={() => handleAcceptOrder(order.id)}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <CheckCircle className="h-4 w-4 mr-1" />
@@ -241,7 +202,7 @@ const MechanicDashboard = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            )) : <p className="text-gray-500">Tidak ada pesanan masuk saat ini.</p>}
           </CardContent>
         </Card>
       </div>

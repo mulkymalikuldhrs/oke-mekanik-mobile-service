@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,61 +7,47 @@ import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+import LoadingSpinner from '@/components/ui/components/LoadingSpinner';
+import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
 
+/**
+ * Fetches the customer dashboard data from the API.
+ * @returns {Promise<any>} A promise that resolves to the customer dashboard data.
+ */
+const fetchCustomerDashboard = async () => {
+  const response = await fetch('/api/customer/dashboard');
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return response.json();
+};
+
+/**
+ * Renders the customer dashboard, displaying the customer's active and past service requests.
+ */
 const CustomerDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [activeService, setActiveService] = useState({
-    id: 'JOB001',
-    mechanic: 'Ahmad Rizki',
-    status: 'otw',
-    eta: '12 menit',
-    vehicle: 'Toyota Avanza 2019'
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['customerDashboard'],
+    queryFn: fetchCustomerDashboard,
   });
-
-  const recentServices = [
-    {
-      id: 1,
-      mechanic: 'Ahmad Rizki',
-      service: 'Ganti Ban',
-      date: '2024-01-20',
-      rating: 5,
-      cost: 'Rp 150.000'
-    },
-    {
-      id: 2,
-      mechanic: 'Budi Santoso',
-      service: 'Servis Rutin',
-      date: '2024-01-15',
-      rating: 4,
-      cost: 'Rp 300.000'
-    }
-  ];
-
-  const nearbyMechanics = [
-    {
-      id: 1,
-      name: 'Joko Widodo',
-      rating: 4.8,
-      distance: '0.5 km',
-      speciality: 'Mobil & Motor',
-      price: 'Rp 50.000/jam',
-      avatar: '👨‍🔧'
-    },
-    {
-      id: 2,
-      name: 'Sari Mechanic',
-      rating: 4.9,
-      distance: '1.2 km',
-      speciality: 'Spesialis Mobil',
-      price: 'Rp 75.000/jam',
-      avatar: '👩‍🔧'
-    }
-  ];
 
   const handleEmergencyCall = () => {
     navigate('/customer/booking');
   };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorDisplay message={error.message} />;
+  }
+
+  const { name, bookings } = data;
+  const activeService = bookings.find(b => b.status !== 'Completed');
+  const recentServices = bookings.filter(b => b.status === 'Completed');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -73,7 +60,7 @@ const CustomerDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Pelanggan</h1>
-              <p className="text-sm text-gray-600">Selamat datang kembali!</p>
+              <p className="text-sm text-gray-600">Selamat datang kembali, {name}!</p>
             </div>
           </div>
           <LanguageToggle />
@@ -119,9 +106,9 @@ const CustomerDashboard = () => {
             <CardContent>
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-semibold">{activeService.mechanic} sedang menuju lokasi Anda</p>
-                  <p className="text-sm text-gray-600">Estimasi tiba: {activeService.eta}</p>
-                  <p className="text-sm text-gray-600">Kendaraan: {activeService.vehicle}</p>
+                  <p className="font-semibold">{activeService.mechanic} sedang menangani permintaan Anda</p>
+                  <p className="text-sm text-gray-600">Layanan: {activeService.service}</p>
+                  <p className="text-sm text-gray-600">Status: {activeService.status}</p>
                 </div>
                 <div className="flex space-x-2">
                   <Button 
@@ -136,7 +123,7 @@ const CustomerDashboard = () => {
                   </Button>
                   <Button 
                     size="sm"
-                    onClick={() => navigate('/customer/tracking')}
+                    onClick={() => navigate(`/customer/tracking/${activeService.id}`)}
                   >
                     Tracking
                   </Button>
@@ -146,7 +133,7 @@ const CustomerDashboard = () => {
           </Card>
         )}
 
-        {/* Nearby Mechanics */}
+        {/* Nearby Mechanics (Placeholder) */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
@@ -154,37 +141,9 @@ const CustomerDashboard = () => {
               Mekanik Terdekat
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {nearbyMechanics.map((mechanic) => (
-              <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                <div className="flex items-center space-x-4">
-                  <div className="text-3xl">{mechanic.avatar}</div>
-                  <div>
-                    <h3 className="font-semibold">{mechanic.name}</h3>
-                    <p className="text-sm text-gray-600">{mechanic.speciality}</p>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="text-sm ml-1">{mechanic.rating}</span>
-                      </div>
-                      <Badge variant="outline" className="text-xs">
-                        {mechanic.distance}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-blue-600">{mechanic.price}</p>
-                  <Button 
-                    size="sm" 
-                    className="mt-2"
-                    onClick={() => navigate('/customer/booking')}
-                  >
-                    Pilih
-                  </Button>
-                </div>
-              </div>
-            ))}
+          <CardContent>
+            {/* This would be populated by a separate API call in a real app */}
+            <p className="text-gray-500">Fitur mekanik terdekat akan segera hadir.</p>
           </CardContent>
         </Card>
 
@@ -210,12 +169,7 @@ const CustomerDashboard = () => {
                   <p className="text-xs text-gray-500">{service.date}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-green-600">{service.cost}</p>
-                  <div className="flex items-center mt-1">
-                    {[...Array(service.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 text-yellow-500 fill-current" />
-                    ))}
-                  </div>
+                  <p className="font-semibold text-green-600">{service.cost || 'N/A'}</p>
                 </div>
               </div>
             ))}

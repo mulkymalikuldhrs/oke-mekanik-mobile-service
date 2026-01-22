@@ -1,300 +1,142 @@
 
-import React, { useState } from 'react';
-import { CreditCard, Wallet, Building, QrCode, CheckCircle, Clock, Star } from 'lucide-react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { CreditCard, Wallet, Building, CheckCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useToast } from '@/hooks/use-toast';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useToast } from '@/components/ui/use-toast';
 
+/**
+ * Zod schema for the payment form.
+ */
+const paymentSchema = z.object({
+  paymentMethod: z.enum(['qris', 'gopay', 'bank_transfer', 'credit_card'], {
+    required_error: "Anda harus memilih metode pembayaran.",
+  }),
+});
+
+type PaymentFormValues = z.infer<typeof paymentSchema>;
+
+/**
+ * Posts the payment data to the API.
+ * @param {PaymentFormValues} data The payment form data.
+ * @returns {Promise<any>} A promise that resolves to the response from the API.
+ */
+const postPayment = async (data: PaymentFormValues) => {
+  const response = await fetch('/api/payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw new Error('Pembayaran gagal');
+  return response.json();
+};
+
+/**
+ * Renders the payment page, allowing customers to pay for a completed service request.
+ */
 const PaymentPage = () => {
-  const { t } = useLanguage();
   const { toast } = useToast();
-  const [selectedMethod, setSelectedMethod] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('pending'); // pending, processing, completed
+  const navigate = useNavigate();
+  const form = useForm<PaymentFormValues>({
+    resolver: zodResolver(paymentSchema),
+  });
 
-  const jobDetails = {
-    id: 'JOB001',
-    mechanic: {
-      name: 'Ahmad Rizki',
-      rating: 4.9,
-      photo: '👨‍🔧'
+  const mutation = useMutation({
+    mutationFn: postPayment,
+    onSuccess: () => {
+      toast({
+        title: 'Pembayaran Berhasil! 🎉',
+        description: 'Terima kasih! Anda akan dialihkan ke dashboard.',
+      });
+      setTimeout(() => navigate('/customer/dashboard'), 2000);
     },
-    service: 'Perbaikan Mesin',
-    vehicle: 'Toyota Avanza 2019 - B 1234 XYZ',
-    duration: '2 jam',
-    completedAt: '16:30',
-    costs: {
-      service: 150000,
-      parts: 50000,
-      tax: 20000,
-      total: 220000
-    }
+    onError: () => {
+      toast({
+        title: 'Pembayaran Gagal',
+        description: 'Terjadi kesalahan. Silakan coba lagi.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const onSubmit = (data: PaymentFormValues) => {
+    mutation.mutate(data);
   };
 
   const paymentMethods = [
-    {
-      id: 'qris',
-      name: 'QRIS',
-      icon: QrCode,
-      description: 'Scan QR code dengan aplikasi bank/e-wallet',
-      fee: 0
-    },
-    {
-      id: 'gopay',
-      name: 'GoPay',
-      icon: Wallet,
-      description: 'Bayar dengan saldo GoPay',
-      fee: 0
-    },
-    {
-      id: 'ovo',
-      name: 'OVO',
-      icon: Wallet,
-      description: 'Bayar dengan saldo OVO',
-      fee: 0
-    },
-    {
-      id: 'dana',
-      name: 'DANA',
-      icon: Wallet,
-      description: 'Bayar dengan saldo DANA',
-      fee: 0
-    },
-    {
-      id: 'bank_transfer',
-      name: 'Transfer Bank',
-      icon: Building,
-      description: 'Transfer melalui ATM/Internet Banking',
-      fee: 2500
-    },
-    {
-      id: 'credit_card',
-      name: 'Kartu Kredit',
-      icon: CreditCard,
-      description: 'Visa, Mastercard, JCB',
-      fee: 6600 // 3% of total
-    }
+    { id: 'qris', name: 'QRIS', icon: Wallet },
+    { id: 'gopay', name: 'GoPay', icon: Wallet },
+    { id: 'bank_transfer', name: 'Transfer Bank', icon: Building },
+    { id: 'credit_card', name: 'Kartu Kredit', icon: CreditCard },
   ];
-
-  const handlePayment = () => {
-    if (!selectedMethod) {
-      toast({
-        title: "Pilih Metode Pembayaran",
-        description: "Silakan pilih metode pembayaran terlebih dahulu.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    setPaymentStatus('processing');
-    
-    // Simulate payment processing
-    setTimeout(() => {
-      setPaymentStatus('completed');
-      toast({
-        title: "Pembayaran Berhasil! 🎉",
-        description: "Terima kasih telah menggunakan layanan Oke Mekanik.",
-      });
-    }, 3000);
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
-    }).format(amount);
-  };
-
-  const renderJobSummary = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <CheckCircle className="h-5 w-5 mr-2 text-green-600" />
-          Pekerjaan Selesai
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex items-center space-x-3">
-          <div className="text-3xl">{jobDetails.mechanic.photo}</div>
-          <div>
-            <h3 className="font-semibold">{jobDetails.mechanic.name}</h3>
-            <div className="flex items-center">
-              <Star className="h-4 w-4 text-yellow-500 fill-current" />
-              <span className="text-sm ml-1">{jobDetails.mechanic.rating}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Layanan:</span>
-            <span className="font-medium">{jobDetails.service}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Kendaraan:</span>
-            <span className="font-medium">{jobDetails.vehicle}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Durasi:</span>
-            <span className="font-medium">{jobDetails.duration}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Selesai:</span>
-            <span className="font-medium">{jobDetails.completedAt}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderCostBreakdown = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Rincian Biaya</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="flex justify-between">
-          <span>Biaya Jasa</span>
-          <span>{formatCurrency(jobDetails.costs.service)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Biaya Suku Cadang</span>
-          <span>{formatCurrency(jobDetails.costs.parts)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span>Pajak & Biaya Admin</span>
-          <span>{formatCurrency(jobDetails.costs.tax)}</span>
-        </div>
-        
-        {selectedMethod && paymentMethods.find(m => m.id === selectedMethod)?.fee > 0 && (
-          <div className="flex justify-between">
-            <span>Biaya Pembayaran</span>
-            <span>{formatCurrency(paymentMethods.find(m => m.id === selectedMethod)?.fee || 0)}</span>
-          </div>
-        )}
-        
-        <hr className="my-2" />
-        <div className="flex justify-between font-semibold text-lg">
-          <span>Total</span>
-          <span className="text-green-600">
-            {formatCurrency(jobDetails.costs.total + (paymentMethods.find(m => m.id === selectedMethod)?.fee || 0))}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderPaymentMethods = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pilih Metode Pembayaran</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {paymentMethods.map((method) => {
-          const MethodIcon = method.icon;
-          const isSelected = selectedMethod === method.id;
-          
-          return (
-            <div
-              key={method.id}
-              onClick={() => setSelectedMethod(method.id)}
-              className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <MethodIcon className="h-6 w-6 text-gray-600" />
-                  <div>
-                    <p className="font-medium">{method.name}</p>
-                    <p className="text-sm text-gray-600">{method.description}</p>
-                  </div>
-                </div>
-                {method.fee > 0 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{formatCurrency(method.fee)}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </CardContent>
-    </Card>
-  );
-
-  const renderPaymentProcessing = () => (
-    <Card className="border-blue-200 bg-blue-50">
-      <CardContent className="p-6 text-center">
-        <Clock className="h-12 w-12 text-blue-600 mx-auto mb-4 animate-spin" />
-        <h3 className="text-lg font-semibold text-blue-900 mb-2">
-          Memproses Pembayaran...
-        </h3>
-        <p className="text-blue-700">
-          Mohon tunggu, pembayaran Anda sedang diproses
-        </p>
-      </CardContent>
-    </Card>
-  );
-
-  const renderPaymentSuccess = () => (
-    <Card className="border-green-200 bg-green-50">
-      <CardContent className="p-6 text-center">
-        <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-green-900 mb-2">
-          Pembayaran Berhasil! 🎉
-        </h3>
-        <p className="text-green-700 mb-4">
-          Terima kasih telah menggunakan layanan Oke Mekanik
-        </p>
-        <div className="space-y-2">
-          <Button className="w-full bg-green-600 hover:bg-green-700">
-            <Star className="h-4 w-4 mr-2" />
-            Beri Rating Mekanik
-          </Button>
-          <Button variant="outline" className="w-full">
-            Unduh Struk Pembayaran
-          </Button>
-          <Button variant="outline" className="w-full">
-            Kembali ke Dashboard
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
           <h1 className="text-2xl font-bold text-gray-900">Pembayaran</h1>
-          <p className="text-gray-600">Job #{jobDetails.id}</p>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto space-y-6">
-          {renderJobSummary()}
-          {renderCostBreakdown()}
-          
-          {paymentStatus === 'pending' && (
-            <>
-              {renderPaymentMethods()}
-              <Button 
-                onClick={handlePayment}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-lg py-3"
-                disabled={!selectedMethod}
-              >
-                Bayar Sekarang - {formatCurrency(jobDetails.costs.total + (paymentMethods.find(m => m.id === selectedMethod)?.fee || 0))}
-              </Button>
-            </>
-          )}
-          
-          {paymentStatus === 'processing' && renderPaymentProcessing()}
-          {paymentStatus === 'completed' && renderPaymentSuccess()}
-        </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-2xl mx-auto space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Ringkasan Biaya</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex justify-between"><span>Biaya Jasa</span><span>Rp 150.000</span></div>
+                <div className="flex justify-between font-semibold text-lg"><span>Total</span><span>Rp 150.000</span></div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Pilih Metode Pembayaran</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FormField
+                  control={form.control}
+                  name="paymentMethod"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormControl>
+                        <RadioGroup onValueChange={field.onChange} defaultValue={field.value} className="flex flex-col space-y-1">
+                          {paymentMethods.map(method => {
+                            const Icon = method.icon;
+                            return (
+                              <FormItem key={method.id} className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <RadioGroupItem value={method.id} />
+                                </FormControl>
+                                <FormLabel className="font-normal flex items-center">
+                                  <Icon className="h-5 w-5 mr-2" /> {method.name}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          })}
+                        </RadioGroup>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            <Button type="submit" className="w-full" disabled={mutation.isPending}>
+              {mutation.isPending ? 'Memproses...' : 'Bayar Sekarang'}
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );

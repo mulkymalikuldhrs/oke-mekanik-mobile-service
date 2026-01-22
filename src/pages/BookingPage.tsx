@@ -1,313 +1,95 @@
 
-import React, { useState, useEffect } from 'react';
-import { MapPin, Clock, Car, Phone, MessageSquare, Star, Camera, Navigation } from 'lucide-react';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useMutation } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Car, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useToast } from '@/components/ui/use-toast';
 
-const BookingPage = () => {
-  const { t } = useLanguage();
-  const { toast } = useToast();
-  const [step, setStep] = useState(1);
-  const [location, setLocation] = useState({ lat: 0, lng: 0, address: '' });
-  const [vehicleData, setVehicleData] = useState({
-    brand: '',
-    model: '',
-    year: '',
-    color: '',
-    licensePlate: '',
-    problem: ''
+/**
+ * Zod schema for the booking form.
+ */
+const bookingSchema = z.object({
+  address: z.string().min(10, 'Alamat lengkap diperlukan'),
+  vehicle: z.string().min(2, 'Model kendaraan diperlukan'),
+  licensePlate: z.string().min(3, 'Plat nomor diperlukan'),
+  problem: z.string().min(10, 'Deskripsi masalah diperlukan'),
+  isEmergency: z.boolean().default(false),
+});
+
+type BookingFormValues = z.infer<typeof bookingSchema>;
+
+/**
+ * Posts the booking data to the API.
+ * @param {BookingFormValues} data The booking form data.
+ * @returns {Promise<any>} A promise that resolves to the response from the API.
+ */
+const postBooking = async (data: BookingFormValues) => {
+  const response = await fetch('/api/bookings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
-  const [selectedMechanic, setSelectedMechanic] = useState(null);
-  const [isEmergency, setIsEmergency] = useState(false);
+  if (!response.ok) {
+    throw new Error('Gagal membuat booking');
+  }
+  return response.json();
+};
 
-  const availableMechanics = [
-    {
-      id: 1,
-      name: 'Ahmad Rizki',
-      rating: 4.9,
-      distance: '0.8 km',
-      eta: '12 menit',
-      speciality: 'Mesin & Transmisi',
-      price: 'Rp 75.000',
-      photo: '👨‍🔧',
-      verified: true,
-      completedJobs: 245
+/**
+ * Renders the booking page, allowing customers to create a new service request.
+ */
+const BookingPage = () => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const form = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      address: '',
+      vehicle: '',
+      licensePlate: '',
+      problem: '',
+      isEmergency: false,
     },
-    {
-      id: 2,
-      name: 'Budi Santoso',
-      rating: 4.8,
-      distance: '1.2 km',
-      eta: '15 menit',
-      speciality: 'Sistem Kelistrikan',
-      price: 'Rp 80.000',
-      photo: '🔧',
-      verified: true,
-      completedJobs: 189
+  });
+
+  const mutation = useMutation({
+    mutationFn: postBooking,
+    onSuccess: () => {
+      toast({
+        title: 'Booking Berhasil!',
+        description: 'Mekanik akan segera dihubungi. Anda akan dialihkan ke dashboard.',
+      });
+      setTimeout(() => navigate('/customer/dashboard'), 2000);
     },
-    {
-      id: 3,
-      name: 'Sari Mekanik',
-      rating: 4.9,
-      distance: '1.5 km',
-      eta: '18 menit',
-      speciality: 'AC & Radiator',
-      price: 'Rp 70.000',
-      photo: '👩‍🔧',
-      verified: true,
-      completedJobs: 167
-    }
-  ];
+    onError: () => {
+      toast({
+        title: 'Booking Gagal',
+        description: 'Terjadi kesalahan. Silakan coba lagi.',
+        variant: 'destructive',
+      });
+    },
+  });
 
-  const vehicleBrands = ['Toyota', 'Honda', 'Suzuki', 'Daihatsu', 'Mitsubishi', 'Nissan', 'Hyundai', 'Yamaha', 'Kawasaki'];
-  const problemTypes = [
-    'Mesin mati mendadak',
-    'Tidak bisa starter',
-    'Overheat',
-    'Ban kempes',
-    'Aki soak',
-    'Rem bermasalah',
-    'AC tidak dingin',
-    'Lampu mati',
-    'Lainnya'
-  ];
-
-  useEffect(() => {
-    // Get user location
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            address: 'Lokasi saat ini' // In real app, use reverse geocoding
-          });
-        },
-        (error) => {
-          console.error('Error getting location:', error);
-        }
-      );
-    }
-  }, []);
+  const onSubmit = (data: BookingFormValues) => {
+    mutation.mutate(data);
+  };
 
   const handleEmergencyBooking = () => {
-    setIsEmergency(true);
+    form.setValue('isEmergency', true);
+    // You might want to pre-fill some fields or show a confirmation
     toast({
       title: "🚨 Mode Darurat Aktif",
-      description: "Mencari mekanik terdekat untuk Anda...",
-    });
-    
-    // Auto-select closest mechanic
-    setSelectedMechanic(availableMechanics[0]);
-    setStep(3);
-  };
-
-  const handleBooking = () => {
-    toast({
-      title: "Booking Berhasil!",
-      description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
+      description: "Lengkapi detail di bawah dan panggil sekarang.",
     });
   };
-
-  const renderLocationStep = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <MapPin className="h-5 w-5 mr-2" />
-          Lokasi & Masalah Kendaraan
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <Label htmlFor="address">Alamat Lengkap</Label>
-          <div className="flex space-x-2">
-            <Input
-              id="address"
-              value={location.address}
-              onChange={(e) => setLocation(prev => ({ ...prev, address: e.target.value }))}
-              placeholder="Masukkan alamat lengkap"
-            />
-            <Button size="sm" variant="outline">
-              <Navigation className="h-4 w-4 mr-1" />
-              GPS
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="brand">Merk Kendaraan</Label>
-            <select
-              id="brand"
-              className="w-full p-2 border rounded-md"
-              value={vehicleData.brand}
-              onChange={(e) => setVehicleData(prev => ({ ...prev, brand: e.target.value }))}
-            >
-              <option value="">Pilih merk</option>
-              {vehicleBrands.map(brand => (
-                <option key={brand} value={brand}>{brand}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <Label htmlFor="model">Model/Tipe</Label>
-            <Input
-              id="model"
-              value={vehicleData.model}
-              onChange={(e) => setVehicleData(prev => ({ ...prev, model: e.target.value }))}
-              placeholder="Avanza, Vario, dll"
-            />
-          </div>
-          <div>
-            <Label htmlFor="year">Tahun</Label>
-            <Input
-              id="year"
-              value={vehicleData.year}
-              onChange={(e) => setVehicleData(prev => ({ ...prev, year: e.target.value }))}
-              placeholder="2019"
-            />
-          </div>
-          <div>
-            <Label htmlFor="licensePlate">Plat Nomor</Label>
-            <Input
-              id="licensePlate"
-              value={vehicleData.licensePlate}
-              onChange={(e) => setVehicleData(prev => ({ ...prev, licensePlate: e.target.value }))}
-              placeholder="B 1234 XYZ"
-            />
-          </div>
-        </div>
-
-        <div>
-          <Label htmlFor="problem">Masalah Kendaraan</Label>
-          <select
-            id="problem"
-            className="w-full p-2 border rounded-md mb-2"
-            value={vehicleData.problem}
-            onChange={(e) => setVehicleData(prev => ({ ...prev, problem: e.target.value }))}
-          >
-            <option value="">Pilih masalah</option>
-            {problemTypes.map(problem => (
-              <option key={problem} value={problem}>{problem}</option>
-            ))}
-          </select>
-          <Input
-            placeholder="Deskripsi detail masalah (opsional)"
-            className="mt-2"
-          />
-        </div>
-
-        <div className="bg-red-50 p-4 rounded-lg">
-          <Button 
-            onClick={handleEmergencyBooking}
-            className="w-full bg-red-600 hover:bg-red-700 text-white"
-          >
-            🚨 DARURAT - Panggil Sekarang
-          </Button>
-          <p className="text-xs text-red-600 mt-2 text-center">
-            Untuk situasi darurat yang membutuhkan bantuan segera
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderMechanicSelection = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Car className="h-5 w-5 mr-2" />
-          Pilih Mekanik {isEmergency && <Badge className="ml-2 bg-red-600">DARURAT</Badge>}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {availableMechanics.map((mechanic) => (
-          <div
-            key={mechanic.id}
-            onClick={() => setSelectedMechanic(mechanic)}
-            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-              selectedMechanic?.id === mechanic.id
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:bg-gray-50'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="text-3xl">{mechanic.photo}</div>
-                <div>
-                  <h3 className="font-semibold flex items-center">
-                    {mechanic.name}
-                    {mechanic.verified && <Badge className="ml-2 bg-green-600">Verified</Badge>}
-                  </h3>
-                  <p className="text-sm text-gray-600">{mechanic.speciality}</p>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <div className="flex items-center">
-                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-sm ml-1">{mechanic.rating}</span>
-                    </div>
-                    <Badge variant="outline" className="text-xs">
-                      {mechanic.distance}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
-                      {mechanic.completedJobs} jobs
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-gray-600">ETA: {mechanic.eta}</p>
-                <p className="text-lg font-semibold text-blue-600">{mechanic.price}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-
-  const renderBookingConfirmation = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Clock className="h-5 w-5 mr-2" />
-          Konfirmasi Booking
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-blue-900">Detail Booking</h3>
-          <div className="mt-2 space-y-2">
-            <p><strong>Mekanik:</strong> {selectedMechanic?.name}</p>
-            <p><strong>Lokasi:</strong> {location.address}</p>
-            <p><strong>Kendaraan:</strong> {vehicleData.brand} {vehicleData.model} ({vehicleData.licensePlate})</p>
-            <p><strong>Masalah:</strong> {vehicleData.problem}</p>
-            <p><strong>Estimasi Biaya:</strong> {selectedMechanic?.price}</p>
-            <p><strong>ETA:</strong> {selectedMechanic?.eta}</p>
-          </div>
-        </div>
-
-        <div className="flex space-x-2">
-          <Button variant="outline" className="flex-1">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Chat
-          </Button>
-          <Button variant="outline" className="flex-1">
-            <Phone className="h-4 w-4 mr-2" />
-            Telepon
-          </Button>
-        </div>
-
-        <Button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-700">
-          Konfirmasi Booking
-        </Button>
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -319,29 +101,95 @@ const BookingPage = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-2xl mx-auto">
-          {step === 1 && renderLocationStep()}
-          {step === 2 && renderMechanicSelection()}
-          {step === 3 && renderBookingConfirmation()}
-          
-          {!isEmergency && (
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={() => setStep(Math.max(1, step - 1))}
-                disabled={step === 1}
-              >
-                Sebelumnya
-              </Button>
-              
-              {step < 3 && (
-                <Button onClick={() => setStep(step + 1)}>
-                  Selanjutnya
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Car className="h-5 w-5 mr-2" />
+              Detail Permintaan Bantuan
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Alamat Lengkap</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Contoh: Jl. Sudirman No. 123, Jakarta" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="vehicle"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Model Kendaraan</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Contoh: Toyota Avanza 2019" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="licensePlate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Plat Nomor</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Contoh: B 1234 XYZ" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="problem"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Deskripsi Masalah</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Jelaskan masalah yang Anda alami secara detail."
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <Button
+                    type="button"
+                    onClick={handleEmergencyBooking}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    <AlertTriangle className="h-5 w-5 mr-2" />
+                    Klik Jika Darurat
+                  </Button>
+                  <p className="text-xs text-red-700 mt-2 text-center">
+                    Gunakan tombol ini untuk situasi darurat yang butuh penanganan super cepat.
+                  </p>
+                </div>
+
+                <Button type="submit" className="w-full" disabled={mutation.isPending}>
+                  {mutation.isPending ? 'Mengirim...' : 'Panggil Mekanik Sekarang'}
                 </Button>
-              )}
-            </div>
-          )}
-        </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
