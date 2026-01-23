@@ -27,11 +27,19 @@ import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
  * @returns {Promise<any>} A promise that resolves to the mechanic dashboard data.
  */
 const fetchMechanicDashboard = async () => {
-  const response = await fetch('/api/mechanic/dashboard');
+  const response = await fetch('http://localhost:3001/mechanics/1'); // Assuming mechanic ID is 1
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
-  return response.json();
+  const mechanic = await response.json();
+
+  const jobsResponse = await fetch(`http://localhost:3001/bookings?mechanicId=${mechanic.id}`);
+  if (!jobsResponse.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const jobs = await jobsResponse.json();
+
+  return { ...mechanic, jobs };
 };
 
 /**

@@ -16,7 +16,7 @@ import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
  */
 const fetchChatMessages = async (id: string | undefined) => {
   if (!id) throw new Error("No chat ID provided");
-  const response = await fetch(`/api/chat/${id}`);
+  const response = await fetch(`http://localhost:3001/chats/${id}`);
   if (!response.ok) throw new Error('Network response was not ok');
   return response.json();
 };
@@ -30,11 +30,22 @@ const fetchChatMessages = async (id: string | undefined) => {
  */
 const postChatMessage = async ({ id, text }: { id: string | undefined; text: string }) => {
   if (!id) throw new Error("No chat ID provided");
-  const response = await fetch(`/api/chat/${id}`, {
-    method: 'POST',
+
+  const chatResponse = await fetch(`http://localhost:3001/chats/${id}`);
+  const chat = await chatResponse.json();
+
+  const newMessage = {
+    id: chat.messages.length + 1,
+    sender: 'customer',
+    text,
+  };
+
+  const response = await fetch(`http://localhost:3001/chats/${id}`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ messages: [...chat.messages, newMessage] }),
   });
+
   if (!response.ok) throw new Error('Failed to send message');
   return response.json();
 };

@@ -1,0 +1,90 @@
+{
+  "customers": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "password": "password123"
+    }
+  ],
+  "mechanics": [
+    {
+      "id": 1,
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "password": "password123",
+      "skills": ["Oil Change", "Tire Rotation", "Brake Inspection"],
+      "rating": 4.8
+    }
+  ],
+  "bookings": [
+    {
+      "id": 1,
+      "customerId": 1,
+      "mechanicId": 1,
+      "service": "Oil Change",
+      "date": "2024-08-15",
+      "status": "Completed",
+      "vehicle": "Toyota Camry",
+      "licensePlate": "B 1234 CD",
+      "problem": "Routine oil change",
+      "isEmergency": false
+    },
+    {
+      "id": 2,
+      "customerId": 1,
+      "mechanicId": 1,
+      "service": "Tire Rotation",
+      "date": "2024-09-01",
+      "status": "Scheduled",
+      "vehicle": "Toyota Camry",
+      "licensePlate": "B 1234 CD",
+      "problem": "Tires need to be rotated",
+      "isEmergency": false
+    }
+  ],
+  "chats": [
+    {
+      "id": 1,
+      "bookingId": 1,
+      "messages": [
+        {
+          "id": 1,
+          "sender": "customer",
+          "text": "Hi, how is my car doing?"
+        },
+        {
+          "id": 2,
+          "sender": "mechanic",
+          "text": "We are currently working on it. It should be ready soon."
+        }
+      ]
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "name": "Oil Change",
+      "price": 50000
+    },
+    {
+      "id": 2,
+      "name": "Tire Rotation",
+      "price": 75000
+    },
+    {
+      "id": 3,
+      "name": "Brake Inspection",
+      "price": 100000
+    }
+  ],
+  "payments": [
+    {
+      "id": 1,
+      "bookingId": 1,
+      "amount": 50000,
+      "paymentMethod": "credit_card",
+      "status": "completed"
+    }
+  ]
+}

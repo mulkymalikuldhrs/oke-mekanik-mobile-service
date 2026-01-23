@@ -29,10 +29,10 @@ type PaymentFormValues = z.infer<typeof paymentSchema>;
  * @returns {Promise<any>} A promise that resolves to the response from the API.
  */
 const postPayment = async (data: PaymentFormValues) => {
-  const response = await fetch('/api/payment', {
+  const response = await fetch('http://localhost:3001/payments', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ ...data, bookingId: 1, amount: 150000, status: 'completed' }),
   });
   if (!response.ok) throw new Error('Pembayaran gagal');
   return response.json();

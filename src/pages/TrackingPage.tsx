@@ -15,7 +15,7 @@ import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
  */
 const fetchTrackingData = async (id: string | undefined) => {
   if (!id) throw new Error("No tracking ID provided");
-  const response = await fetch(`/api/tracking/${id}`);
+  const response = await fetch(`http://localhost:3001/bookings/${id}`);
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }

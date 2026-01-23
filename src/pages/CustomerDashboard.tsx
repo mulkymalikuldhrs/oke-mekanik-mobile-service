@@ -15,11 +15,19 @@ import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
  * @returns {Promise<any>} A promise that resolves to the customer dashboard data.
  */
 const fetchCustomerDashboard = async () => {
-  const response = await fetch('/api/customer/dashboard');
+  const response = await fetch('http://localhost:3001/customers/1'); // Assuming customer ID is 1
   if (!response.ok) {
     throw new Error('Network response was not ok');
   }
-  return response.json();
+  const customer = await response.json();
+
+  const bookingsResponse = await fetch(`http://localhost:3001/bookings?customerId=${customer.id}`);
+  if (!bookingsResponse.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const bookings = await bookingsResponse.json();
+
+  return { ...customer, bookings };
 };
 
 /**

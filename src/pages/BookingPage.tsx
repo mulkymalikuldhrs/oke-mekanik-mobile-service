@@ -32,10 +32,10 @@ type BookingFormValues = z.infer<typeof bookingSchema>;
  * @returns {Promise<any>} A promise that resolves to the response from the API.
  */
 const postBooking = async (data: BookingFormValues) => {
-  const response = await fetch('/api/bookings', {
+  const response = await fetch('http://localhost:3001/bookings', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
+    body: JSON.stringify({ ...data, customerId: 1, mechanicId: 1, date: new Date().toISOString(), status: 'Scheduled' }),
   });
   if (!response.ok) {
     throw new Error('Gagal membuat booking');
