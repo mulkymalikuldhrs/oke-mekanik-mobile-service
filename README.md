@@ -1,73 +1,43 @@
-# Welcome to your Lovable project
+# Oke Mekanik
 
-## Project info
+Oke Mekanik is a platform for connecting customers with mechanics. This project is a web application that provides a dashboard for both customers and mechanics, as well as features for booking, tracking, chat, and payment.
 
-**URL**: https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d
+## Getting Started
 
-## How can I edit this code?
+To get started with the project, you'll need to have Node.js and npm installed on your machine.
 
-There are several ways of editing your application.
+1.  **Clone the repository:**
+    ```sh
+    git clone <YOUR_GIT_URL>
+    ```
+2.  **Navigate to the project directory:**
+    ```sh
+    cd oke-mekanik
+    ```
+3.  **Install the dependencies:**
+    ```sh
+    npm i
+    ```
+4.  **Start the development server:**
+    ```sh
+    npm run dev
+    ```
 
-**Use Lovable**
+## Running Tests
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+This project uses `vitest` for testing. To run the tests, use the following command:
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+npm test
 ```
 
-**Edit a file directly in GitHub**
+## Technologies Used
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+*   **Vite**
+*   **TypeScript**
+*   **React**
+*   **shadcn-ui**
+*   **Tailwind CSS**
+*   **Mock Service Worker**
+*   **Vitest**
+*   **React Testing Library**
