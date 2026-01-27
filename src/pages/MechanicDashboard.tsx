@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   Wrench, 
@@ -10,7 +9,9 @@ import {
   CheckCircle,
   XCircle,
   Camera,
-  DollarSign
+  DollarSign,
+  LoaderCircle,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,47 +19,23 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import LanguageToggle from '@/components/LanguageToggle';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchMechanicData = async () => {
+  const res = await fetch('http://localhost:3001/mechanic');
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+};
 
 const MechanicDashboard = () => {
   const { t } = useLanguage();
   const [isOnline, setIsOnline] = useState(true);
-  const [currentJob, setCurrentJob] = useState({
-    id: 1,
-    customer: 'Budi Santoso',
-    location: 'Jl. Sudirman No. 45, Jakarta',
-    issue: 'Mesin mobil mati mendadak',
-    vehicle: 'Toyota Avanza 2019 - B 1234 XYZ',
-    status: 'otw', // otw, arrived, working, completed
-    estimatedEarning: 'Rp 200.000'
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['mechanicData'],
+    queryFn: fetchMechanicData
   });
-
-  const pendingOrders = [
-    {
-      id: 2,
-      customer: 'Siti Aminah',
-      location: 'Jl. Thamrin No. 12, Jakarta',
-      issue: 'Ban mobil kempes',
-      vehicle: 'Honda Jazz 2020 - B 5678 ABC',
-      estimatedEarning: 'Rp 100.000',
-      distance: '2.5 km'
-    },
-    {
-      id: 3,
-      customer: 'Ahmad Rahman',
-      location: 'Jl. Gatot Subroto No. 88, Jakarta',
-      issue: 'Aki soak',
-      vehicle: 'Suzuki Ertiga 2021 - B 9012 DEF',
-      estimatedEarning: 'Rp 150.000',
-      distance: '1.8 km'
-    }
-  ];
-
-  const todayStats = {
-    completedJobs: 3,
-    totalEarnings: 'Rp 450.000',
-    rating: 4.8,
-    onlineHours: '6.5 jam'
-  };
 
   const getStatusBadge = (status: string) => {
     const statusMap = {
@@ -79,6 +56,28 @@ const MechanicDashboard = () => {
     console.log('Rejecting order:', orderId);
     // Handle order rejection logic
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoaderCircle data-testid="loader" className="h-12 w-12 animate-spin text-orange-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
+          <h2 className="mt-4 text-xl font-semibold text-gray-800">Gagal memuat data</h2>
+          <p className="text-gray-600">Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { currentJob, pendingOrders, todayStats } = data || {};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,28 +111,28 @@ const MechanicDashboard = () => {
           <Card>
             <CardContent className="p-4 text-center">
               <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.completedJobs}</p>
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.completedJobs}</p>
               <p className="text-sm text-gray-600">Pekerjaan Selesai</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <DollarSign className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.totalEarnings}</p>
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.totalEarnings}</p>
               <p className="text-sm text-gray-600">Pendapatan Hari Ini</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.rating}</p>
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.rating}</p>
               <p className="text-sm text-gray-600">Rating</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
               <Clock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-              <p className="text-2xl font-bold text-gray-900">{todayStats.onlineHours}</p>
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.onlineHours}</p>
               <p className="text-sm text-gray-600">Jam Online</p>
             </CardContent>
           </Card>
@@ -200,11 +199,11 @@ const MechanicDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Clock className="h-5 w-5 mr-2 text-blue-600" />
-              Pesanan Masuk ({pendingOrders.length})
+              Pesanan Masuk ({pendingOrders?.length || 0})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {pendingOrders.map((order) => (
+            {pendingOrders && pendingOrders.map((order) => (
               <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">

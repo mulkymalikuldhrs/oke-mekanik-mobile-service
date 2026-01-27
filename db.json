@@ -1,0 +1,86 @@
+{
+  "customer": {
+    "activeService": {
+      "id": "JOB001",
+      "mechanic": "Ahmad Rizki",
+      "status": "otw",
+      "eta": "12 menit",
+      "vehicle": "Toyota Avanza 2019"
+    },
+    "recentServices": [
+      {
+        "id": 1,
+        "mechanic": "Ahmad Rizki",
+        "service": "Ganti Ban",
+        "date": "2024-01-20",
+        "rating": 5,
+        "cost": "Rp 150.000"
+      },
+      {
+        "id": 2,
+        "mechanic": "Budi Santoso",
+        "service": "Servis Rutin",
+        "date": "2024-01-15",
+        "rating": 4,
+        "cost": "Rp 300.000"
+      }
+    ],
+    "nearbyMechanics": [
+      {
+        "id": 1,
+        "name": "Joko Widodo",
+        "rating": 4.8,
+        "distance": "0.5 km",
+        "speciality": "Mobil & Motor",
+        "price": "Rp 50.000/jam",
+        "avatar": "👨‍🔧"
+      },
+      {
+        "id": 2,
+        "name": "Sari Mechanic",
+        "rating": 4.9,
+        "distance": "1.2 km",
+        "speciality": "Spesialis Mobil",
+        "price": "Rp 75.000/jam",
+        "avatar": "👩‍🔧"
+      }
+    ]
+  },
+  "mechanic": {
+    "currentJob": {
+      "id": 1,
+      "customer": "Budi Santoso",
+      "location": "Jl. Sudirman No. 45, Jakarta",
+      "issue": "Mesin mobil mati mendadak",
+      "vehicle": "Toyota Avanza 2019 - B 1234 XYZ",
+      "status": "otw",
+      "estimatedEarning": "Rp 200.000"
+    },
+    "pendingOrders": [
+      {
+        "id": 2,
+        "customer": "Siti Aminah",
+        "location": "Jl. Thamrin No. 12, Jakarta",
+        "issue": "Ban mobil kempes",
+        "vehicle": "Honda Jazz 2020 - B 5678 ABC",
+        "estimatedEarning": "Rp 100.000",
+        "distance": "2.5 km"
+      },
+      {
+        "id": 3,
+        "customer": "Ahmad Rahman",
+        "location": "Jl. Gatot Subroto No. 88, Jakarta",
+        "issue": "Aki soak",
+        "vehicle": "Suzuki Ertiga 2021 - B 9012 DEF",
+        "estimatedEarning": "Rp 150.000",
+        "distance": "1.8 km"
+      }
+    ],
+    "todayStats": {
+      "completedJobs": 3,
+      "totalEarnings": "Rp 450.000",
+      "rating": 4.8,
+      "onlineHours": "6.5 jam"
+    }
+  }
+}

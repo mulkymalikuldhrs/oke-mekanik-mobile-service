@@ -1,66 +1,54 @@
-import React, { useState } from 'react';
-import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LoaderCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+import { useQuery } from '@tanstack/react-query';
+
+const fetchCustomerData = async () => {
+  const res = await fetch('http://localhost:3001/customer');
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+};
 
 const CustomerDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [activeService, setActiveService] = useState({
-    id: 'JOB001',
-    mechanic: 'Ahmad Rizki',
-    status: 'otw',
-    eta: '12 menit',
-    vehicle: 'Toyota Avanza 2019'
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['customerData'],
+    queryFn: fetchCustomerData
   });
-
-  const recentServices = [
-    {
-      id: 1,
-      mechanic: 'Ahmad Rizki',
-      service: 'Ganti Ban',
-      date: '2024-01-20',
-      rating: 5,
-      cost: 'Rp 150.000'
-    },
-    {
-      id: 2,
-      mechanic: 'Budi Santoso',
-      service: 'Servis Rutin',
-      date: '2024-01-15',
-      rating: 4,
-      cost: 'Rp 300.000'
-    }
-  ];
-
-  const nearbyMechanics = [
-    {
-      id: 1,
-      name: 'Joko Widodo',
-      rating: 4.8,
-      distance: '0.5 km',
-      speciality: 'Mobil & Motor',
-      price: 'Rp 50.000/jam',
-      avatar: '👨‍🔧'
-    },
-    {
-      id: 2,
-      name: 'Sari Mechanic',
-      rating: 4.9,
-      distance: '1.2 km',
-      speciality: 'Spesialis Mobil',
-      price: 'Rp 75.000/jam',
-      avatar: '👩‍🔧'
-    }
-  ];
 
   const handleEmergencyCall = () => {
     navigate('/customer/booking');
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoaderCircle data-testid="loader" className="h-12 w-12 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
+          <h2 className="mt-4 text-xl font-semibold text-gray-800">Gagal memuat data</h2>
+          <p className="text-gray-600">Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { activeService, recentServices, nearbyMechanics } = data || {};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -155,7 +143,7 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {nearbyMechanics.map((mechanic) => (
+            {nearbyMechanics && nearbyMechanics.map((mechanic) => (
               <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                 <div className="flex items-center space-x-4">
                   <div className="text-3xl">{mechanic.avatar}</div>
@@ -202,7 +190,7 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentServices.map((service) => (
+            {recentServices && recentServices.map((service) => (
               <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h3 className="font-semibold">{service.service}</h3>
