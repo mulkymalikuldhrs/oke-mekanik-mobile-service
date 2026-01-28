@@ -1,73 +1,62 @@
-# Welcome to your Lovable project
+# Oke Mekanik
 
-## Project info
+Oke Mekanik is a web platform designed to connect customers with mechanics for vehicle repair and maintenance services. The platform features separate dashboards for customers and mechanics, a booking system, service tracking, a chat feature for communication, and a payment system.
 
-**URL**: https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d
+## Tech Stack
 
-## How can I edit this code?
+- **Frontend:** React, Vite, TypeScript
+- **Styling:** Tailwind CSS, shadcn-ui
+- **State Management:** @tanstack/react-query
+- **Routing:** react-router-dom
+- **Testing:** Vitest, React Testing Library
+- **Mock API:** json-server
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d) and start prompting.
+- Node.js (v18 or higher)
+- npm
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1.  **Clone the repository:**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+    ```bash
+    git clone https://github.com/lovable-community/oke-mekanik.git
+    ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2.  **Navigate to the project directory:**
 
-Follow these steps:
+    ```bash
+    cd oke-mekanik
+    ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+3.  **Install the dependencies:**
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+    ```bash
+    npm install
+    ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+### Running the Application
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+To run the application in development mode, which includes the Vite development server for the UI and the `json-server` for the mock API, run the following command:
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+This will start two servers concurrently:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- The **frontend application** will be available at `http://localhost:5173`.
+- The **mock API server** will be running at `http://localhost:3001`.
 
-**Use GitHub Codespaces**
+### Running Tests
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+To run the test suite, use the following command:
 
-## What technologies are used for this project?
+```bash
+npm test
+```
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This will execute the tests using Vitest and provide a report in the console.

@@ -1,0 +1,47 @@
+{
+  "activeService": {
+    "id": "JOB001",
+    "mechanic": "Ahmad Rizki",
+    "status": "otw",
+    "eta": "12 menit",
+    "vehicle": "Toyota Avanza 2019"
+  },
+  "recentServices": [
+    {
+      "id": 1,
+      "mechanic": "Ahmad Rizki",
+      "service": "Ganti Ban",
+      "date": "2024-01-20",
+      "rating": 5,
+      "cost": "Rp 150.000"
+    },
+    {
+      "id": 2,
+      "mechanic": "Budi Santoso",
+      "service": "Servis Rutin",
+      "date": "2024-01-15",
+      "rating": 4,
+      "cost": "Rp 300.000"
+    }
+  ],
+  "nearbyMechanics": [
+    {
+      "id": 1,
+      "name": "Joko Widodo",
+      "rating": 4.8,
+      "distance": "0.5 km",
+      "speciality": "Mobil & Motor",
+      "price": "Rp 50.000/jam",
+      "avatar": "👨‍🔧"
+    },
+    {
+      "id": 2,
+      "name": "Sari Mechanic",
+      "rating": 4.9,
+      "distance": "1.2 km",
+      "speciality": "Spesialis Mobil",
+      "price": "Rp 75.000/jam",
+      "avatar": "👩‍🔧"
+    }
+  ]
+}
