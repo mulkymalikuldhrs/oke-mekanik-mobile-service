@@ -1,62 +1,32 @@
-import React, { useState } from 'react';
-import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+import { useQuery } from '@tanstack/react-query';
+import { fetchActiveService, fetchRecentServices, fetchNearbyMechanics } from '@/lib/api';
 
 const CustomerDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [activeService, setActiveService] = useState({
-    id: 'JOB001',
-    mechanic: 'Ahmad Rizki',
-    status: 'otw',
-    eta: '12 menit',
-    vehicle: 'Toyota Avanza 2019'
+
+  const { data: activeService, isLoading: isLoadingActiveService } = useQuery({
+    queryKey: ['activeService'],
+    queryFn: fetchActiveService
   });
 
-  const recentServices = [
-    {
-      id: 1,
-      mechanic: 'Ahmad Rizki',
-      service: 'Ganti Ban',
-      date: '2024-01-20',
-      rating: 5,
-      cost: 'Rp 150.000'
-    },
-    {
-      id: 2,
-      mechanic: 'Budi Santoso',
-      service: 'Servis Rutin',
-      date: '2024-01-15',
-      rating: 4,
-      cost: 'Rp 300.000'
-    }
-  ];
+  const { data: recentServices, isLoading: isLoadingRecentServices } = useQuery({
+    queryKey: ['recentServices'],
+    queryFn: fetchRecentServices
+  });
 
-  const nearbyMechanics = [
-    {
-      id: 1,
-      name: 'Joko Widodo',
-      rating: 4.8,
-      distance: '0.5 km',
-      speciality: 'Mobil & Motor',
-      price: 'Rp 50.000/jam',
-      avatar: '👨‍🔧'
-    },
-    {
-      id: 2,
-      name: 'Sari Mechanic',
-      rating: 4.9,
-      distance: '1.2 km',
-      speciality: 'Spesialis Mobil',
-      price: 'Rp 75.000/jam',
-      avatar: '👩‍🔧'
-    }
-  ];
+  const { data: nearbyMechanics, isLoading: isLoadingNearbyMechanics } = useQuery({
+    queryKey: ['nearbyMechanics'],
+    queryFn: fetchNearbyMechanics
+  });
 
   const handleEmergencyCall = () => {
     navigate('/customer/booking');
@@ -108,7 +78,11 @@ const CustomerDashboard = () => {
         </Card>
 
         {/* Active Service */}
-        {activeService && (
+        {isLoadingActiveService ? (
+          <div className="flex items-center justify-center">
+            <Loader className="h-6 w-6 animate-spin" />
+          </div>
+        ) : activeService && (
           <Card className="border-orange-200 bg-orange-50">
             <CardHeader>
               <CardTitle className="flex items-center text-orange-800">
@@ -124,8 +98,8 @@ const CustomerDashboard = () => {
                   <p className="text-sm text-gray-600">Kendaraan: {activeService.vehicle}</p>
                 </div>
                 <div className="flex space-x-2">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={() => navigate('/customer/chat')}
                   >
@@ -134,7 +108,7 @@ const CustomerDashboard = () => {
                   <Button size="sm" variant="outline">
                     <Phone className="h-4 w-4" />
                   </Button>
-                  <Button 
+                  <Button
                     size="sm"
                     onClick={() => navigate('/customer/tracking')}
                   >
@@ -155,7 +129,11 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {nearbyMechanics.map((mechanic) => (
+            {isLoadingNearbyMechanics ? (
+              <div className="flex items-center justify-center">
+                <Loader className="h-6 w-6 animate-spin" />
+              </div>
+            ) : nearbyMechanics?.map((mechanic) => (
               <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                 <div className="flex items-center space-x-4">
                   <div className="text-3xl">{mechanic.avatar}</div>
@@ -175,8 +153,8 @@ const CustomerDashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold text-blue-600">{mechanic.price}</p>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="mt-2"
                     onClick={() => navigate('/customer/booking')}
                   >
@@ -202,7 +180,11 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentServices.map((service) => (
+            {isLoadingRecentServices ? (
+              <div className="flex items-center justify-center">
+                <Loader className="h-6 w-6 animate-spin" />
+              </div>
+            ) : recentServices?.map((service) => (
               <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h3 className="font-semibold">{service.service}</h3>
