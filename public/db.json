@@ -1,0 +1,58 @@
+
+{
+  "mechanics": [
+    {
+      "id": "M1",
+      "name": "Joko Widodo",
+      "email": "joko@example.com",
+      "role": "mechanic",
+      "speciality": "Mobil & Motor",
+      "rating": 4.8,
+      "distance": "0.5 km",
+      "pricePerHour": 50000,
+      "isOnline": true,
+      "avatar": "👨‍🔧"
+    },
+    {
+      "id": "M2",
+      "name": "Sari Mechanic",
+      "email": "sari@example.com",
+      "role": "mechanic",
+      "speciality": "Spesialis Mobil",
+      "rating": 4.9,
+      "distance": "1.2 km",
+      "pricePerHour": 75000,
+      "isOnline": true,
+      "avatar": "👩‍🔧"
+    }
+  ],
+  "services": [
+    {
+      "id": "S1",
+      "name": "Ganti Oli",
+      "description": "Layanan ganti oli mesin standar",
+      "basePrice": 100000
+    },
+    {
+      "id": "S2",
+      "name": "Service Rutin",
+      "description": "Pengecekan dan perawatan berkala",
+      "basePrice": 250000
+    }
+  ],
+  "bookings": [
+    {
+      "id": "JOB001",
+      "customerId": "C1",
+      "mechanicId": "M1",
+      "serviceId": "S1",
+      "status": "otw",
+      "vehicleDetails": "Toyota Avanza 2019",
+      "location": "Jl. Merdeka No. 123",
+      "scheduledAt": "2024-02-01T10:00:00Z",
+      "totalCost": 150000,
+      "createdAt": "2024-02-01T09:00:00Z"
+    }
+  ],
+  "messages": []
+}
