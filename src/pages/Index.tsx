@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import LanguageToggle from '@/components/LanguageToggle';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [selectedRole, setSelectedRole] = useState<'customer' | 'mechanic' | null>(null);
 
   const features = [
@@ -36,12 +38,17 @@ const Index = () => {
   ];
 
   const handleRoleSelection = (role: 'customer' | 'mechanic') => {
-    setSelectedRole(role);
-    if (role === 'customer') {
-      navigate('/customer/dashboard');
-    } else {
-      navigate('/mechanic/registration');
+    if (user) {
+      if (user.role === 'customer') {
+        navigate('/customer/dashboard');
+      } else {
+        navigate('/mechanic/dashboard');
+      }
+      return;
     }
+
+    setSelectedRole(role);
+    navigate('/login');
   };
 
   return (

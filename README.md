@@ -1,73 +1,51 @@
-# Welcome to your Lovable project
+# Oke Mekanik
 
-## Project info
+Oke Mekanik is a comprehensive mobile mechanic platform designed to bring professional vehicle services directly to the customer's location.
 
-**URL**: https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d
+## Features
 
-## How can I edit this code?
+- **Real-time Tracking**: Monitor the mechanic's location as they head towards you.
+- **Instant Booking**: Call a mechanic for emergency repairs or schedule routine maintenance.
+- **Verified Mechanics**: All mechanics are vetted and rated by the community.
+- **In-app Chat**: Seamless communication between customers and mechanics.
+- **Secure Payments**: Transparent pricing and digital payment records.
+- **Multi-language Support**: Available in Bahasa Indonesia and English.
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Framework**: [React 18](https://reactjs.org/) with [Vite](https://vitejs.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
+- **State Management**: [React Query](https://tanstack.com/query/latest) & Context API
+- **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-**Use your preferred IDE**
+2. **Start Development Server**:
+   ```bash
+   npm run dev
+   ```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+3. **Run Tests**:
+   ```bash
+   npm test
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Project Structure
 
-Follow these steps:
+- `src/components`: Reusable UI components.
+- `src/contexts`: React Context providers (Auth, etc.).
+- `src/hooks`: Custom React hooks.
+- `src/lib`: Utility functions and API client.
+- `src/pages`: Application pages/routes.
+- `src/types`: TypeScript definitions.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## License
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/e5cea7f6-b14f-4518-92d9-e7fa9d2f813d) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is private and intended for the Oke Mekanik platform.

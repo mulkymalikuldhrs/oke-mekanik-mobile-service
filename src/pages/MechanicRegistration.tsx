@@ -7,14 +7,18 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const MechanicRegistration = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Personal Info
-    fullName: '',
+    fullName: user?.name || '',
     email: '',
     phone: '',
     address: '',
@@ -59,11 +63,13 @@ const MechanicRegistration = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Simulate registration logic
     toast({
       title: "Pendaftaran Berhasil!",
       description: "Dokumen Anda sedang diverifikasi. Kami akan mengirim notifikasi dalam 1-2 hari kerja.",
     });
+    navigate('/mechanic/dashboard');
   };
 
   const renderStep = () => {

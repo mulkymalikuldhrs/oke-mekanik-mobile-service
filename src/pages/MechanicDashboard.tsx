@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Wrench, 
   Clock, 
@@ -10,7 +10,8 @@ import {
   CheckCircle,
   XCircle,
   Camera,
-  DollarSign
+  DollarSign,
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,46 +19,39 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import LanguageToggle from '@/components/LanguageToggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { useNavigate } from 'react-router-dom';
 
 const MechanicDashboard = () => {
   const { t } = useLanguage();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isOnline, setIsOnline] = useState(true);
-  const [currentJob, setCurrentJob] = useState({
-    id: 1,
-    customer: 'Budi Santoso',
-    location: 'Jl. Sudirman No. 45, Jakarta',
-    issue: 'Mesin mobil mati mendadak',
-    vehicle: 'Toyota Avanza 2019 - B 1234 XYZ',
-    status: 'otw', // otw, arrived, working, completed
-    estimatedEarning: 'Rp 200.000'
+
+  const { data: bookings = [], isLoading } = useQuery({
+    queryKey: ['mechanic-bookings', user?.id],
+    queryFn: () => api.getBookings(),
+    enabled: !!user,
   });
 
-  const pendingOrders = [
-    {
-      id: 2,
-      customer: 'Siti Aminah',
-      location: 'Jl. Thamrin No. 12, Jakarta',
-      issue: 'Ban mobil kempes',
-      vehicle: 'Honda Jazz 2020 - B 5678 ABC',
-      estimatedEarning: 'Rp 100.000',
-      distance: '2.5 km'
-    },
-    {
-      id: 3,
-      customer: 'Ahmad Rahman',
-      location: 'Jl. Gatot Subroto No. 88, Jakarta',
-      issue: 'Aki soak',
-      vehicle: 'Suzuki Ertiga 2021 - B 9012 DEF',
-      estimatedEarning: 'Rp 150.000',
-      distance: '1.8 km'
-    }
-  ];
+  const mechanicBookings = bookings.filter(b => b.mechanicId === user?.id);
+  const currentJob = mechanicBookings.find(b => ['accepted', 'otw', 'arrived', 'working'].includes(b.status));
+  const pendingOrders = mechanicBookings.filter(b => b.status === 'pending');
+  const completedJobs = mechanicBookings.filter(b => b.status === 'completed');
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string, status: any }) => api.updateBookingStatus(id, status),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['mechanic-bookings'] }),
+  });
 
   const todayStats = {
-    completedJobs: 3,
-    totalEarnings: 'Rp 450.000',
-    rating: 4.8,
-    onlineHours: '6.5 jam'
+    completedJobs: completedJobs.length,
+    totalEarnings: `Rp ${completedJobs.reduce((acc, curr) => acc + curr.estimatedCost, 0)}`,
+    rating: 4.9,
+    onlineHours: '8 jam'
   };
 
   const getStatusBadge = (status: string) => {
@@ -70,14 +64,16 @@ const MechanicDashboard = () => {
     return statusMap[status as keyof typeof statusMap] || statusMap.otw;
   };
 
-  const handleAcceptOrder = (orderId: number) => {
-    console.log('Accepting order:', orderId);
-    // Handle order acceptance logic
+  const handleAcceptOrder = (orderId: string) => {
+    updateStatusMutation.mutate({ id: orderId, status: 'accepted' });
   };
 
-  const handleRejectOrder = (orderId: number) => {
-    console.log('Rejecting order:', orderId);
-    // Handle order rejection logic
+  const handleRejectOrder = (orderId: string) => {
+    updateStatusMutation.mutate({ id: orderId, status: 'cancelled' });
+  };
+
+  const handleCompleteJob = (orderId: string) => {
+    updateStatusMutation.mutate({ id: orderId, status: 'completed' });
   };
 
   return (
@@ -91,7 +87,7 @@ const MechanicDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Mekanik</h1>
-              <p className="text-sm text-gray-600">Selamat datang, Ahmad Rizki!</p>
+              <p className="text-sm text-gray-600">Selamat datang, {user?.name}!</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -102,6 +98,9 @@ const MechanicDashboard = () => {
               <Switch checked={isOnline} onCheckedChange={setIsOnline} />
             </div>
             <LanguageToggle />
+            <Button variant="ghost" size="icon" onClick={() => { logout(); navigate('/'); }}>
+              <LogOut className="h-5 w-5 text-gray-600" />
+            </Button>
           </div>
         </div>
       </header>
@@ -156,18 +155,18 @@ const MechanicDashboard = () => {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="font-semibold text-lg">{currentJob.customer}</h3>
+                  <h3 className="font-semibold text-lg">Pelanggan ID: {currentJob.customerId}</h3>
                   <p className="text-sm text-gray-600 flex items-center mt-1">
                     <MapPin className="h-4 w-4 mr-1" />
-                    {currentJob.location}
+                    {currentJob.location.address}
                   </p>
-                  <p className="text-sm mt-2"><strong>Masalah:</strong> {currentJob.issue}</p>
-                  <p className="text-sm"><strong>Kendaraan:</strong> {currentJob.vehicle}</p>
+                  <p className="text-sm mt-2"><strong>Masalah:</strong> {currentJob.problem}</p>
+                  <p className="text-sm"><strong>Kendaraan:</strong> {currentJob.vehicle.brand} {currentJob.vehicle.model}</p>
                 </div>
                 <div className="flex flex-col justify-between">
-                  <p className="text-lg font-semibold text-green-600">{currentJob.estimatedEarning}</p>
+                  <p className="text-lg font-semibold text-green-600">Rp {currentJob.estimatedCost}</p>
                   <div className="flex space-x-2 mt-4">
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/mechanic/chat?bookingId=${currentJob.id}`)}>
                       <MessageSquare className="h-4 w-4 mr-1" />
                       Chat
                     </Button>
@@ -175,22 +174,33 @@ const MechanicDashboard = () => {
                       <Phone className="h-4 w-4 mr-1" />
                       Telepon
                     </Button>
-                    <Button size="sm">
-                      <Camera className="h-4 w-4 mr-1" />
-                      Foto
-                    </Button>
                   </div>
                 </div>
               </div>
               
-              {currentJob.status === 'working' && (
-                <div className="flex justify-center">
-                  <Button size="lg" className="bg-green-600 hover:bg-green-700">
+              <div className="flex justify-center space-x-4">
+                {currentJob.status === 'accepted' && (
+                  <Button size="lg" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'otw' })}>
+                    Mulai Menuju Lokasi
+                  </Button>
+                )}
+                {currentJob.status === 'otw' && (
+                  <Button size="lg" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'arrived' })}>
+                    Sudah Sampai
+                  </Button>
+                )}
+                {currentJob.status === 'arrived' && (
+                  <Button size="lg" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'working' })}>
+                    Mulai Kerjakan
+                  </Button>
+                )}
+                {currentJob.status === 'working' && (
+                  <Button size="lg" className="bg-green-600 hover:bg-green-700" onClick={() => handleCompleteJob(currentJob.id)}>
                     <CheckCircle className="h-5 w-5 mr-2" />
                     Selesai Pekerjaan
                   </Button>
-                </div>
-              )}
+                )}
+              </div>
             </CardContent>
           </Card>
         )}
@@ -208,16 +218,16 @@ const MechanicDashboard = () => {
               <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">{order.customer}</h3>
+                    <h3 className="font-semibold text-lg">Pelanggan ID: {order.customerId}</h3>
                     <p className="text-sm text-gray-600 flex items-center mt-1">
                       <MapPin className="h-4 w-4 mr-1" />
-                      {order.location}
+                      {order.location.address}
                     </p>
-                    <p className="text-sm mt-2"><strong>Masalah:</strong> {order.issue}</p>
-                    <p className="text-sm"><strong>Kendaraan:</strong> {order.vehicle}</p>
+                    <p className="text-sm mt-2"><strong>Masalah:</strong> {order.problem}</p>
+                    <p className="text-sm"><strong>Kendaraan:</strong> {order.vehicle.brand} {order.vehicle.model}</p>
                     <div className="flex items-center space-x-4 mt-2">
-                      <Badge variant="outline">{order.distance}</Badge>
-                      <span className="text-lg font-semibold text-green-600">{order.estimatedEarning}</span>
+                      <Badge variant="outline">Baru</Badge>
+                      <span className="text-lg font-semibold text-green-600">Rp {order.estimatedCost}</span>
                     </div>
                   </div>
                   <div className="flex space-x-2 ml-4">

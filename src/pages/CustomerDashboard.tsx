@@ -1,62 +1,34 @@
-import React, { useState } from 'react';
-import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 
 const CustomerDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [activeService, setActiveService] = useState({
-    id: 'JOB001',
-    mechanic: 'Ahmad Rizki',
-    status: 'otw',
-    eta: '12 menit',
-    vehicle: 'Toyota Avanza 2019'
+  const { user, logout } = useAuth();
+
+  const { data: bookings = [], isLoading: loadingBookings } = useQuery({
+    queryKey: ['bookings', user?.id],
+    queryFn: () => api.getBookings(),
+    enabled: !!user,
   });
 
-  const recentServices = [
-    {
-      id: 1,
-      mechanic: 'Ahmad Rizki',
-      service: 'Ganti Ban',
-      date: '2024-01-20',
-      rating: 5,
-      cost: 'Rp 150.000'
-    },
-    {
-      id: 2,
-      mechanic: 'Budi Santoso',
-      service: 'Servis Rutin',
-      date: '2024-01-15',
-      rating: 4,
-      cost: 'Rp 300.000'
-    }
-  ];
+  const { data: mechanics = [], isLoading: loadingMechanics } = useQuery({
+    queryKey: ['mechanics'],
+    queryFn: () => api.getMechanics(),
+  });
 
-  const nearbyMechanics = [
-    {
-      id: 1,
-      name: 'Joko Widodo',
-      rating: 4.8,
-      distance: '0.5 km',
-      speciality: 'Mobil & Motor',
-      price: 'Rp 50.000/jam',
-      avatar: '👨‍🔧'
-    },
-    {
-      id: 2,
-      name: 'Sari Mechanic',
-      rating: 4.9,
-      distance: '1.2 km',
-      speciality: 'Spesialis Mobil',
-      price: 'Rp 75.000/jam',
-      avatar: '👩‍🔧'
-    }
-  ];
+  const activeBooking = bookings.find(b => ['pending', 'accepted', 'otw', 'arrived', 'working'].includes(b.status));
+  const recentBookings = bookings.filter(b => b.status === 'completed').slice(0, 5);
+  const nearbyMechanics = mechanics.filter(m => m.isOnline).slice(0, 3);
 
   const handleEmergencyCall = () => {
     navigate('/customer/booking');
@@ -73,10 +45,15 @@ const CustomerDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Pelanggan</h1>
-              <p className="text-sm text-gray-600">Selamat datang kembali!</p>
+              <p className="text-sm text-gray-600">Selamat datang kembali, {user?.name}!</p>
             </div>
           </div>
-          <LanguageToggle />
+          <div className="flex items-center space-x-4">
+            <LanguageToggle />
+            <Button variant="ghost" size="icon" onClick={() => { logout(); navigate('/'); }}>
+              <LogOut className="h-5 w-5 text-gray-600" />
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -108,35 +85,32 @@ const CustomerDashboard = () => {
         </Card>
 
         {/* Active Service */}
-        {activeService && (
+        {activeBooking && (
           <Card className="border-orange-200 bg-orange-50">
             <CardHeader>
               <CardTitle className="flex items-center text-orange-800">
                 <Clock className="h-5 w-5 mr-2" />
-                Layanan Aktif
+                Layanan Aktif - {activeBooking.status.toUpperCase()}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex justify-between items-center">
                 <div>
-                  <p className="font-semibold">{activeService.mechanic} sedang menuju lokasi Anda</p>
-                  <p className="text-sm text-gray-600">Estimasi tiba: {activeService.eta}</p>
-                  <p className="text-sm text-gray-600">Kendaraan: {activeService.vehicle}</p>
+                  <p className="font-semibold">Mekanik ID: {activeBooking.mechanicId}</p>
+                  <p className="text-sm text-gray-600">Kendaraan: {activeBooking.vehicle.brand} {activeBooking.vehicle.model}</p>
+                  <p className="text-sm text-gray-600">Masalah: {activeBooking.problem}</p>
                 </div>
                 <div className="flex space-x-2">
                   <Button 
                     size="sm" 
                     variant="outline"
-                    onClick={() => navigate('/customer/chat')}
+                    onClick={() => navigate(`/customer/chat?bookingId=${activeBooking.id}`)}
                   >
                     <MessageSquare className="h-4 w-4" />
                   </Button>
-                  <Button size="sm" variant="outline">
-                    <Phone className="h-4 w-4" />
-                  </Button>
                   <Button 
                     size="sm"
-                    onClick={() => navigate('/customer/tracking')}
+                    onClick={() => navigate(`/customer/tracking?bookingId=${activeBooking.id}`)}
                   >
                     Tracking
                   </Button>
@@ -155,36 +129,42 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {nearbyMechanics.map((mechanic) => (
-              <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                <div className="flex items-center space-x-4">
-                  <div className="text-3xl">{mechanic.avatar}</div>
-                  <div>
-                    <h3 className="font-semibold">{mechanic.name}</h3>
-                    <p className="text-sm text-gray-600">{mechanic.speciality}</p>
-                    <div className="flex items-center space-x-2 mt-1">
-                      <div className="flex items-center">
-                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                        <span className="text-sm ml-1">{mechanic.rating}</span>
+            {loadingMechanics ? (
+              <p>Memuat mekanik...</p>
+            ) : nearbyMechanics.length > 0 ? (
+              nearbyMechanics.map((mechanic) => (
+                <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-3xl">{mechanic.avatar || '👨‍🔧'}</div>
+                    <div>
+                      <h3 className="font-semibold">{mechanic.name}</h3>
+                      <p className="text-sm text-gray-600">{mechanic.speciality.join(', ')}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <span className="text-sm ml-1">{mechanic.rating}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          Online
+                        </Badge>
                       </div>
-                      <Badge variant="outline" className="text-xs">
-                        {mechanic.distance}
-                      </Badge>
                     </div>
                   </div>
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-blue-600">Rp {mechanic.pricePerHour}/jam</p>
+                    <Button
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => navigate(`/customer/booking?mechanicId=${mechanic.id}`)}
+                    >
+                      Pilih
+                    </Button>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-semibold text-blue-600">{mechanic.price}</p>
-                  <Button 
-                    size="sm" 
-                    className="mt-2"
-                    onClick={() => navigate('/customer/booking')}
-                  >
-                    Pilih
-                  </Button>
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-4">Tidak ada mekanik online saat ini</p>
+            )}
           </CardContent>
         </Card>
 
@@ -196,29 +176,28 @@ const CustomerDashboard = () => {
                 <History className="h-5 w-5 mr-2 text-green-600" />
                 Riwayat Layanan
               </div>
-              <Button size="sm" variant="outline">
-                Lihat Semua
-              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {recentServices.map((service) => (
-              <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <h3 className="font-semibold">{service.service}</h3>
-                  <p className="text-sm text-gray-600">Mekanik: {service.mechanic}</p>
-                  <p className="text-xs text-gray-500">{service.date}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-semibold text-green-600">{service.cost}</p>
-                  <div className="flex items-center mt-1">
-                    {[...Array(service.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 text-yellow-500 fill-current" />
-                    ))}
+            {loadingBookings ? (
+              <p>Memuat riwayat...</p>
+            ) : recentBookings.length > 0 ? (
+              recentBookings.map((service) => (
+                <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-semibold">{service.problem}</h3>
+                    <p className="text-sm text-gray-600">Kendaraan: {service.vehicle.brand} {service.vehicle.model}</p>
+                    <p className="text-xs text-gray-500">{new Date(service.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-green-600">Rp {service.estimatedCost}</p>
+                    <Badge variant="outline" className="mt-1">Selesai</Badge>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-4">Belum ada riwayat layanan</p>
+            )}
           </CardContent>
         </Card>
       </div>

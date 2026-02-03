@@ -8,61 +8,34 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Mechanic } from '@/types';
 
 const BookingPage = () => {
   const { t } = useLanguage();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
-  const [location, setLocation] = useState({ lat: 0, lng: 0, address: '' });
+  const [location, setLocation] = useState({ lat: -6.2, lng: 106.8, address: '' });
   const [vehicleData, setVehicleData] = useState({
     brand: '',
     model: '',
     year: '',
-    color: '',
     licensePlate: '',
     problem: ''
   });
-  const [selectedMechanic, setSelectedMechanic] = useState(null);
+  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
   const [isEmergency, setIsEmergency] = useState(false);
 
-  const availableMechanics = [
-    {
-      id: 1,
-      name: 'Ahmad Rizki',
-      rating: 4.9,
-      distance: '0.8 km',
-      eta: '12 menit',
-      speciality: 'Mesin & Transmisi',
-      price: 'Rp 75.000',
-      photo: '👨‍🔧',
-      verified: true,
-      completedJobs: 245
-    },
-    {
-      id: 2,
-      name: 'Budi Santoso',
-      rating: 4.8,
-      distance: '1.2 km',
-      eta: '15 menit',
-      speciality: 'Sistem Kelistrikan',
-      price: 'Rp 80.000',
-      photo: '🔧',
-      verified: true,
-      completedJobs: 189
-    },
-    {
-      id: 3,
-      name: 'Sari Mekanik',
-      rating: 4.9,
-      distance: '1.5 km',
-      eta: '18 menit',
-      speciality: 'AC & Radiator',
-      price: 'Rp 70.000',
-      photo: '👩‍🔧',
-      verified: true,
-      completedJobs: 167
-    }
-  ];
+  const { data: availableMechanics = [] } = useQuery({
+    queryKey: ['mechanics'],
+    queryFn: () => api.getMechanics(),
+  });
 
   const vehicleBrands = ['Toyota', 'Honda', 'Suzuki', 'Daihatsu', 'Mitsubishi', 'Nissan', 'Hyundai', 'Yamaha', 'Kawasaki'];
   const problemTypes = [
@@ -95,22 +68,56 @@ const BookingPage = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const mechId = searchParams.get('mechanicId');
+    if (mechId && availableMechanics.length > 0) {
+      const mech = availableMechanics.find(m => m.id === mechId);
+      if (mech) {
+        setSelectedMechanic(mech);
+        setStep(1);
+      }
+    }
+  }, [searchParams, availableMechanics]);
+
+  const bookingMutation = useMutation({
+    mutationFn: api.createBooking,
+    onSuccess: (data) => {
+      toast({
+        title: "Booking Berhasil!",
+        description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
+      });
+      navigate(`/customer/tracking?bookingId=${data.id}`);
+    },
+  });
+
   const handleEmergencyBooking = () => {
+    if (!user) { navigate('/login'); return; }
     setIsEmergency(true);
     toast({
       title: "🚨 Mode Darurat Aktif",
       description: "Mencari mekanik terdekat untuk Anda...",
     });
     
-    // Auto-select closest mechanic
-    setSelectedMechanic(availableMechanics[0]);
-    setStep(3);
+    // Auto-select first available mechanic
+    const mech = availableMechanics.find(m => m.isOnline);
+    if (mech) {
+      setSelectedMechanic(mech);
+      setStep(3);
+    }
   };
 
   const handleBooking = () => {
-    toast({
-      title: "Booking Berhasil!",
-      description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
+    if (!user || !selectedMechanic) return;
+
+    bookingMutation.mutate({
+      customerId: user.id,
+      mechanicId: selectedMechanic.id,
+      status: 'pending',
+      vehicle: vehicleData,
+      problem: vehicleData.problem,
+      location,
+      estimatedCost: selectedMechanic.pricePerHour, // Simplified
+      isEmergency,
     });
   };
 
