@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 import React from 'react';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LogOut } from 'lucide-react';
@@ -7,12 +8,17 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+import React from 'react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, Loader } from 'lucide-react';
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+<<<<<<< HEAD
 <<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -22,6 +28,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import LoadingSpinner from '@/components/ui/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+import { useQuery } from '@tanstack/react-query';
+import { fetchActiveService, fetchRecentServices, fetchNearbyMechanics } from '@/lib/api';
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
 
 /**
  * Fetches the customer dashboard data from the API.
@@ -50,6 +60,7 @@ const CustomerDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
 <<<<<<< HEAD
+<<<<<<< HEAD
   const { user, logout } = useAuth();
 
   const { data: mechanics, isLoading: isLoadingMechanics } = useQuery({
@@ -73,6 +84,22 @@ const CustomerDashboard = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['customerDashboard'],
     queryFn: fetchCustomerDashboard,
+=======
+
+  const { data: activeService, isLoading: isLoadingActiveService } = useQuery({
+    queryKey: ['activeService'],
+    queryFn: fetchActiveService
+  });
+
+  const { data: recentServices, isLoading: isLoadingRecentServices } = useQuery({
+    queryKey: ['recentServices'],
+    queryFn: fetchRecentServices
+  });
+
+  const { data: nearbyMechanics, isLoading: isLoadingNearbyMechanics } = useQuery({
+    queryKey: ['nearbyMechanics'],
+    queryFn: fetchNearbyMechanics
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
   });
 
   const handleEmergencyCall = () => {
@@ -147,12 +174,23 @@ const CustomerDashboard = () => {
         </Card>
 
         {/* Active Service */}
+<<<<<<< HEAD
         {isLoadingBookings ? (
           <Skeleton className="h-32 w-full rounded-xl" />
         ) : activeBooking && (
           <Card className="border-orange-200 bg-orange-50 shadow-md">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center text-orange-800 text-lg">
+=======
+        {isLoadingActiveService ? (
+          <div className="flex items-center justify-center">
+            <Loader className="h-6 w-6 animate-spin" />
+          </div>
+        ) : activeService && (
+          <Card className="border-orange-200 bg-orange-50">
+            <CardHeader>
+              <CardTitle className="flex items-center text-orange-800">
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
                 <Clock className="h-5 w-5 mr-2" />
                 Layanan Aktif - {activeBooking.status.toUpperCase()}
               </CardTitle>
@@ -170,8 +208,14 @@ const CustomerDashboard = () => {
                   <p className="text-sm text-gray-600">Status: {activeService.status}</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
                 </div>
+<<<<<<< HEAD
                 <div className="flex flex-wrap gap-2">
                   <Button 
+=======
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
                     variant="outline"
                     className="bg-white"
                     onClick={() => navigate('/customer/chat')}
@@ -183,9 +227,14 @@ const CustomerDashboard = () => {
                     <Phone className="h-4 w-4 mr-2" />
                     Telepon
                   </Button>
+<<<<<<< HEAD
                   <Button 
 <<<<<<< HEAD
                     className="bg-orange-600 hover:bg-orange-700"
+=======
+                  <Button
+                    size="sm"
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
                     onClick={() => navigate('/customer/tracking')}
 =======
                     size="sm"
@@ -215,6 +264,7 @@ const CustomerDashboard = () => {
           </CardHeader>
 <<<<<<< HEAD
           <CardContent className="space-y-4">
+<<<<<<< HEAD
             {isLoadingMechanics ? (
               [1, 2].map(i => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
             ) : (
@@ -235,6 +285,23 @@ const CustomerDashboard = () => {
                         <Badge variant="secondary" className="text-[10px] font-bold">
                           {mechanic.distance}
                         </Badge>
+=======
+            {isLoadingNearbyMechanics ? (
+              <div className="flex items-center justify-center">
+                <Loader className="h-6 w-6 animate-spin" />
+              </div>
+            ) : nearbyMechanics?.map((mechanic) => (
+              <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                <div className="flex items-center space-x-4">
+                  <div className="text-3xl">{mechanic.avatar}</div>
+                  <div>
+                    <h3 className="font-semibold">{mechanic.name}</h3>
+                    <p className="text-sm text-gray-600">{mechanic.speciality}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <div className="flex items-center">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="text-sm ml-1">{mechanic.rating}</span>
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
                       </div>
                     </div>
                   </div>
@@ -249,6 +316,7 @@ const CustomerDashboard = () => {
                     </Button>
                   </div>
                 </div>
+<<<<<<< HEAD
               ))
             )}
 =======
@@ -256,6 +324,20 @@ const CustomerDashboard = () => {
             {/* This would be populated by a separate API call in a real app */}
             <p className="text-gray-500">Fitur mekanik terdekat akan segera hadir.</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-blue-600">{mechanic.price}</p>
+                  <Button
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => navigate('/customer/booking')}
+                  >
+                    Pilih
+                  </Button>
+                </div>
+              </div>
+            ))}
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
           </CardContent>
         </Card>
 
@@ -273,6 +355,7 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+<<<<<<< HEAD
 <<<<<<< HEAD
             {isLoadingBookings ? (
               <Skeleton className="h-20 w-full rounded-lg" />
@@ -294,6 +377,13 @@ const CustomerDashboard = () => {
                   </div>
 =======
             {recentServices.map((service) => (
+=======
+            {isLoadingRecentServices ? (
+              <div className="flex items-center justify-center">
+                <Loader className="h-6 w-6 animate-spin" />
+              </div>
+            ) : recentServices?.map((service) => (
+>>>>>>> origin/feature/production-ready-foundation-11256743727145072162
               <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h3 className="font-semibold">{service.service}</h3>
