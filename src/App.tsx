@@ -81,6 +81,7 @@ const App = () => (
 =======
     <LanguageProvider>
 <<<<<<< HEAD
+<<<<<<< HEAD
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -110,6 +111,8 @@ const App = () => (
         </BrowserRouter>
       </TooltipProvider>
 =======
+=======
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
       <AuthProvider>
         <TooltipProvider>
           <Toaster />
@@ -133,7 +136,10 @@ const App = () => (
           </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
+<<<<<<< HEAD
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
     </LanguageProvider>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
   </QueryClientProvider>

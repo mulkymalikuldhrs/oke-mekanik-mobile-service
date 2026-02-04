@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+<<<<<<< HEAD
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
@@ -14,10 +15,52 @@ const MechanicRegistration = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+=======
+import { useLanguage } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
+const MechanicRegistration = () => {
+  const { t } = useLanguage();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    // Personal Info
+    fullName: user?.name || '',
+    email: '',
+    phone: '',
+    address: '',
+    city: '',
+    
+    // Documents
+    ktpNumber: '',
+    simNumber: '',
+    ktpPhoto: null,
+    simPhoto: null,
+    selfiePhoto: null,
+    
+    // Experience
+    experience: '',
+    specialization: [],
+    tools: '',
+    
+    // Payment
+    bankName: '',
+    accountNumber: '',
+    accountName: '',
+    
+    // Verification
+    verificationStatus: 'pending'
+  });
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
   const nextStep = () => setStep(s => s + 1);
   const prevStep = () => setStep(s => s - 1);
 
+<<<<<<< HEAD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -27,6 +70,28 @@ const MechanicRegistration = () => {
       toast.success('Pendaftaran Berhasil! Akun Anda sedang diverifikasi.');
       navigate('/mechanic/dashboard');
     }, 2000);
+=======
+  const handleFileUpload = (field: string, file: File | null) => {
+    setFormData(prev => ({ ...prev, [field]: file }));
+  };
+
+  const handleSpecializationToggle = (spec: string) => {
+    setFormData(prev => ({
+      ...prev,
+      specialization: prev.specialization.includes(spec)
+        ? prev.specialization.filter(s => s !== spec)
+        : [...prev.specialization, spec]
+    }));
+  };
+
+  const handleSubmit = async () => {
+    // Simulate registration logic
+    toast({
+      title: "Pendaftaran Berhasil!",
+      description: "Dokumen Anda sedang diverifikasi. Kami akan mengirim notifikasi dalam 1-2 hari kerja.",
+    });
+    navigate('/mechanic/dashboard');
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   };
 
   const renderStep = () => {

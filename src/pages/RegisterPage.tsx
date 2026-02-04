@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 import { Button } from "@/components/ui/button";
@@ -104,10 +105,16 @@ export default function RegisterPage() {
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+=======
+
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+<<<<<<< HEAD
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
@@ -128,10 +135,42 @@ const RegisterPage = () => {
       navigate(role === 'customer' ? '/customer/dashboard' : '/mechanic/registration');
     } catch (error) {
       toast.error('Pendaftaran gagal. Silakan coba lagi.');
+=======
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useLanguage } from '@/hooks/useLanguage';
+import { Wrench } from 'lucide-react';
+
+const RegisterPage = () => {
+  const { t } = useLanguage();
+  const { register } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'customer' as 'customer' | 'mechanic',
+  });
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    try {
+      await register(formData);
+      if (formData.role === 'mechanic') {
+        navigate('/mechanic/registration');
+      } else {
+        navigate('/customer/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
     }
   };
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
@@ -145,13 +184,34 @@ const RegisterPage = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+=======
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <Wrench className="h-8 w-8 text-white" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold">Daftar Oke Mekanik</CardTitle>
+          <CardDescription>Mulai perjalanan Anda bersama kami</CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
             <div className="space-y-2">
               <Label htmlFor="name">Nama Lengkap</Label>
               <Input
                 id="name"
+<<<<<<< HEAD
                 placeholder="John Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+=======
+                placeholder="Joko Susilo"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                 required
               />
             </div>
@@ -161,6 +221,7 @@ const RegisterPage = () => {
                 id="email"
                 type="email"
                 placeholder="nama@email.com"
+<<<<<<< HEAD
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -296,6 +357,52 @@ const RegisterPage = () => {
           </div>
         </CardContent>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Nomor Telepon</Label>
+              <Input
+                id="phone"
+                placeholder="0812XXXXXXXX"
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="role">Daftar sebagai</Label>
+              <Select
+                value={formData.role}
+                onValueChange={(val: any) => setFormData({ ...formData, role: val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Pilih peran" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="customer">Pelanggan</SelectItem>
+                  <SelectItem value="mechanic">Mekanik</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {error && <p className="text-sm text-red-600">{error}</p>}
+          </CardContent>
+          <CardFooter className="flex flex-col space-y-4">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+              Daftar
+            </Button>
+            <p className="text-sm text-gray-600">
+              Sudah punya akun?{' '}
+              <Link to="/login" className="text-blue-600 hover:underline">
+                Masuk di sini
+              </Link>
+            </p>
+          </CardFooter>
+        </form>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
       </Card>
     </div>
   );
@@ -303,8 +410,11 @@ const RegisterPage = () => {
 
 export default RegisterPage;
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
 =======
 >>>>>>> origin/feat/project-revamp-10664209957500258455
 =======
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+>>>>>>> origin/jules-9588893365322302084-daabd2d3

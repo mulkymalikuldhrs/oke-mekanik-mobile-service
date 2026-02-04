@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import React from 'react';
 import { Wrench, MapPin, Clock, Star, MessageSquare, Phone, CheckCircle, XCircle, LogOut, Settings } from 'lucide-react';
 =======
@@ -8,6 +9,9 @@ import { Wrench, MapPin, Clock, Star, MessageSquare, Phone, CheckCircle, XCircle
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+=======
+import React, { useState, useEffect } from 'react';
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 import { 
   Wrench, 
   Clock, 
@@ -19,8 +23,12 @@ import {
   XCircle,
   Camera,
   DollarSign,
+<<<<<<< HEAD
   LoaderCircle,
   AlertTriangle
+=======
+  LogOut
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 } from 'lucide-react';
 >>>>>>> origin/feat/project-revamp-10664209957500258455
 import { Button } from '@/components/ui/button';
@@ -30,6 +38,7 @@ import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
@@ -43,6 +52,12 @@ import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
 >>>>>>> origin/feat/project-revamp-10664209957500258455
 =======
 import { useQuery } from '@tanstack/react-query';
+=======
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { useNavigate } from 'react-router-dom';
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
 const fetchMechanicData = async () => {
   const res = await fetch('http://localhost:3001/mechanic');
@@ -80,6 +95,7 @@ const MechanicDashboard = () => {
   const { t } = useLanguage();
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const queryClient = useQueryClient();
@@ -105,6 +121,34 @@ const MechanicDashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+=======
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [isOnline, setIsOnline] = useState(true);
+
+  const { data: bookings = [], isLoading } = useQuery({
+    queryKey: ['mechanic-bookings', user?.id],
+    queryFn: () => api.getBookings(),
+    enabled: !!user,
+  });
+
+  const mechanicBookings = bookings.filter(b => b.mechanicId === user?.id);
+  const currentJob = mechanicBookings.find(b => ['accepted', 'otw', 'arrived', 'working'].includes(b.status));
+  const pendingOrders = mechanicBookings.filter(b => b.status === 'pending');
+  const completedJobs = mechanicBookings.filter(b => b.status === 'completed');
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string, status: any }) => api.updateBookingStatus(id, status),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['mechanic-bookings'] }),
+  });
+
+  const todayStats = {
+    completedJobs: completedJobs.length,
+    totalEarnings: `Rp ${completedJobs.reduce((acc, curr) => acc + curr.estimatedCost, 0)}`,
+    rating: 4.9,
+    onlineHours: '8 jam'
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   };
 =======
   const [isOnline, setIsOnline] = useState(true);
@@ -129,6 +173,7 @@ const MechanicDashboard = () => {
     return statusMap[status as keyof typeof statusMap] || { label: 'Unknown', color: 'bg-gray-500' };
   };
 
+<<<<<<< HEAD
   if (isLoading) return <LoadingSpinner />;
   if (error) return <ErrorDisplay message={error.message} />;
 
@@ -159,6 +204,19 @@ const MechanicDashboard = () => {
   }
 
   const { currentJob, pendingOrders, todayStats } = data || {};
+=======
+  const handleAcceptOrder = (orderId: string) => {
+    updateStatusMutation.mutate({ id: orderId, status: 'accepted' });
+  };
+
+  const handleRejectOrder = (orderId: string) => {
+    updateStatusMutation.mutate({ id: orderId, status: 'cancelled' });
+  };
+
+  const handleCompleteJob = (orderId: string) => {
+    updateStatusMutation.mutate({ id: orderId, status: 'completed' });
+  };
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -172,10 +230,14 @@ const MechanicDashboard = () => {
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Mekanik</h1>
 <<<<<<< HEAD
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">Selamat bekerja, {user?.name}</p>
 =======
               <p className="text-sm text-gray-600">Selamat datang, {name}!</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+              <p className="text-sm text-gray-600">Selamat datang, {user?.name}!</p>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -186,7 +248,11 @@ const MechanicDashboard = () => {
               <Switch checked={isOnline} onCheckedChange={setIsOnline} />
             </div>
             <LanguageToggle />
+<<<<<<< HEAD
             <Button variant="ghost" size="icon" onClick={handleLogout}>
+=======
+            <Button variant="ghost" size="icon" onClick={() => { logout(); navigate('/'); }}>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
               <LogOut className="h-5 w-5 text-gray-600" />
             </Button>
           </div>
@@ -406,12 +472,25 @@ const MechanicDashboard = () => {
             <CardContent className="space-y-4">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
+<<<<<<< HEAD
                   <h3 className="font-semibold text-lg">{currentJob.customer}</h3>
                   <p className="text-sm mt-2"><strong>Layanan:</strong> {currentJob.service}</p>
                 </div>
                 <div className="flex flex-col justify-between items-end">
+=======
+                  <h3 className="font-semibold text-lg">Pelanggan ID: {currentJob.customerId}</h3>
+                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    {currentJob.location.address}
+                  </p>
+                  <p className="text-sm mt-2"><strong>Masalah:</strong> {currentJob.problem}</p>
+                  <p className="text-sm"><strong>Kendaraan:</strong> {currentJob.vehicle.brand} {currentJob.vehicle.model}</p>
+                </div>
+                <div className="flex flex-col justify-between">
+                  <p className="text-lg font-semibold text-green-600">Rp {currentJob.estimatedCost}</p>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                   <div className="flex space-x-2 mt-4">
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/mechanic/chat?bookingId=${currentJob.id}`)}>
                       <MessageSquare className="h-4 w-4 mr-1" />
                       Chat
                     </Button>
@@ -419,18 +498,40 @@ const MechanicDashboard = () => {
                       <Phone className="h-4 w-4 mr-1" />
                       Telepon
                     </Button>
-                    <Button size="sm">
-                      <Camera className="h-4 w-4 mr-1" />
-                      Foto
-                    </Button>
                   </div>
                 </div>
               </div>
+<<<<<<< HEAD
               <div className="flex justify-center">
                 <Button size="lg" className="bg-green-600 hover:bg-green-700">
                   <CheckCircle className="h-5 w-5 mr-2" />
                   Selesai Pekerjaan
                 </Button>
+=======
+              
+              <div className="flex justify-center space-x-4">
+                {currentJob.status === 'accepted' && (
+                  <Button size="lg" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'otw' })}>
+                    Mulai Menuju Lokasi
+                  </Button>
+                )}
+                {currentJob.status === 'otw' && (
+                  <Button size="lg" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'arrived' })}>
+                    Sudah Sampai
+                  </Button>
+                )}
+                {currentJob.status === 'arrived' && (
+                  <Button size="lg" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'working' })}>
+                    Mulai Kerjakan
+                  </Button>
+                )}
+                {currentJob.status === 'working' && (
+                  <Button size="lg" className="bg-green-600 hover:bg-green-700" onClick={() => handleCompleteJob(currentJob.id)}>
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    Selesai Pekerjaan
+                  </Button>
+                )}
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
               </div>
             </CardContent>
           </Card>
@@ -453,8 +554,22 @@ const MechanicDashboard = () => {
               <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
+<<<<<<< HEAD
                     <h3 className="font-semibold text-lg">{order.customer}</h3>
                     <p className="text-sm mt-2"><strong>Layanan:</strong> {order.service}</p>
+=======
+                    <h3 className="font-semibold text-lg">Pelanggan ID: {order.customerId}</h3>
+                    <p className="text-sm text-gray-600 flex items-center mt-1">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      {order.location.address}
+                    </p>
+                    <p className="text-sm mt-2"><strong>Masalah:</strong> {order.problem}</p>
+                    <p className="text-sm"><strong>Kendaraan:</strong> {order.vehicle.brand} {order.vehicle.model}</p>
+                    <div className="flex items-center space-x-4 mt-2">
+                      <Badge variant="outline">Baru</Badge>
+                      <span className="text-lg font-semibold text-green-600">Rp {order.estimatedCost}</span>
+                    </div>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                   </div>
                   <div className="flex space-x-2 ml-4">
                     <Button 

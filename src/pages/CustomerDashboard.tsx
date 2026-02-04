@@ -2,6 +2,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 import React from 'react';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LogOut } from 'lucide-react';
@@ -22,12 +23,17 @@ import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTri
 import React from 'react';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, Loader } from 'lucide-react';
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+import React from 'react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LogOut } from 'lucide-react';
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -50,6 +56,11 @@ import { useQuery } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { fetchActiveService, fetchRecentServices, fetchNearbyMechanics } from '@/lib/api';
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
 const fetchCustomerData = async () => {
   const res = await fetch('http://localhost:3001/customer');
@@ -90,6 +101,7 @@ const CustomerDashboard = () => {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const { user, logout } = useAuth();
 
   const { data: mechanics, isLoading: isLoadingMechanics } = useQuery({
@@ -106,6 +118,24 @@ const CustomerDashboard = () => {
   const activeBooking = bookings?.find(b => ['accepted', 'otw', 'working'].includes(b.status));
   const recentBookings = bookings?.filter(b => b.status === 'completed') || [];
 =======
+=======
+  const { user, logout } = useAuth();
+
+  const { data: bookings = [], isLoading: loadingBookings } = useQuery({
+    queryKey: ['bookings', user?.id],
+    queryFn: () => api.getBookings(),
+    enabled: !!user,
+  });
+
+  const { data: mechanics = [], isLoading: loadingMechanics } = useQuery({
+    queryKey: ['mechanics'],
+    queryFn: () => api.getMechanics(),
+  });
+
+  const activeBooking = bookings.find(b => ['pending', 'accepted', 'otw', 'arrived', 'working'].includes(b.status));
+  const recentBookings = bookings.filter(b => b.status === 'completed').slice(0, 5);
+  const nearbyMechanics = mechanics.filter(m => m.isOnline).slice(0, 3);
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
   const { data: activeService, isLoading: isLoadingActiveService } = useQuery({
     queryKey: ['activeService'],
@@ -207,6 +237,7 @@ const CustomerDashboard = () => {
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Pelanggan</h1>
 <<<<<<< HEAD
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">Halo, {user?.name || 'Pelanggan'}</p>
 =======
               <p className="text-sm text-gray-600">Selamat datang kembali, {name}!</p>
@@ -216,6 +247,14 @@ const CustomerDashboard = () => {
           <div className="flex items-center space-x-2">
             <LanguageToggle />
             <Button variant="ghost" size="icon" onClick={handleLogout} title="Keluar">
+=======
+              <p className="text-sm text-gray-600">Selamat datang kembali, {user?.name}!</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <LanguageToggle />
+            <Button variant="ghost" size="icon" onClick={() => { logout(); navigate('/'); }}>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
               <LogOut className="h-5 w-5 text-gray-600" />
             </Button>
           </div>
@@ -252,6 +291,7 @@ const CustomerDashboard = () => {
         {/* Active Service */}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         {isLoadingBookings ? (
           <Skeleton className="h-32 w-full rounded-xl" />
         ) : activeBooking && (
@@ -266,6 +306,9 @@ const CustomerDashboard = () => {
             <Loader className="h-6 w-6 animate-spin" />
           </div>
         ) : activeService && (
+=======
+        {activeBooking && (
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
           <Card className="border-orange-200 bg-orange-50">
             <CardHeader>
               <CardTitle className="flex items-center text-orange-800">
@@ -278,6 +321,7 @@ const CustomerDashboard = () => {
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
 <<<<<<< HEAD
+<<<<<<< HEAD
                   <p className="font-semibold text-gray-900">Mekanik sedang dalam perjalanan ke lokasi Anda</p>
                   <p className="text-sm text-gray-600">Kendaraan: {activeBooking.vehicleDetails}</p>
                   <p className="text-sm text-gray-600">Lokasi: {activeBooking.location}</p>
@@ -286,6 +330,11 @@ const CustomerDashboard = () => {
                   <p className="text-sm text-gray-600">Layanan: {activeService.service}</p>
                   <p className="text-sm text-gray-600">Status: {activeService.status}</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+                  <p className="font-semibold">Mekanik ID: {activeBooking.mechanicId}</p>
+                  <p className="text-sm text-gray-600">Kendaraan: {activeBooking.vehicle.brand} {activeBooking.vehicle.model}</p>
+                  <p className="text-sm text-gray-600">Masalah: {activeBooking.problem}</p>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                 </div>
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -302,18 +351,25 @@ const CustomerDashboard = () => {
                     size="sm"
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
                     variant="outline"
+<<<<<<< HEAD
                     className="bg-white"
                     onClick={() => navigate('/customer/chat')}
+=======
+                    onClick={() => navigate(`/customer/chat?bookingId=${activeBooking.id}`)}
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                   >
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Chat
                   </Button>
+<<<<<<< HEAD
                   <Button variant="outline" className="bg-white">
                     <Phone className="h-4 w-4 mr-2" />
                     Telepon
                   </Button>
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                   <Button 
 <<<<<<< HEAD
                     className="bg-orange-600 hover:bg-orange-700"
@@ -322,12 +378,16 @@ const CustomerDashboard = () => {
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
                   <Button
                     size="sm"
+<<<<<<< HEAD
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
                     onClick={() => navigate('/customer/tracking')}
 =======
                     size="sm"
                     onClick={() => navigate(`/customer/tracking/${activeService.id}`)}
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+                    onClick={() => navigate(`/customer/tracking?bookingId=${activeBooking.id}`)}
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                   >
                     Lacak Lokasi
                   </Button>
@@ -352,6 +412,7 @@ const CustomerDashboard = () => {
           </CardHeader>
 <<<<<<< HEAD
           <CardContent className="space-y-4">
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -400,10 +461,31 @@ const CustomerDashboard = () => {
                         <Star className="h-4 w-4 text-yellow-500 fill-current" />
                         <span className="text-sm ml-1">{mechanic.rating}</span>
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
+=======
+            {loadingMechanics ? (
+              <p>Memuat mekanik...</p>
+            ) : nearbyMechanics.length > 0 ? (
+              nearbyMechanics.map((mechanic) => (
+                <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                  <div className="flex items-center space-x-4">
+                    <div className="text-3xl">{mechanic.avatar || '👨‍🔧'}</div>
+                    <div>
+                      <h3 className="font-semibold">{mechanic.name}</h3>
+                      <p className="text-sm text-gray-600">{mechanic.speciality.join(', ')}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className="flex items-center">
+                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                          <span className="text-sm ml-1">{mechanic.rating}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          Online
+                        </Badge>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
+<<<<<<< HEAD
                     <p className="text-sm font-bold text-blue-600">Rp {mechanic.pricePerHour.toLocaleString()}/jam</p>
                     <Button
                       size="sm"
@@ -436,6 +518,22 @@ const CustomerDashboard = () => {
               </div>
             ))}
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
+=======
+                    <p className="text-sm font-semibold text-blue-600">Rp {mechanic.pricePerHour}/jam</p>
+                    <Button
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => navigate(`/customer/booking?mechanicId=${mechanic.id}`)}
+                    >
+                      Pilih
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-4">Tidak ada mekanik online saat ini</p>
+            )}
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
           </CardContent>
         </Card>
 
@@ -447,6 +545,7 @@ const CustomerDashboard = () => {
                 <History className="h-5 w-5 mr-2 text-green-600" />
                 Riwayat Layanan
               </div>
+<<<<<<< HEAD
               <Button size="sm" variant="ghost" className="text-blue-600">
                 Lihat Semua
               </Button>
@@ -505,6 +604,29 @@ const CustomerDashboard = () => {
               ))
             ) : (
               <p className="text-center py-6 text-gray-500 italic">Belum ada riwayat layanan.</p>
+=======
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {loadingBookings ? (
+              <p>Memuat riwayat...</p>
+            ) : recentBookings.length > 0 ? (
+              recentBookings.map((service) => (
+                <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div>
+                    <h3 className="font-semibold">{service.problem}</h3>
+                    <p className="text-sm text-gray-600">Kendaraan: {service.vehicle.brand} {service.vehicle.model}</p>
+                    <p className="text-xs text-gray-500">{new Date(service.createdAt).toLocaleDateString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-green-600">Rp {service.estimatedCost}</p>
+                    <Badge variant="outline" className="mt-1">Selesai</Badge>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-500 py-4">Belum ada riwayat layanan</p>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
             )}
           </CardContent>
         </Card>

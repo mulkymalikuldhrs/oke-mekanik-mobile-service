@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const Index = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+<<<<<<< HEAD
   const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -22,6 +23,10 @@ const Index = () => {
       }
     }
   }, [isAuthenticated, user, navigate]);
+=======
+  const { user } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<'customer' | 'mechanic' | null>(null);
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
   const features = [
     {
@@ -47,7 +52,21 @@ const Index = () => {
   ];
 
   const handleRoleSelection = (role: 'customer' | 'mechanic') => {
+<<<<<<< HEAD
     navigate(`/login?role=${role}`);
+=======
+    if (user) {
+      if (user.role === 'customer') {
+        navigate('/customer/dashboard');
+      } else {
+        navigate('/mechanic/dashboard');
+      }
+      return;
+    }
+
+    setSelectedRole(role);
+    navigate('/login');
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   };
 
   return (

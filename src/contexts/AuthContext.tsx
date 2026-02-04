@@ -1,5 +1,6 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 import { createContext, useContext, useState } from 'react';
@@ -17,12 +18,15 @@ interface AuthContextType {
   logout: () => void;
 <<<<<<< HEAD
 =======
+=======
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole } from '@/types';
 
 interface AuthContextType {
   user: User | null;
+<<<<<<< HEAD
   role: UserRole | null;
   login: (email: string, role: UserRole) => Promise<void>;
   register: (name: string, email: string, role: UserRole) => Promise<void>;
@@ -32,10 +36,17 @@ interface AuthContextType {
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
 =======
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+  login: (email: string, role: UserRole) => Promise<void>;
+  register: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<void>;
+  logout: () => void;
+  isLoading: boolean;
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -60,11 +71,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (savedUser && savedRole) {
       setUser(JSON.parse(savedUser));
       setRole(savedRole as UserRole);
+=======
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('ok_mekanik_user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
     }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, role: UserRole) => {
+<<<<<<< HEAD
     setIsLoading(true);
     // Mock login logic
     setTimeout(() => {
@@ -101,10 +123,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
 =======
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+    // In a real app, this would be an API call
+    // For now, we simulate finding a user in localStorage
+    const users = JSON.parse(localStorage.getItem('ok_mekanik_all_users') || '[]');
+    const existingUser = users.find((u: User) => u.email === email && u.role === role);
+
+    if (existingUser) {
+      setUser(existingUser);
+      localStorage.setItem('ok_mekanik_user', JSON.stringify(existingUser));
+    } else {
+      // For demo purposes, if not found, we create a dummy one or throw error
+      // Let's throw error to be "real"
+      throw new Error('User not found. Please register.');
+    }
+  };
+
+  const register = async (userData: Omit<User, 'id' | 'createdAt'>) => {
+    const newUser: User = {
+      ...userData,
+      id: Math.random().toString(36).substr(2, 9),
+      createdAt: new Date().toISOString(),
+    };
+
+    const users = JSON.parse(localStorage.getItem('ok_mekanik_all_users') || '[]');
+    users.push(newUser);
+    localStorage.setItem('ok_mekanik_all_users', JSON.stringify(users));
+
+    setUser(newUser);
+    localStorage.setItem('ok_mekanik_user', JSON.stringify(newUser));
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   };
 
   const logout = () => {
     setUser(null);
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -134,6 +187,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
 =======
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+    localStorage.removeItem('ok_mekanik_user');
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
       {children}
     </AuthContext.Provider>
   );

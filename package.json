@@ -34,6 +34,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     "server": "json-server --watch db.json --port 3001"
 >>>>>>> origin/feat/project-revamp-10664209957500258455
@@ -46,6 +47,10 @@
 =======
     "test": "vitest"
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+    "test": "vitest",
+    "test:ui": "vitest --ui"
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -119,6 +124,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feat/setup-testing-environment-4015463618406263905
     "jsdom": "^27.4.0",
@@ -130,6 +136,9 @@
     "jsdom": "^27.4.0",
     "json-server": "^1.0.0-beta.5",
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
+=======
+    "jsdom": "^28.0.0",
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
     "lovable-tagger": "^1.1.7",
     "msw": "^2.12.7",
 =======
@@ -147,6 +156,7 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -178,5 +188,9 @@
     "vite": "^5.4.1",
     "vitest": "^4.0.18"
 >>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+=======
+    "vite": "^5.4.1",
+    "vitest": "^4.0.18"
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   }
 }

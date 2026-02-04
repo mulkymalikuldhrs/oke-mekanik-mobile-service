@@ -19,6 +19,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Input } from '@/components/ui/input';
 <<<<<<< HEAD
 import { Label } from '@/components/ui/label';
+<<<<<<< HEAD
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
@@ -55,6 +56,39 @@ const BookingPage = () => {
       navigate('/login');
       return;
     }
+=======
+import { Badge } from '@/components/ui/badge';
+import { useLanguage } from '@/hooks/useLanguage';
+import { useToast } from '@/hooks/use-toast';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { api } from '@/lib/api';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { Mechanic } from '@/types';
+
+const BookingPage = () => {
+  const { t } = useLanguage();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const [step, setStep] = useState(1);
+  const [location, setLocation] = useState({ lat: -6.2, lng: 106.8, address: '' });
+  const [vehicleData, setVehicleData] = useState({
+    brand: '',
+    model: '',
+    year: '',
+    licensePlate: '',
+    problem: ''
+  });
+  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
+  const [isEmergency, setIsEmergency] = useState(false);
+
+  const { data: availableMechanics = [] } = useQuery({
+    queryKey: ['mechanics'],
+    queryFn: () => api.getMechanics(),
+  });
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
 
     setIsSubmitting(true);
     try {
@@ -146,16 +180,265 @@ const BookingPage = () => {
     mutation.mutate(data);
   };
 
+  useEffect(() => {
+    const mechId = searchParams.get('mechanicId');
+    if (mechId && availableMechanics.length > 0) {
+      const mech = availableMechanics.find(m => m.id === mechId);
+      if (mech) {
+        setSelectedMechanic(mech);
+        setStep(1);
+      }
+    }
+  }, [searchParams, availableMechanics]);
+
+  const bookingMutation = useMutation({
+    mutationFn: api.createBooking,
+    onSuccess: (data) => {
+      toast({
+        title: "Booking Berhasil!",
+        description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
+      });
+      navigate(`/customer/tracking?bookingId=${data.id}`);
+    },
+  });
+
   const handleEmergencyBooking = () => {
+<<<<<<< HEAD
     form.setValue('isEmergency', true);
     // You might want to pre-fill some fields or show a confirmation
+=======
+    if (!user) { navigate('/login'); return; }
+    setIsEmergency(true);
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
     toast({
       title: "🚨 Mode Darurat Aktif",
       description: "Lengkapi detail di bawah dan panggil sekarang.",
     });
+<<<<<<< HEAD
 >>>>>>> origin/feat/project-revamp-10664209957500258455
   };
 
+=======
+    
+    // Auto-select first available mechanic
+    const mech = availableMechanics.find(m => m.isOnline);
+    if (mech) {
+      setSelectedMechanic(mech);
+      setStep(3);
+    }
+  };
+
+  const handleBooking = () => {
+    if (!user || !selectedMechanic) return;
+
+    bookingMutation.mutate({
+      customerId: user.id,
+      mechanicId: selectedMechanic.id,
+      status: 'pending',
+      vehicle: vehicleData,
+      problem: vehicleData.problem,
+      location,
+      estimatedCost: selectedMechanic.pricePerHour, // Simplified
+      isEmergency,
+    });
+  };
+
+  const renderLocationStep = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <MapPin className="h-5 w-5 mr-2" />
+          Lokasi & Masalah Kendaraan
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor="address">Alamat Lengkap</Label>
+          <div className="flex space-x-2">
+            <Input
+              id="address"
+              value={location.address}
+              onChange={(e) => setLocation(prev => ({ ...prev, address: e.target.value }))}
+              placeholder="Masukkan alamat lengkap"
+            />
+            <Button size="sm" variant="outline">
+              <Navigation className="h-4 w-4 mr-1" />
+              GPS
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="brand">Merk Kendaraan</Label>
+            <select
+              id="brand"
+              className="w-full p-2 border rounded-md"
+              value={vehicleData.brand}
+              onChange={(e) => setVehicleData(prev => ({ ...prev, brand: e.target.value }))}
+            >
+              <option value="">Pilih merk</option>
+              {vehicleBrands.map(brand => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <Label htmlFor="model">Model/Tipe</Label>
+            <Input
+              id="model"
+              value={vehicleData.model}
+              onChange={(e) => setVehicleData(prev => ({ ...prev, model: e.target.value }))}
+              placeholder="Avanza, Vario, dll"
+            />
+          </div>
+          <div>
+            <Label htmlFor="year">Tahun</Label>
+            <Input
+              id="year"
+              value={vehicleData.year}
+              onChange={(e) => setVehicleData(prev => ({ ...prev, year: e.target.value }))}
+              placeholder="2019"
+            />
+          </div>
+          <div>
+            <Label htmlFor="licensePlate">Plat Nomor</Label>
+            <Input
+              id="licensePlate"
+              value={vehicleData.licensePlate}
+              onChange={(e) => setVehicleData(prev => ({ ...prev, licensePlate: e.target.value }))}
+              placeholder="B 1234 XYZ"
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label htmlFor="problem">Masalah Kendaraan</Label>
+          <select
+            id="problem"
+            className="w-full p-2 border rounded-md mb-2"
+            value={vehicleData.problem}
+            onChange={(e) => setVehicleData(prev => ({ ...prev, problem: e.target.value }))}
+          >
+            <option value="">Pilih masalah</option>
+            {problemTypes.map(problem => (
+              <option key={problem} value={problem}>{problem}</option>
+            ))}
+          </select>
+          <Input
+            placeholder="Deskripsi detail masalah (opsional)"
+            className="mt-2"
+          />
+        </div>
+
+        <div className="bg-red-50 p-4 rounded-lg">
+          <Button 
+            onClick={handleEmergencyBooking}
+            className="w-full bg-red-600 hover:bg-red-700 text-white"
+          >
+            🚨 DARURAT - Panggil Sekarang
+          </Button>
+          <p className="text-xs text-red-600 mt-2 text-center">
+            Untuk situasi darurat yang membutuhkan bantuan segera
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderMechanicSelection = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Car className="h-5 w-5 mr-2" />
+          Pilih Mekanik {isEmergency && <Badge className="ml-2 bg-red-600">DARURAT</Badge>}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {availableMechanics.map((mechanic) => (
+          <div
+            key={mechanic.id}
+            onClick={() => setSelectedMechanic(mechanic)}
+            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+              selectedMechanic?.id === mechanic.id
+                ? 'border-blue-500 bg-blue-50'
+                : 'border-gray-200 hover:bg-gray-50'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="text-3xl">{mechanic.photo}</div>
+                <div>
+                  <h3 className="font-semibold flex items-center">
+                    {mechanic.name}
+                    {mechanic.verified && <Badge className="ml-2 bg-green-600">Verified</Badge>}
+                  </h3>
+                  <p className="text-sm text-gray-600">{mechanic.speciality}</p>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <div className="flex items-center">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      <span className="text-sm ml-1">{mechanic.rating}</span>
+                    </div>
+                    <Badge variant="outline" className="text-xs">
+                      {mechanic.distance}
+                    </Badge>
+                    <Badge variant="outline" className="text-xs">
+                      {mechanic.completedJobs} jobs
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-gray-600">ETA: {mechanic.eta}</p>
+                <p className="text-lg font-semibold text-blue-600">{mechanic.price}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+
+  const renderBookingConfirmation = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center">
+          <Clock className="h-5 w-5 mr-2" />
+          Konfirmasi Booking
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <h3 className="font-semibold text-blue-900">Detail Booking</h3>
+          <div className="mt-2 space-y-2">
+            <p><strong>Mekanik:</strong> {selectedMechanic?.name}</p>
+            <p><strong>Lokasi:</strong> {location.address}</p>
+            <p><strong>Kendaraan:</strong> {vehicleData.brand} {vehicleData.model} ({vehicleData.licensePlate})</p>
+            <p><strong>Masalah:</strong> {vehicleData.problem}</p>
+            <p><strong>Estimasi Biaya:</strong> {selectedMechanic?.price}</p>
+            <p><strong>ETA:</strong> {selectedMechanic?.eta}</p>
+          </div>
+        </div>
+
+        <div className="flex space-x-2">
+          <Button variant="outline" className="flex-1">
+            <MessageSquare className="h-4 w-4 mr-2" />
+            Chat
+          </Button>
+          <Button variant="outline" className="flex-1">
+            <Phone className="h-4 w-4 mr-2" />
+            Telepon
+          </Button>
+        </div>
+
+        <Button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-700">
+          Konfirmasi Booking
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+>>>>>>> origin/jules-9588893365322302084-daabd2d3
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
