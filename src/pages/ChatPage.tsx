@@ -1,279 +1,147 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Phone, Camera, MapPin, Clock, Star, Paperclip } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, Send, Phone, MoreVertical, Image as ImageIcon, Smile } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
+import { Card, CardContent } from '@/components/ui/card';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Message {
+  id: string;
+  senderId: string;
+  text: string;
+  timestamp: Date;
+}
 
 const ChatPage = () => {
-  const { t } = useLanguage();
-  const [messages, setMessages] = useState([
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([
     {
-      id: 1,
-      sender: 'mechanic',
-      text: 'Halo! Saya Ahmad Rizki, mekanik yang akan membantu Anda hari ini. Saya sedang dalam perjalanan ke lokasi Anda.',
-      timestamp: '14:30',
-      type: 'text'
+      id: '1',
+      senderId: 'other',
+      text: 'Halo, saya mekanik Ahmad. Saya sudah dalam perjalanan menuju lokasi Anda.',
+      timestamp: new Date(Date.now() - 1000 * 60 * 5)
     },
     {
-      id: 2,
-      sender: 'customer',
-      text: 'Terima kasih pak! Mobilnya benar-benar tidak bisa dinyalakan sama sekali.',
-      timestamp: '14:32',
-      type: 'text'
-    },
-    {
-      id: 3,
-      sender: 'mechanic',
-      text: 'Baik, saya sudah dekat dengan lokasi Anda. Bisa tolong kirim foto kondisi mesin saat ini?',
-      timestamp: '14:35',
-      type: 'text'
-    },
-    {
-      id: 4,
-      sender: 'customer',
-      text: '',
-      timestamp: '14:36',
-      type: 'image',
-      image: '/placeholder.svg'
-    },
-    {
-      id: 5,
-      sender: 'mechanic',
-      text: 'Saya sudah sampai di lokasi. Dimana posisi mobil Anda?',
-      timestamp: '14:40',
-      type: 'location'
+      id: '2',
+      senderId: 'other',
+      text: 'Bisa tolong share lokasi tepatnya di mana? Patokannya apa ya?',
+      timestamp: new Date(Date.now() - 1000 * 60 * 4)
     }
   ]);
-  
   const [newMessage, setNewMessage] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
-
-  const currentJob = {
-    id: 'JOB001',
-    mechanic: {
-      name: 'Ahmad Rizki',
-      rating: 4.9,
-      phone: '+62 812-3456-7890',
-      photo: '👨‍🔧',
-      status: 'online'
-    },
-    customer: {
-      name: 'Budi Santoso',
-      vehicle: 'Toyota Avanza 2019 - B 1234 XYZ'
-    },
-    status: 'otw'
-  };
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const message = {
-        id: messages.length + 1,
-        sender: 'customer', // In real app, this would be determined by user role
-        text: newMessage,
-        timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-        type: 'text'
-      };
-      
-      setMessages([...messages, message]);
-      setNewMessage('');
-      
-      // Simulate mechanic typing
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        // Add auto-reply (in real app, this would come from the other user)
-        const autoReply = {
-          id: messages.length + 2,
-          sender: 'mechanic',
-          text: 'Baik, saya mengerti. Akan segera saya cek kondisinya.',
-          timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-          type: 'text'
-        };
-        setMessages(prev => [...prev, autoReply]);
-      }, 2000);
-    }
-  };
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim()) return;
 
-  const handleFileUpload = (file) => {
-    const message = {
-      id: messages.length + 1,
-      sender: 'customer',
-      text: '',
-      timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-      type: 'image',
-      image: URL.createObjectURL(file)
+    const msg: Message = {
+      id: Date.now().toString(),
+      senderId: 'me',
+      text: newMessage,
+      timestamp: new Date()
     };
-    
-    setMessages([...messages, message]);
-  };
 
-  const renderMessage = (message) => {
-    const isOwnMessage = message.sender === 'customer';
-    
-    return (
-      <div key={message.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-4`}>
-        <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-          isOwnMessage 
-            ? 'bg-blue-500 text-white' 
-            : 'bg-gray-200 text-gray-900'
-        }`}>
-          {message.type === 'text' && (
-            <p className="text-sm">{message.text}</p>
-          )}
-          
-          {message.type === 'image' && (
-            <div>
-              <img src={message.image} alt="Shared image" className="w-full h-32 object-cover rounded mb-2" />
-              {message.text && <p className="text-sm">{message.text}</p>}
-            </div>
-          )}
-          
-          {message.type === 'location' && (
-            <div className="flex items-center space-x-2">
-              <MapPin className="h-4 w-4" />
-              <p className="text-sm">{message.text || 'Lokasi dibagikan'}</p>
-            </div>
-          )}
-          
-          <p className={`text-xs mt-1 ${isOwnMessage ? 'text-blue-100' : 'text-gray-500'}`}>
-            {message.timestamp}
-          </p>
-        </div>
-      </div>
-    );
-  };
+    setMessages([...messages, msg]);
+    setNewMessage('');
 
-  const renderTypingIndicator = () => (
-    <div className="flex justify-start mb-4">
-      <div className="bg-gray-200 px-4 py-2 rounded-lg">
-        <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-          <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-        </div>
-      </div>
-    </div>
-  );
+    // Simulate reply
+    setTimeout(() => {
+      const reply: Message = {
+        id: (Date.now() + 1).toString(),
+        senderId: 'other',
+        text: 'Baik, saya mengerti. Saya segera sampai.',
+        timestamp: new Date()
+      };
+      setMessages((prev) => [...prev, reply]);
+    }, 2000);
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col h-screen max-h-screen">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="text-2xl">{currentJob.mechanic.photo}</div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">{currentJob.mechanic.name}</h1>
-                <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-sm text-gray-600">{currentJob.mechanic.status}</span>
-                  <div className="flex items-center">
-                    <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                    <span className="text-xs ml-1">{currentJob.mechanic.rating}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex space-x-2">
-              <Button size="sm" variant="outline">
-                <Phone className="h-4 w-4" />
-              </Button>
-              <Button size="sm" variant="outline">
-                <MapPin className="h-4 w-4" />
-              </Button>
+      <header className="bg-blue-600 text-white p-4 flex items-center justify-between shadow-md">
+        <div className="flex items-center">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="mr-2 text-white hover:bg-blue-700">
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-xl">👨‍🔧</div>
+            <div>
+              <h1 className="font-bold">Ahmad Rizki (Mekanik)</h1>
+              <p className="text-xs text-blue-100">Aktif Sekarang</p>
             </div>
           </div>
+        </div>
+        <div className="flex items-center space-x-1">
+          <Button variant="ghost" size="icon" className="text-white hover:bg-blue-700">
+            <Phone className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="text-white hover:bg-blue-700">
+            <MoreVertical className="h-5 w-5" />
+          </Button>
         </div>
       </header>
 
-      {/* Job Info Banner */}
-      <div className="bg-blue-50 border-b">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-blue-900">Job #{currentJob.id}</p>
-              <p className="text-xs text-blue-700">{currentJob.customer.vehicle}</p>
-            </div>
-            <Badge className="bg-blue-600">
-              {currentJob.status === 'otw' ? 'Menuju Lokasi' : 'Aktif'}
-            </Badge>
-          </div>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="container mx-auto px-4 py-4">
-          {messages.map(renderMessage)}
-          {isTyping && renderTypingIndicator()}
-          <div ref={messagesEndRef} />
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="bg-white border-t">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex space-x-2 overflow-x-auto">
-            <Button size="sm" variant="outline" className="whitespace-nowrap">
-              📍 Bagikan Lokasi
-            </Button>
-            <Button size="sm" variant="outline" className="whitespace-nowrap">
-              📸 Kirim Foto
-            </Button>
-            <Button size="sm" variant="outline" className="whitespace-nowrap">
-              ⏰ Estimasi Waktu
-            </Button>
-            <Button size="sm" variant="outline" className="whitespace-nowrap">
-              💰 Estimasi Biaya
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Message Input */}
-      <div className="bg-white border-t">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center space-x-2">
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              id="file-upload"
-              onChange={(e) => e.target.files?.[0] && handleFileUpload(e.target.files[0])}
-            />
-            <label htmlFor="file-upload">
-              <Button size="sm" variant="outline" className="p-2">
-                <Paperclip className="h-4 w-4" />
-              </Button>
-            </label>
-            
-            <div className="flex-1 flex space-x-2">
-              <Input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Ketik pesan..."
-                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                className="flex-1"
-              />
-              <Button onClick={handleSendMessage} size="sm" className="px-4">
-                <Send className="h-4 w-4" />
-              </Button>
+      {/* Messages Area */}
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4 bg-[url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')] bg-repeat"
+      >
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`flex ${msg.senderId === 'me' ? 'justify-end' : 'justify-start'}`}
+          >
+            <div
+              className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${
+                msg.senderId === 'me'
+                  ? 'bg-blue-600 text-white rounded-tr-none'
+                  : 'bg-white text-gray-800 rounded-tl-none'
+              }`}
+            >
+              <p className="text-sm">{msg.text}</p>
+              <p className={`text-[10px] mt-1 text-right ${msg.senderId === 'me' ? 'text-blue-100' : 'text-gray-400'}`}>
+                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
             </div>
           </div>
-        </div>
+        ))}
+      </div>
+
+      {/* Input Area */}
+      <div className="bg-white p-4 border-t shadow-lg">
+        <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+          <Button type="button" variant="ghost" size="icon" className="text-gray-400">
+            <ImageIcon className="h-5 w-5" />
+          </Button>
+          <Button type="button" variant="ghost" size="icon" className="text-gray-400">
+            <Smile className="h-5 w-5" />
+          </Button>
+          <Input
+            className="flex-1 bg-gray-100 border-none focus-visible:ring-1 focus-visible:ring-blue-600"
+            placeholder="Ketik pesan..."
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+          />
+          <Button
+            type="submit"
+            size="icon"
+            className="bg-blue-600 hover:bg-blue-700 rounded-full h-10 w-10 flex-shrink-0"
+            disabled={!newMessage.trim()}
+          >
+            <Send className="h-5 w-5" />
+          </Button>
+        </form>
       </div>
     </div>
   );
