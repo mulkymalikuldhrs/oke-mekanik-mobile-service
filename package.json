@@ -6,6 +6,7 @@
   "scripts": {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     "dev": "npm-run-all --parallel dev:vite dev:server",
     "dev:vite": "vite",
     "dev:server": "json-server --watch db.json --port 3001",
@@ -20,10 +21,16 @@
     "dev:ui": "vite",
     "dev": "concurrently \"npm run dev:ui\" \"npm run dev:api\"",
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
+=======
+    "dev": "concurrently \"npm:dev:ui\" \"npm:dev:api\"",
+    "dev:ui": "vite",
+    "dev:api": "json-server --watch db.json --port 3001",
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -36,6 +43,9 @@
 =======
     "test": "vitest"
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
+=======
+    "test": "vitest"
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -108,6 +118,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> origin/feat/setup-testing-environment-4015463618406263905
     "jsdom": "^27.4.0",
@@ -126,10 +137,17 @@
     "lovable-tagger": "^1.1.7",
     "npm-run-all": "^4.1.5",
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+    "jsdom": "^27.4.0",
+    "json-server": "^1.0.0-beta.5",
+    "lovable-tagger": "^1.1.7",
+    "msw": "^2.12.7",
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -156,5 +174,9 @@
     "vite": "^5.4.1",
     "vitest": "^4.0.18"
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
+=======
+    "vite": "^5.4.1",
+    "vitest": "^4.0.18"
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
   }
 }

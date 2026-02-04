@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 # Agent Documentation - Production-Ready Implementation
 
@@ -27,6 +28,8 @@ Project "Oke Mekanik" telah ditingkatkan menjadi aplikasi fungsional dengan arsi
 - Gunakan `npm test` untuk menjalankan unit testing.
 - Semua pengembangan fitur baru harus mengikuti pola yang ada di `src/lib/api.ts` dan menggunakan interface dari `src/types`.
 =======
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 # AGENTS.md
 
 This document provides instructions for AI agents working on the Oke Mekanik codebase.
@@ -77,4 +80,7 @@ All new features and bug fixes should be accompanied by tests.
 ## Pre-Commit Steps
 
 Before submitting any changes, you must complete the pre-commit steps. This involves running the tests and ensuring they all pass.
+<<<<<<< HEAD
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399

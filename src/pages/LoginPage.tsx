@@ -1,5 +1,8 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -74,6 +77,7 @@ export default function LoginPage() {
         </div>
     );
 }
+<<<<<<< HEAD
 =======
 
 import React from 'react';
@@ -258,3 +262,5 @@ export default LoginPage;
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
 =======
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399

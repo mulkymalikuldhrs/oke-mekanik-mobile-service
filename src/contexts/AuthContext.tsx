@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 import { createContext, useContext, useState } from 'react';
 
 interface User {
@@ -12,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   login: (user: User, token: string) => void;
   logout: () => void;
+<<<<<<< HEAD
 =======
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -26,17 +30,23 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
   const login = (user: User, token: string) => {
     setUser(user);
     localStorage.setItem('token', token);
+<<<<<<< HEAD
 =======
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -89,16 +99,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(false);
     }, 1000);
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
   };
 
   const logout = () => {
     setUser(null);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
     localStorage.removeItem('token');
   };
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
+<<<<<<< HEAD
 =======
     setRole(null);
     localStorage.removeItem('user');
@@ -116,6 +132,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       isLoading
     }}>
 >>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
       {children}
     </AuthContext.Provider>
   );

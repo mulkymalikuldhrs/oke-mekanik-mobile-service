@@ -1,6 +1,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 import React from 'react';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LogOut } from 'lucide-react';
@@ -17,12 +18,17 @@ import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTri
 import React from 'react';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LoaderCircle } from 'lucide-react';
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
+=======
+import React from 'react';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, Loader } from 'lucide-react';
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -40,6 +46,10 @@ import { fetchActiveService, fetchRecentServices, fetchNearbyMechanics } from '@
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
 =======
 import { useQuery } from '@tanstack/react-query';
+=======
+import { useQuery } from '@tanstack/react-query';
+import { fetchActiveService, fetchRecentServices, fetchNearbyMechanics } from '@/lib/api';
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 
 const fetchCustomerData = async () => {
   const res = await fetch('http://localhost:3001/customer');
@@ -79,6 +89,7 @@ const CustomerDashboard = () => {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   const { user, logout } = useAuth();
 
   const { data: mechanics, isLoading: isLoadingMechanics } = useQuery({
@@ -94,6 +105,23 @@ const CustomerDashboard = () => {
 
   const activeBooking = bookings?.find(b => ['accepted', 'otw', 'working'].includes(b.status));
   const recentBookings = bookings?.filter(b => b.status === 'completed') || [];
+=======
+
+  const { data: activeService, isLoading: isLoadingActiveService } = useQuery({
+    queryKey: ['activeService'],
+    queryFn: fetchActiveService
+  });
+
+  const { data: recentServices, isLoading: isLoadingRecentServices } = useQuery({
+    queryKey: ['recentServices'],
+    queryFn: fetchRecentServices
+  });
+
+  const { data: nearbyMechanics, isLoading: isLoadingNearbyMechanics } = useQuery({
+    queryKey: ['nearbyMechanics'],
+    queryFn: fetchNearbyMechanics
+  });
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 
   const handleLogout = () => {
     logout();
@@ -223,6 +251,7 @@ const CustomerDashboard = () => {
 
         {/* Active Service */}
 <<<<<<< HEAD
+<<<<<<< HEAD
         {isLoadingBookings ? (
           <Skeleton className="h-32 w-full rounded-xl" />
         ) : activeBooking && (
@@ -230,6 +259,8 @@ const CustomerDashboard = () => {
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center text-orange-800 text-lg">
 =======
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
         {isLoadingActiveService ? (
           <div className="flex items-center justify-center">
             <Loader className="h-6 w-6 animate-spin" />
@@ -257,6 +288,7 @@ const CustomerDashboard = () => {
 >>>>>>> origin/feat/project-revamp-10664209957500258455
                 </div>
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <div className="flex flex-wrap gap-2">
                   <Button 
 =======
@@ -264,6 +296,11 @@ const CustomerDashboard = () => {
                   <Button
                     size="sm"
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
+=======
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
                     variant="outline"
                     className="bg-white"
                     onClick={() => navigate('/customer/chat')}
@@ -276,10 +313,13 @@ const CustomerDashboard = () => {
                     Telepon
                   </Button>
 <<<<<<< HEAD
+<<<<<<< HEAD
                   <Button 
 <<<<<<< HEAD
                     className="bg-orange-600 hover:bg-orange-700"
 =======
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
                   <Button
                     size="sm"
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
@@ -314,6 +354,7 @@ const CustomerDashboard = () => {
           <CardContent className="space-y-4">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             {isLoadingMechanics ? (
               [1, 2].map(i => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
             ) : (
@@ -335,14 +376,19 @@ const CustomerDashboard = () => {
                           {mechanic.distance}
                         </Badge>
 =======
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
             {isLoadingNearbyMechanics ? (
               <div className="flex items-center justify-center">
                 <Loader className="h-6 w-6 animate-spin" />
               </div>
             ) : nearbyMechanics?.map((mechanic) => (
+<<<<<<< HEAD
 =======
             {nearbyMechanics && nearbyMechanics.map((mechanic) => (
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
               <div key={mechanic.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
                 <div className="flex items-center space-x-4">
                   <div className="text-3xl">{mechanic.avatar}</div>
@@ -410,6 +456,7 @@ const CustomerDashboard = () => {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             {isLoadingBookings ? (
               <Skeleton className="h-20 w-full rounded-lg" />
             ) : recentBookings.length > 0 ? (
@@ -431,15 +478,20 @@ const CustomerDashboard = () => {
 =======
             {recentServices.map((service) => (
 =======
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
             {isLoadingRecentServices ? (
               <div className="flex items-center justify-center">
                 <Loader className="h-6 w-6 animate-spin" />
               </div>
             ) : recentServices?.map((service) => (
+<<<<<<< HEAD
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
 =======
             {recentServices && recentServices.map((service) => (
 >>>>>>> origin/feature/production-ready-refactor-15241725718241106546
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
               <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div>
                   <h3 className="font-semibold">{service.service}</h3>

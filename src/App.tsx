@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,9 +19,12 @@ import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 
 const queryClient = new QueryClient();
 
@@ -78,6 +80,7 @@ const App = () => (
         </TooltipProvider>
 =======
     <LanguageProvider>
+<<<<<<< HEAD
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -106,6 +109,31 @@ const App = () => (
           </AppLayout>
         </BrowserRouter>
       </TooltipProvider>
+=======
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/customer/dashboard" element={<CustomerDashboard />} />
+              <Route path="/customer/booking" element={<BookingPage />} />
+              <Route path="/customer/tracking" element={<TrackingPage />} />
+              <Route path="/customer/chat" element={<ChatPage />} />
+              <Route path="/customer/payment" element={<PaymentPage />} />
+              <Route path="/mechanic/dashboard" element={<MechanicDashboard />} />
+              <Route path="/mechanic/registration" element={<MechanicRegistration />} />
+              <Route path="/mechanic/chat" element={<ChatPage />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
     </LanguageProvider>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
   </QueryClientProvider>

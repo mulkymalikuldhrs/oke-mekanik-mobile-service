@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 import { User, Mechanic, Booking, Service, Message, Review } from '@/types';
 
@@ -59,6 +60,8 @@ export const api = {
     return newMessage;
   }
 =======
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 const API_BASE_URL = "http://localhost:3001";
 
 export const fetchActiveService = async () => {
@@ -83,5 +86,8 @@ export const fetchNearbyMechanics = async () => {
     throw new Error("Network response was not ok");
   }
   return response.json();
+<<<<<<< HEAD
 >>>>>>> origin/feature/production-ready-foundation-11256743727145072162
+=======
+>>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
 };
