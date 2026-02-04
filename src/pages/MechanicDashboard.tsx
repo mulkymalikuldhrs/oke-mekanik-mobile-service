@@ -1,8 +1,11 @@
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 import React from 'react';
 import { Wrench, MapPin, Clock, Star, MessageSquare, Phone, CheckCircle, XCircle, LogOut, Settings } from 'lucide-react';
 =======
+=======
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { 
@@ -15,7 +18,9 @@ import {
   CheckCircle,
   XCircle,
   Camera,
-  DollarSign
+  DollarSign,
+  LoaderCircle,
+  AlertTriangle
 } from 'lucide-react';
 >>>>>>> origin/feat/project-revamp-10664209957500258455
 import { Button } from '@/components/ui/button';
@@ -26,6 +31,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
@@ -35,6 +41,17 @@ import { toast } from 'sonner';
 import LoadingSpinner from '@/components/ui/components/LoadingSpinner';
 import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+import { useQuery } from '@tanstack/react-query';
+
+const fetchMechanicData = async () => {
+  const res = await fetch('http://localhost:3001/mechanic');
+  if (!res.ok) {
+    throw new Error('Network response was not ok');
+  }
+  return res.json();
+};
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
 
 /**
  * Fetches the mechanic dashboard data from the API.
@@ -61,6 +78,7 @@ const fetchMechanicDashboard = async () => {
  */
 const MechanicDashboard = () => {
   const { t } = useLanguage();
+<<<<<<< HEAD
 <<<<<<< HEAD
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -95,6 +113,14 @@ const MechanicDashboard = () => {
     queryFn: fetchMechanicDashboard,
   });
 
+=======
+  const [isOnline, setIsOnline] = useState(true);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['mechanicData'],
+    queryFn: fetchMechanicData
+  });
+
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
   const getStatusBadge = (status: string) => {
     const statusMap = {
       'In Progress': { label: 'Sedang Dikerjakan', color: 'bg-orange-500' },
@@ -111,6 +137,28 @@ const MechanicDashboard = () => {
   const pendingOrders = jobs.filter(job => job.status !== 'In Progress' && job.status !== 'Completed');
   const completedJobsCount = jobs.filter(job => job.status === 'Completed').length;
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <LoaderCircle data-testid="loader" className="h-12 w-12 animate-spin text-orange-600" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
+          <h2 className="mt-4 text-xl font-semibold text-gray-800">Gagal memuat data</h2>
+          <p className="text-gray-600">Terjadi kesalahan saat mengambil data. Silakan coba lagi nanti.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const { currentJob, pendingOrders, todayStats } = data || {};
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -160,7 +208,11 @@ const MechanicDashboard = () => {
           <Card>
             <CardContent className="p-4 text-center">
               <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+<<<<<<< HEAD
               <p className="text-2xl font-bold text-gray-900">{completedJobsCount}</p>
+=======
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.completedJobs}</p>
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
               <p className="text-sm text-gray-600">Pekerjaan Selesai</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
             </CardContent>
@@ -172,7 +224,11 @@ const MechanicDashboard = () => {
               <p className="text-2xl font-bold text-green-600">Rp 750rb</p>
 =======
               <DollarSign className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+<<<<<<< HEAD
               <p className="text-2xl font-bold text-gray-900">Rp 0</p>
+=======
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.totalEarnings}</p>
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
               <p className="text-sm text-gray-600">Pendapatan Hari Ini</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
             </CardContent>
@@ -182,8 +238,12 @@ const MechanicDashboard = () => {
 <<<<<<< HEAD
 =======
               <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+<<<<<<< HEAD
               <p className="text-2xl font-bold text-gray-900">N/A</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
+=======
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.rating}</p>
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
               <p className="text-sm text-gray-600">Rating</p>
               <div className="flex justify-center items-center">
                 <p className="text-2xl font-bold text-yellow-600 mr-1">4.9</p>
@@ -198,7 +258,11 @@ const MechanicDashboard = () => {
               <p className="text-2xl font-bold text-orange-600">6.5h</p>
 =======
               <Clock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+<<<<<<< HEAD
               <p className="text-2xl font-bold text-gray-900">N/A</p>
+=======
+              <p className="text-2xl font-bold text-gray-900">{todayStats?.onlineHours}</p>
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
               <p className="text-sm text-gray-600">Jam Online</p>
 >>>>>>> origin/feat/project-revamp-10664209957500258455
             </CardContent>
@@ -377,11 +441,15 @@ const MechanicDashboard = () => {
           <CardHeader>
             <CardTitle className="flex items-center">
               <Clock className="h-5 w-5 mr-2 text-blue-600" />
-              Pesanan Masuk ({pendingOrders.length})
+              Pesanan Masuk ({pendingOrders?.length || 0})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+<<<<<<< HEAD
             {pendingOrders.length > 0 ? pendingOrders.map((order) => (
+=======
+            {pendingOrders && pendingOrders.map((order) => (
+>>>>>>> origin/feature/production-ready-refactor-15241725718241106546
               <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
