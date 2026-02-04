@@ -1,20 +1,55 @@
+<<<<<<< HEAD
 
 import React from 'react';
 import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle, LogOut } from 'lucide-react';
+=======
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { MapPin, Car, Clock, Star, MessageSquare, Phone, Plus, History, AlertTriangle } from 'lucide-react';
+>>>>>>> origin/feat/project-revamp-10664209957500258455
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+<<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
+=======
+import LoadingSpinner from '@/components/ui/components/LoadingSpinner';
+import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
+>>>>>>> origin/feat/project-revamp-10664209957500258455
 
+/**
+ * Fetches the customer dashboard data from the API.
+ * @returns {Promise<any>} A promise that resolves to the customer dashboard data.
+ */
+const fetchCustomerDashboard = async () => {
+  const response = await fetch('http://localhost:3001/customers/1'); // Assuming customer ID is 1
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const customer = await response.json();
+
+  const bookingsResponse = await fetch(`http://localhost:3001/bookings?customerId=${customer.id}`);
+  if (!bookingsResponse.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const bookings = await bookingsResponse.json();
+
+  return { ...customer, bookings };
+};
+
+/**
+ * Renders the customer dashboard, displaying the customer's active and past service requests.
+ */
 const CustomerDashboard = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+<<<<<<< HEAD
   const { user, logout } = useAuth();
 
   const { data: mechanics, isLoading: isLoadingMechanics } = useQuery({
@@ -34,7 +69,28 @@ const CustomerDashboard = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+=======
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['customerDashboard'],
+    queryFn: fetchCustomerDashboard,
+  });
+
+  const handleEmergencyCall = () => {
+    navigate('/customer/booking');
+>>>>>>> origin/feat/project-revamp-10664209957500258455
   };
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (error) {
+    return <ErrorDisplay message={error.message} />;
+  }
+
+  const { name, bookings } = data;
+  const activeService = bookings.find(b => b.status !== 'Completed');
+  const recentServices = bookings.filter(b => b.status === 'Completed');
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,7 +103,11 @@ const CustomerDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Pelanggan</h1>
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">Halo, {user?.name || 'Pelanggan'}</p>
+=======
+              <p className="text-sm text-gray-600">Selamat datang kembali, {name}!</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -100,9 +160,15 @@ const CustomerDashboard = () => {
             <CardContent>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
+<<<<<<< HEAD
                   <p className="font-semibold text-gray-900">Mekanik sedang dalam perjalanan ke lokasi Anda</p>
                   <p className="text-sm text-gray-600">Kendaraan: {activeBooking.vehicleDetails}</p>
                   <p className="text-sm text-gray-600">Lokasi: {activeBooking.location}</p>
+=======
+                  <p className="font-semibold">{activeService.mechanic} sedang menangani permintaan Anda</p>
+                  <p className="text-sm text-gray-600">Layanan: {activeService.service}</p>
+                  <p className="text-sm text-gray-600">Status: {activeService.status}</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button 
@@ -118,8 +184,13 @@ const CustomerDashboard = () => {
                     Telepon
                   </Button>
                   <Button 
+<<<<<<< HEAD
                     className="bg-orange-600 hover:bg-orange-700"
                     onClick={() => navigate('/customer/tracking')}
+=======
+                    size="sm"
+                    onClick={() => navigate(`/customer/tracking/${activeService.id}`)}
+>>>>>>> origin/feat/project-revamp-10664209957500258455
                   >
                     Lacak Lokasi
                   </Button>
@@ -129,14 +200,20 @@ const CustomerDashboard = () => {
           </Card>
         )}
 
+<<<<<<< HEAD
         {/* Nearby Mechanics */}
         <Card className="shadow-sm">
+=======
+        {/* Nearby Mechanics (Placeholder) */}
+        <Card>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
           <CardHeader>
             <CardTitle className="flex items-center text-lg">
               <MapPin className="h-5 w-5 mr-2 text-blue-600" />
               Mekanik Terdekat
             </CardTitle>
           </CardHeader>
+<<<<<<< HEAD
           <CardContent className="space-y-4">
             {isLoadingMechanics ? (
               [1, 2].map(i => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
@@ -174,6 +251,11 @@ const CustomerDashboard = () => {
                 </div>
               ))
             )}
+=======
+          <CardContent>
+            {/* This would be populated by a separate API call in a real app */}
+            <p className="text-gray-500">Fitur mekanik terdekat akan segera hadir.</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
           </CardContent>
         </Card>
 
@@ -191,6 +273,7 @@ const CustomerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+<<<<<<< HEAD
             {isLoadingBookings ? (
               <Skeleton className="h-20 w-full rounded-lg" />
             ) : recentBookings.length > 0 ? (
@@ -209,6 +292,17 @@ const CustomerDashboard = () => {
                       ))}
                     </div>
                   </div>
+=======
+            {recentServices.map((service) => (
+              <div key={service.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div>
+                  <h3 className="font-semibold">{service.service}</h3>
+                  <p className="text-sm text-gray-600">Mekanik: {service.mechanic}</p>
+                  <p className="text-xs text-gray-500">{service.date}</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold text-green-600">{service.cost || 'N/A'}</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
                 </div>
               ))
             ) : (

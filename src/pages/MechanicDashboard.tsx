@@ -1,6 +1,23 @@
 
+<<<<<<< HEAD
 import React from 'react';
 import { Wrench, MapPin, Clock, Star, MessageSquare, Phone, CheckCircle, XCircle, LogOut, Settings } from 'lucide-react';
+=======
+import React, { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { 
+  Wrench, 
+  Clock, 
+  Star, 
+  MapPin, 
+  Phone, 
+  MessageSquare, 
+  CheckCircle,
+  XCircle,
+  Camera,
+  DollarSign
+} from 'lucide-react';
+>>>>>>> origin/feat/project-revamp-10664209957500258455
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,14 +25,43 @@ import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
+<<<<<<< HEAD
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
+=======
+import LoadingSpinner from '@/components/ui/components/LoadingSpinner';
+import ErrorDisplay from '@/components/ui/components/ErrorDisplay';
+>>>>>>> origin/feat/project-revamp-10664209957500258455
 
+/**
+ * Fetches the mechanic dashboard data from the API.
+ * @returns {Promise<any>} A promise that resolves to the mechanic dashboard data.
+ */
+const fetchMechanicDashboard = async () => {
+  const response = await fetch('http://localhost:3001/mechanics/1'); // Assuming mechanic ID is 1
+  if (!response.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const mechanic = await response.json();
+
+  const jobsResponse = await fetch(`http://localhost:3001/bookings?mechanicId=${mechanic.id}`);
+  if (!jobsResponse.ok) {
+    throw new Error('Network response was not ok');
+  }
+  const jobs = await jobsResponse.json();
+
+  return { ...mechanic, jobs };
+};
+
+/**
+ * Renders the mechanic dashboard, displaying the mechanic's active and pending job requests.
+ */
 const MechanicDashboard = () => {
   const { t } = useLanguage();
+<<<<<<< HEAD
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const queryClient = useQueryClient();
@@ -42,6 +88,29 @@ const MechanicDashboard = () => {
     logout();
     navigate('/');
   };
+=======
+  const [isOnline, setIsOnline] = useState(true);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['mechanicDashboard'],
+    queryFn: fetchMechanicDashboard,
+  });
+
+  const getStatusBadge = (status: string) => {
+    const statusMap = {
+      'In Progress': { label: 'Sedang Dikerjakan', color: 'bg-orange-500' },
+      Completed: { label: 'Selesai', color: 'bg-green-500' }
+    };
+    return statusMap[status as keyof typeof statusMap] || { label: 'Unknown', color: 'bg-gray-500' };
+  };
+
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <ErrorDisplay message={error.message} />;
+
+  const { name, jobs } = data;
+  const currentJob = jobs.find(job => job.status === 'In Progress');
+  const pendingOrders = jobs.filter(job => job.status !== 'In Progress' && job.status !== 'Completed');
+  const completedJobsCount = jobs.filter(job => job.status === 'Completed').length;
+>>>>>>> origin/feat/project-revamp-10664209957500258455
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +123,11 @@ const MechanicDashboard = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Dashboard Mekanik</h1>
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">Selamat bekerja, {user?.name}</p>
+=======
+              <p className="text-sm text-gray-600">Selamat datang, {name}!</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -72,6 +145,7 @@ const MechanicDashboard = () => {
         </div>
       </header>
 
+<<<<<<< HEAD
       <main className="container mx-auto p-4 space-y-6">
         {/* Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -79,16 +153,37 @@ const MechanicDashboard = () => {
             <CardContent className="p-4 text-center">
               <p className="text-sm text-gray-600">Pekerjaan Hari Ini</p>
               <p className="text-2xl font-bold text-blue-600">5</p>
+=======
+      <div className="container mx-auto p-4 space-y-6">
+        {/* Today's Stats (partially placeholder) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4 text-center">
+              <CheckCircle className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">{completedJobsCount}</p>
+              <p className="text-sm text-gray-600">Pekerjaan Selesai</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">Total Pendapatan</p>
               <p className="text-2xl font-bold text-green-600">Rp 750rb</p>
+=======
+              <DollarSign className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">Rp 0</p>
+              <p className="text-sm text-gray-600">Pendapatan Hari Ini</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
+<<<<<<< HEAD
+=======
+              <Star className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">N/A</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
               <p className="text-sm text-gray-600">Rating</p>
               <div className="flex justify-center items-center">
                 <p className="text-2xl font-bold text-yellow-600 mr-1">4.9</p>
@@ -98,12 +193,19 @@ const MechanicDashboard = () => {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
+<<<<<<< HEAD
               <p className="text-sm text-gray-600">Jam Kerja</p>
               <p className="text-2xl font-bold text-orange-600">6.5h</p>
+=======
+              <Clock className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-gray-900">N/A</p>
+              <p className="text-sm text-gray-600">Jam Online</p>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
             </CardContent>
           </Card>
         </div>
 
+<<<<<<< HEAD
         {/* Active Jobs */}
         <section>
           <h2 className="text-lg font-bold mb-4 flex items-center">
@@ -222,6 +324,94 @@ const MechanicDashboard = () => {
           </div>
         </section>
       </main>
+=======
+        {/* Current Job */}
+        {currentJob && (
+          <Card className="border-orange-200 bg-orange-50">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center text-orange-800">
+                  <Wrench className="h-5 w-5 mr-2" />
+                  Pekerjaan Aktif
+                </div>
+                <Badge className={`${getStatusBadge(currentJob.status).color} text-white`}>
+                  {getStatusBadge(currentJob.status).label}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h3 className="font-semibold text-lg">{currentJob.customer}</h3>
+                  <p className="text-sm mt-2"><strong>Layanan:</strong> {currentJob.service}</p>
+                </div>
+                <div className="flex flex-col justify-between items-end">
+                  <div className="flex space-x-2 mt-4">
+                    <Button size="sm" variant="outline">
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                      Chat
+                    </Button>
+                    <Button size="sm" variant="outline">
+                      <Phone className="h-4 w-4 mr-1" />
+                      Telepon
+                    </Button>
+                    <Button size="sm">
+                      <Camera className="h-4 w-4 mr-1" />
+                      Foto
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center">
+                <Button size="lg" className="bg-green-600 hover:bg-green-700">
+                  <CheckCircle className="h-5 w-5 mr-2" />
+                  Selesai Pekerjaan
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pending Orders */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-blue-600" />
+              Pesanan Masuk ({pendingOrders.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {pendingOrders.length > 0 ? pendingOrders.map((order) => (
+              <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                <div className="flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">{order.customer}</h3>
+                    <p className="text-sm mt-2"><strong>Layanan:</strong> {order.service}</p>
+                  </div>
+                  <div className="flex space-x-2 ml-4">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <XCircle className="h-4 w-4 mr-1" />
+                      Tolak
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-1" />
+                      Terima
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )) : <p className="text-gray-500">Tidak ada pesanan masuk saat ini.</p>}
+          </CardContent>
+        </Card>
+      </div>
+>>>>>>> origin/feat/project-revamp-10664209957500258455
     </div>
   );
 };
