@@ -1,199 +1,116 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-import { createContext, useContext, useState } from 'react';
-
-interface User {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (user: User, token: string) => void;
-  logout: () => void;
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin/jules-9588893365322302084-daabd2d3
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole } from '@/types';
+import { authApi } from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
-<<<<<<< HEAD
-  role: UserRole | null;
-  login: (email: string, role: UserRole) => Promise<void>;
-  register: (name: string, email: string, role: UserRole) => Promise<void>;
-  logout: () => void;
-  isAuthenticated: boolean;
-  isLoading: boolean;
->>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-  login: (email: string, role: UserRole) => Promise<void>;
-  register: (userData: Omit<User, 'id' | 'createdAt'>) => Promise<void>;
+  token: string | null;
+  login: (email: string, password: string, role: UserRole) => Promise<void>;
+  register: (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+    phone?: string;
+  }) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+  error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  const login = (user: User, token: string) => {
-    setUser(user);
-    localStorage.setItem('token', token);
-<<<<<<< HEAD
-=======
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<UserRole | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Check for existing session on mount
   useEffect(() => {
-    // Check for saved session
-    const savedUser = localStorage.getItem('user');
-    const savedRole = localStorage.getItem('role');
-    if (savedUser && savedRole) {
-      setUser(JSON.parse(savedUser));
-      setRole(savedRole as UserRole);
-=======
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+    const storedToken = localStorage.getItem('auth_token');
+    const storedUser = localStorage.getItem('auth_user');
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem('ok_mekanik_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+    if (storedToken && storedUser) {
+      try {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      } catch (e) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+      }
     }
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, role: UserRole) => {
-<<<<<<< HEAD
+  const login = async (email: string, password: string, role: UserRole) => {
     setIsLoading(true);
-    // Mock login logic
-    setTimeout(() => {
-      const mockUser: User = {
-        id: role === 'customer' ? 'C1' : 'M1',
-        name: role === 'customer' ? 'Customer User' : 'Mechanic User',
-        email,
-        role,
-      };
-      setUser(mockUser);
-      setRole(role);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      localStorage.setItem('role', role);
-      setIsLoading(false);
-    }, 1000);
-  };
+    setError(null);
 
-  const register = async (name: string, email: string, role: UserRole) => {
-    setIsLoading(true);
-    // Mock register logic
-    setTimeout(() => {
-      const mockUser: User = {
-        id: Math.random().toString(36).substr(2, 9),
-        name,
-        email,
-        role,
-      };
-      setUser(mockUser);
-      setRole(role);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      localStorage.setItem('role', role);
-      setIsLoading(false);
-    }, 1000);
->>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-    // In a real app, this would be an API call
-    // For now, we simulate finding a user in localStorage
-    const users = JSON.parse(localStorage.getItem('ok_mekanik_all_users') || '[]');
-    const existingUser = users.find((u: User) => u.email === email && u.role === role);
+    try {
+      const response = await authApi.login(email, password, role);
+      const { user: userData, token: authToken } = response;
 
-    if (existingUser) {
-      setUser(existingUser);
-      localStorage.setItem('ok_mekanik_user', JSON.stringify(existingUser));
-    } else {
-      // For demo purposes, if not found, we create a dummy one or throw error
-      // Let's throw error to be "real"
-      throw new Error('User not found. Please register.');
+      setUser(userData);
+      setToken(authToken);
+      localStorage.setItem('auth_token', authToken);
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      setError(message);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const register = async (userData: Omit<User, 'id' | 'createdAt'>) => {
-    const newUser: User = {
-      ...userData,
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString(),
-    };
+  const register = async (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+    phone?: string;
+  }) => {
+    setIsLoading(true);
+    setError(null);
 
-    const users = JSON.parse(localStorage.getItem('ok_mekanik_all_users') || '[]');
-    users.push(newUser);
-    localStorage.setItem('ok_mekanik_all_users', JSON.stringify(users));
+    try {
+      const response = await authApi.register(userData);
+      const { user: newUser, token: authToken } = response;
 
-    setUser(newUser);
-    localStorage.setItem('ok_mekanik_user', JSON.stringify(newUser));
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+      setUser(newUser);
+      setToken(authToken);
+      localStorage.setItem('auth_token', authToken);
+      localStorage.setItem('auth_user', JSON.stringify(newUser));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Registration failed. Please try again.';
+      setError(message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {
     setUser(null);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-    localStorage.removeItem('token');
+    setToken(null);
+    setError(null);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
-<<<<<<< HEAD
-=======
-    setRole(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
-  };
-
-  return (
-    <AuthContext.Provider value={{
-      user,
-      role,
-      login,
-      register,
-      logout,
-      isAuthenticated: !!user,
-      isLoading
-    }}>
->>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-    localStorage.removeItem('ok_mekanik_user');
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        login,
+        register,
+        logout,
+        isLoading,
+        error,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

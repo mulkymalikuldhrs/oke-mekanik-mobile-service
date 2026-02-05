@@ -1,56 +1,15 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "oke-mekanik-mobile-service",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "dev": "npm-run-all --parallel dev:vite dev:server",
-    "dev:vite": "vite",
-    "dev:server": "json-server --watch db.json --port 3001",
-=======
-    "dev": "concurrently \"npm:dev:ui\" \"npm:dev:api\"",
-    "dev:ui": "vite",
-    "dev:api": "json-server --watch db.json --port 3001",
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
-    "test": "vitest",
-    "dev:api": "json-server --watch db.json --port 3001",
-    "dev:ui": "vite",
-    "dev": "concurrently \"npm run dev:ui\" \"npm run dev:api\"",
->>>>>>> origin/feature/production-ready-refactor-15241725718241106546
-=======
-    "dev": "concurrently \"npm:dev:ui\" \"npm:dev:api\"",
-    "dev:ui": "vite",
-    "dev:api": "json-server --watch db.json --port 3001",
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-    "build": "vite build",
-    "build:dev": "vite build --mode development",
+    "dev": "vite",
+    "build": "tsc && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    "server": "json-server --watch db.json --port 3001"
->>>>>>> origin/feat/project-revamp-10664209957500258455
-=======
-    "test": "vitest"
->>>>>>> origin/feat/setup-testing-environment-4015463618406263905
-=======
-    "test": "vitest"
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
-    "test": "vitest"
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
     "test": "vitest",
     "test:ui": "vitest --ui"
->>>>>>> origin/jules-9588893365322302084-daabd2d3
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -119,78 +78,13 @@
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/feat/setup-testing-environment-4015463618406263905
-    "jsdom": "^27.4.0",
-=======
-    "jsdom": "^27.4.0",
-    "json-server": "^1.0.0-beta.5",
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
-    "jsdom": "^27.4.0",
-    "json-server": "^1.0.0-beta.5",
->>>>>>> origin/feature/production-ready-refactor-15241725718241106546
-=======
     "jsdom": "^28.0.0",
->>>>>>> origin/jules-9588893365322302084-daabd2d3
-    "lovable-tagger": "^1.1.7",
-    "msw": "^2.12.7",
-=======
-    "json-server": "^1.0.0-beta.5",
-    "lovable-tagger": "^1.1.7",
-    "npm-run-all": "^4.1.5",
->>>>>>> origin/feat/project-revamp-10664209957500258455
-=======
-    "jsdom": "^27.4.0",
-    "json-server": "^1.0.0-beta.5",
-    "lovable-tagger": "^1.1.7",
-    "msw": "^2.12.7",
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
+    "lovable-tagger": "^1.1.13",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
     "vite": "^5.4.1",
     "vitest": "^4.0.18"
-=======
-    "vite": "^5.4.1"
-  },
-  "msw": {
-    "workerDirectory": [
-      "public"
-    ]
->>>>>>> origin/feat/project-revamp-10664209957500258455
-=======
-    "vite": "^5.4.1",
-    "vitest": "^4.0.18"
->>>>>>> origin/feat/setup-testing-environment-4015463618406263905
-=======
-    "vite": "^5.4.1",
-    "vitest": "^4.0.18"
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
-    "vite": "^5.4.1",
-    "vitest": "^4.0.18"
->>>>>>> origin/feature/production-ready-refactor-15241725718241106546
-=======
-    "vite": "^5.4.1",
-    "vitest": "^4.0.18"
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-    "vite": "^5.4.1",
-    "vitest": "^4.0.18"
->>>>>>> origin/jules-9588893365322302084-daabd2d3
   }
 }

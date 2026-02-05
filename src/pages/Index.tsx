@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Car, Wrench, MapPin, Star, Users, Clock, ArrowRight } from 'lucide-react';
@@ -11,22 +10,18 @@ import { useAuth } from '@/contexts/AuthContext';
 const Index = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-<<<<<<< HEAD
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
+  const [selectedRole, setSelectedRole] = useState<'customer' | 'mechanic' | null>(null);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      if (user?.role === 'customer') {
+    if (user) {
+      if (user.role === 'customer') {
         navigate('/customer/dashboard');
-      } else if (user?.role === 'mechanic') {
+      } else if (user.role === 'mechanic') {
         navigate('/mechanic/dashboard');
       }
     }
-  }, [isAuthenticated, user, navigate]);
-=======
-  const { user } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<'customer' | 'mechanic' | null>(null);
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+  }, [user, navigate]);
 
   const features = [
     {
@@ -52,9 +47,6 @@ const Index = () => {
   ];
 
   const handleRoleSelection = (role: 'customer' | 'mechanic') => {
-<<<<<<< HEAD
-    navigate(`/login?role=${role}`);
-=======
     if (user) {
       if (user.role === 'customer') {
         navigate('/customer/dashboard');
@@ -66,8 +58,14 @@ const Index = () => {
 
     setSelectedRole(role);
     navigate('/login');
->>>>>>> origin/jules-9588893365322302084-daabd2d3
   };
+
+  // Simple Badge component
+  const Badge = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}>
+      {children}
+    </span>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
@@ -264,12 +262,5 @@ const Index = () => {
     </div>
   );
 };
-
-// Simple Badge component since it might not be in the UI components
-const Badge = ({ children, className }: { children: React.ReactNode, className?: string }) => (
-  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${className}`}>
-    {children}
-  </span>
-);
 
 export default Index;

@@ -1,159 +1,41 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const { login } = useAuth();
-    const navigate = useNavigate();
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const response = await fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-
-        if (response.ok) {
-            const { user, token } = await response.json();
-            login(user, token);
-            navigate('/customer/dashboard');
-        } else {
-            // Handle login error
-            console.error('Login failed');
-        }
-    };
-
-    return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <Card className="w-full max-w-md">
-                <CardHeader>
-                    <CardTitle>Login</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit}>
-                        <div className="grid gap-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input
-                                    id="email"
-                                    type="email"
-                                    placeholder="m@example.com"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                />
-                            </div>
-                            <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-                            <Button type="submit" className="w-full">
-                                Login
-                            </Button>
-                        </div>
-                    </form>
-                </CardContent>
-            </Card>
-        </div>
-    );
-}
-<<<<<<< HEAD
-=======
-
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-=======
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
->>>>>>> origin/jules-9588893365322302084-daabd2d3
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-<<<<<<< HEAD
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { toast } from 'sonner';
-import { Car, Wrench } from 'lucide-react';
-
-const LoginPage = () => {
-  const [email, setEmail] = React.useState('');
-  const [role, setRole] = React.useState<'customer' | 'mechanic'>('customer');
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await login(email, role);
-      toast.success('Login berhasil!');
-      navigate(role === 'customer' ? '/customer/dashboard' : '/mechanic/dashboard');
-    } catch (error) {
-      toast.error('Login gagal. Silakan coba lagi.');
-=======
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Wrench } from 'lucide-react';
+import { toast } from 'sonner';
+import { UserRole } from '@/types';
 
 const LoginPage = () => {
   const { t } = useLanguage();
   const { login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState<'customer' | 'mechanic'>('customer');
-  const [error, setError] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<UserRole>('customer');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setIsLoading(true);
+
     try {
-      await login(email, role);
+      await login(email, password, role);
+      toast.success('Login berhasil!');
       navigate(role === 'customer' ? '/customer/dashboard' : '/mechanic/dashboard');
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+    } catch (error) {
+      toast.error('Login gagal. Silakan coba lagi.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-<<<<<<< HEAD
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-xl">
-              <Wrench className="h-8 w-8 text-white" />
-            </div>
-          </div>
-          <CardTitle className="text-2xl">Selamat Datang di Oke Mekanik</CardTitle>
-          <CardDescription>Masuk ke akun Anda untuk melanjutkan</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-=======
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
@@ -167,7 +49,6 @@ const LoginPage = () => {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
->>>>>>> origin/jules-9588893365322302084-daabd2d3
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -179,130 +60,20 @@ const LoginPage = () => {
                 required
               />
             </div>
-<<<<<<< HEAD
-
             <div className="space-y-2">
-              <Label>Masuk sebagai</Label>
-              <RadioGroup
-                value={role}
-                onValueChange={(v) => setRole(v as 'customer' | 'mechanic')}
-                className="grid grid-cols-2 gap-4"
-              >
-                <div>
-                  <RadioGroupItem value="customer" id="customer" className="peer sr-only" />
-                  <Label
-                    htmlFor="customer"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-blue-600 [&:has([data-state=checked])]:border-blue-600"
-                  >
-                    <Car className="mb-3 h-6 w-6" />
-                    Pelanggan
-                  </Label>
-                </div>
-                <div>
-                  <RadioGroupItem value="mechanic" id="mechanic" className="peer sr-only" />
-                  <Label
-                    htmlFor="mechanic"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-orange-600 [&:has([data-state=checked])]:border-orange-600"
-                  >
-                    <Wrench className="mb-3 h-6 w-6" />
-                    Mekanik
-                  </Label>
-                </div>
-              </RadioGroup>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="******"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
-
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Masuk
-            </Button>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-center">
-          <p className="text-sm text-gray-600">
-            Belum punya akun?{' '}
-            <Button variant="link" className="p-0 text-blue-600" onClick={() => navigate('/register')}>
-              Daftar Sekarang
-            </Button>
-          </p>
-        </CardFooter>
-=======
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Link } from 'react-router-dom';
-
-const loginSchema = z.object({
-  email: z.string().email('Email tidak valid'),
-  password: z.string().min(6, 'Password minimal 6 karakter'),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
-
-const LoginPage = () => {
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
-  });
-
-  const onSubmit = (data: LoginFormValues) => {
-    console.log('Login data:', data);
-    // Handle login logic here
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="email@contoh.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="******" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full">Login</Button>
-            </form>
-          </Form>
-          <div className="mt-4 text-center text-sm">
-            Belum punya akun? <Link to="/register" className="underline">Daftar di sini</Link>
-          </div>
-          <div className="mt-2 text-center text-sm">
-            <Link to="/forgot-password">Lupa password?</Link>
-          </div>
-        </CardContent>
->>>>>>> origin/feat/project-revamp-10664209957500258455
-=======
             <div className="space-y-2">
               <Label htmlFor="role">Masuk sebagai</Label>
-              <Select value={role} onValueChange={(val: any) => setRole(val)}>
+              <Select value={role} onValueChange={(val) => setRole(val as UserRole)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih peran" />
                 </SelectTrigger>
@@ -312,11 +83,10 @@ const LoginPage = () => {
                 </SelectContent>
               </Select>
             </div>
-            {error && <p className="text-sm text-red-600">{error}</p>}
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
-              Masuk
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+              {isLoading ? 'Memuat...' : 'Masuk'}
             </Button>
             <p className="text-sm text-gray-600">
               Belum punya akun?{' '}
@@ -326,19 +96,9 @@ const LoginPage = () => {
             </p>
           </CardFooter>
         </form>
->>>>>>> origin/jules-9588893365322302084-daabd2d3
       </Card>
     </div>
   );
 };
 
 export default LoginPage;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> origin/feat/production-ready-upgrade-13949670600845112772
-=======
->>>>>>> origin/feat/project-revamp-10664209957500258455
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
->>>>>>> origin/jules-9588893365322302084-daabd2d3

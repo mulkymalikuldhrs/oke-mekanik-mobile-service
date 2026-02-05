@@ -1,239 +1,199 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+import { Booking, Mechanic, Message, User, UserRole } from '@/types';
 
-import { User, Mechanic, Booking, Service, Message, Review } from '@/types';
+// Environment-based API configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
-// Simple mock API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Generic fetch wrapper with error handling
+async function fetchApi<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
+  
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
 
-=======
-
-import { Booking, Mechanic, Message, Review, User } from '@/types';
-
-// Helper to simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Local Storage Keys
-const KEYS = {
-  BOOKINGS: 'ok_mekanik_bookings',
-  MECHANICS: 'ok_mekanik_mechanics',
-  MESSAGES: 'ok_mekanik_messages',
-  REVIEWS: 'ok_mekanik_reviews',
-  USERS: 'ok_mekanik_all_users',
-};
-
-// Initial Data Seed
-const seedData = () => {
-  if (!localStorage.getItem(KEYS.MECHANICS)) {
-    const initialMechanics: Mechanic[] = [
-      {
-        id: 'mech_1',
-        name: 'Ahmad Rizki',
-        email: 'ahmad@example.com',
-        phone: '08123456789',
-        role: 'mechanic',
-        speciality: ['Mesin', 'Transmisi'],
-        rating: 4.9,
-        totalJobs: 245,
-        isOnline: true,
-        verified: true,
-        pricePerHour: 75000,
-        createdAt: new Date().toISOString(),
-        avatar: '👨‍🔧',
-      },
-      {
-        id: 'mech_2',
-        name: 'Budi Santoso',
-        email: 'budi@example.com',
-        phone: '08123456780',
-        role: 'mechanic',
-        speciality: ['Kelistrikan', 'AC'],
-        rating: 4.8,
-        totalJobs: 189,
-        isOnline: true,
-        verified: true,
-        pricePerHour: 80000,
-        createdAt: new Date().toISOString(),
-        avatar: '🔧',
-      },
-      {
-        id: 'mech_3',
-        name: 'Sari Mekanik',
-        email: 'sari@example.com',
-        phone: '08123456781',
-        role: 'mechanic',
-        speciality: ['Rem', 'Suspensi'],
-        rating: 4.9,
-        totalJobs: 167,
-        isOnline: false,
-        verified: true,
-        pricePerHour: 70000,
-        createdAt: new Date().toISOString(),
-        avatar: '👩‍🔧',
-      },
-    ];
-    localStorage.setItem(KEYS.MECHANICS, JSON.stringify(initialMechanics));
-  }
-};
-
-seedData();
-
->>>>>>> origin/jules-9588893365322302084-daabd2d3
-export const api = {
-  // Mechanics
-  getMechanics: async (): Promise<Mechanic[]> => {
-    await delay(500);
-<<<<<<< HEAD
-    const res = await fetch('/db.json');
-    const data = await res.json();
-    return data.mechanics;
-  },
-
-  // Bookings
-  createBooking: async (bookingData: Omit<Booking, 'id' | 'status' | 'createdAt'>): Promise<Booking> => {
-    await delay(800);
-    const newBooking: Booking = {
-      ...bookingData,
-      id: `BK-${Math.random().toString(36).substr(2, 9)}`,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-    };
-    // In a real app, we would POST to the server here
-    return newBooking;
-  },
-
-  getBookings: async (userId: string, role: 'customer' | 'mechanic'): Promise<Booking[]> => {
-    await delay(500);
-    const res = await fetch('/db.json');
-    const data = await res.json();
-    return data.bookings.filter((b: Booking) =>
-      role === 'customer' ? b.customerId === userId : b.mechanicId === userId
-    );
-  },
-
-  updateJobStatus: async (bookingId: string, status: Booking['status']): Promise<void> => {
-    await delay(500);
-    // Persist status update logic here
-  },
-
-  // Messages
-  getMessages: async (chatId: string): Promise<Message[]> => {
-    await delay(300);
-    const res = await fetch('/db.json');
-    const data = await res.json();
-    return data.messages || [];
-  },
-
-  sendMessage: async (message: Omit<Message, 'id' | 'timestamp'>): Promise<Message> => {
-    await delay(200);
-    const newMessage: Message = {
-      ...message,
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-    };
-    return newMessage;
-  }
-=======
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-const API_BASE_URL = "http://localhost:3001";
-
-export const fetchActiveService = async () => {
-  const response = await fetch(`${API_BASE_URL}/activeService`);
   if (!response.ok) {
-    throw new Error("Network response was not ok");
+    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
+    throw new Error(error.message || `HTTP error! status: ${response.status}`);
   }
+
   return response.json();
+}
+
+// Auth API
+export const authApi = {
+  login: async (email: string, password: string, role: UserRole): Promise<{ user: User; token: string }> => {
+    return fetchApi('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, role }),
+    });
+  },
+
+  register: async (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
+    phone?: string;
+  }): Promise<{ user: User; token: string }> => {
+    return fetchApi('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+  },
+
+  logout: async (): Promise<void> => {
+    return fetchApi('/auth/logout', { method: 'POST' });
+  },
+
+  refreshToken: async (): Promise<{ token: string }> => {
+    return fetchApi('/auth/refresh', { method: 'POST' });
+  },
 };
 
-export const fetchRecentServices = async () => {
-  const response = await fetch(`${API_BASE_URL}/recentServices`);
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
+// Mechanics API
+export const mechanicApi = {
+  getAll: async (): Promise<Mechanic[]> => {
+    return fetchApi('/mechanics');
+  },
+
+  getById: async (id: string): Promise<Mechanic> => {
+    return fetchApi(`/mechanics/${id}`);
+  },
+
+  getNearby: async (lat: number, lng: number, radiusKm: number = 10): Promise<Mechanic[]> => {
+    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`);
+  },
+
+  updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
+    return fetchApi(`/mechanics/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isOnline }),
+    });
+  },
 };
 
-export const fetchNearbyMechanics = async () => {
-  const response = await fetch(`${API_BASE_URL}/nearbyMechanics`);
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return response.json();
-<<<<<<< HEAD
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-    return JSON.parse(localStorage.getItem(KEYS.MECHANICS) || '[]');
+// Bookings API
+export const bookingApi = {
+  create: async (bookingData: {
+    mechanicId: string;
+    serviceId: string;
+    vehicle: { brand: string; model: string; year: string; licensePlate: string };
+    problem: string;
+    location: { lat: number; lng: number; address: string };
+    scheduledAt?: string;
+    isEmergency?: boolean;
+  }): Promise<Booking> => {
+    return fetchApi('/bookings', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    });
   },
 
-  getMechanicById: async (id: string): Promise<Mechanic | undefined> => {
-    const mechanics = await api.getMechanics();
-    return mechanics.find(m => m.id === id);
+  getById: async (id: string): Promise<Booking> => {
+    return fetchApi(`/bookings/${id}`);
   },
 
-  updateMechanicStatus: async (id: string, isOnline: boolean): Promise<void> => {
-    const mechanics = await api.getMechanics();
-    const index = mechanics.findIndex(m => m.id === id);
-    if (index !== -1) {
-      mechanics[index].isOnline = isOnline;
-      localStorage.setItem(KEYS.MECHANICS, JSON.stringify(mechanics));
-    }
+  getByUser: async (userId: string): Promise<Booking[]> => {
+    return fetchApi(`/bookings?userId=${userId}`);
   },
 
-  // Bookings
-  getBookings: async (): Promise<Booking[]> => {
-    await delay(500);
-    return JSON.parse(localStorage.getItem(KEYS.BOOKINGS) || '[]');
+  getByMechanic: async (mechanicId: string): Promise<Booking[]> => {
+    return fetchApi(`/bookings?mechanicId=${mechanicId}`);
   },
 
-  getBookingById: async (id: string): Promise<Booking | undefined> => {
-    const bookings = await api.getBookings();
-    return bookings.find(b => b.id === id);
+  updateStatus: async (id: string, status: Booking['status']): Promise<Booking> => {
+    return fetchApi(`/bookings/${id}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
   },
 
-  createBooking: async (bookingData: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>): Promise<Booking> => {
-    await delay(800);
-    const bookings = await api.getBookings();
-    const newBooking: Booking = {
-      ...bookingData,
-      id: `BK-${Math.random().toString(36).substr(2, 6).toUpperCase()}`,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    bookings.push(newBooking);
-    localStorage.setItem(KEYS.BOOKINGS, JSON.stringify(bookings));
-    return newBooking;
+  getActiveServices: async (): Promise<Booking[]> => {
+    return fetchApi('/bookings/active');
   },
-
-  updateBookingStatus: async (id: string, status: Booking['status']): Promise<void> => {
-    const bookings = await api.getBookings();
-    const index = bookings.findIndex(b => b.id === id);
-    if (index !== -1) {
-      bookings[index].status = status;
-      bookings[index].updatedAt = new Date().toISOString();
-      localStorage.setItem(KEYS.BOOKINGS, JSON.stringify(bookings));
-    }
-  },
-
-  // Messages
-  getMessagesByBookingId: async (bookingId: string): Promise<Message[]> => {
-    const allMessages: Message[] = JSON.parse(localStorage.getItem(KEYS.MESSAGES) || '[]');
-    return allMessages.filter(m => m.bookingId === bookingId);
-  },
-
-  sendMessage: async (messageData: Omit<Message, 'id' | 'timestamp'>): Promise<Message> => {
-    const allMessages: Message[] = JSON.parse(localStorage.getItem(KEYS.MESSAGES) || '[]');
-    const newMessage: Message = {
-      ...messageData,
-      id: Math.random().toString(36).substr(2, 9),
-      timestamp: new Date().toISOString(),
-    };
-    allMessages.push(newMessage);
-    localStorage.setItem(KEYS.MESSAGES, JSON.stringify(allMessages));
-    return newMessage;
-  },
->>>>>>> origin/jules-9588893365322302084-daabd2d3
 };
+
+// Messages API
+export const messageApi = {
+  getByBookingId: async (bookingId: string): Promise<Message[]> => {
+    return fetchApi(`/messages?bookingId=${bookingId}`);
+  },
+
+  send: async (messageData: {
+    bookingId: string;
+    text: string;
+    senderId: string;
+  }): Promise<Message> => {
+    return fetchApi('/messages', {
+      method: 'POST',
+      body: JSON.stringify(messageData),
+    });
+  },
+};
+
+// User API
+export const userApi = {
+  getProfile: async (userId: string): Promise<User> => {
+    return fetchApi(`/users/${userId}`);
+  },
+
+  updateProfile: async (userId: string, data: Partial<User>): Promise<User> => {
+    return fetchApi(`/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+// Service Types API
+export const serviceApi = {
+  getAll: async (): Promise<{ id: string; name: string; description: string; basePrice: number }[]> => {
+    return fetchApi('/services');
+  },
+
+  getById: async (id: string): Promise<{ id: string; name: string; description: string; basePrice: number }> => {
+    return fetchApi(`/services/${id}`);
+  },
+};
+
+// Payments API
+export const paymentApi = {
+  create: async (paymentData: {
+    bookingId: number;
+    amount: number;
+    paymentMethod: string;
+    status: string;
+  }): Promise<{ id: number; status: string }> => {
+    return fetchApi('/payments', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  },
+
+  getByBookingId: async (bookingId: string): Promise<{ id: number; amount: number; status: string; paymentMethod: string }> => {
+    return fetchApi(`/payments?bookingId=${bookingId}`);
+  },
+};
+
+// Helper function for authenticated requests
+export async function fetchWithAuth<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = localStorage.getItem('auth_token');
+  
+  return fetchApi<T>(endpoint, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+}

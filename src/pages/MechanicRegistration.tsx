@@ -1,97 +1,41 @@
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wrench, Shield, Check, ChevronRight, ChevronLeft, Upload, Loader2, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-<<<<<<< HEAD
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Progress } from '@/components/ui/progress';
 
 const MechanicRegistration = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-=======
-import { useLanguage } from '@/hooks/useLanguage';
-import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-
-const MechanicRegistration = () => {
-  const { t } = useLanguage();
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Personal Info
-    fullName: user?.name || '',
-    email: '',
-    phone: '',
-    address: '',
-    city: '',
-    
-    // Documents
-    ktpNumber: '',
-    simNumber: '',
-    ktpPhoto: null,
-    simPhoto: null,
-    selfiePhoto: null,
-    
-    // Experience
+    speciality: '',
     experience: '',
-    specialization: [],
-    tools: '',
-    
-    // Payment
-    bankName: '',
-    accountNumber: '',
-    accountName: '',
-    
-    // Verification
-    verificationStatus: 'pending'
+    ktpFile: null,
+    certificateFile: null,
+    termsAccepted: false,
   });
->>>>>>> origin/jules-9588893365322302084-daabd2d3
 
-  const nextStep = () => setStep(s => s + 1);
-  const prevStep = () => setStep(s => s - 1);
+  const nextStep = () => setStep(s => Math.min(s + 1, 3));
+  const prevStep = () => setStep(s => Math.max(s - 1, 1));
 
-<<<<<<< HEAD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.termsAccepted) {
+      toast.error('Anda harus menyetujui syarat dan ketentuan');
+      return;
+    }
+
     setIsSubmitting(true);
     // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success('Pendaftaran Berhasil! Akun Anda sedang diverifikasi.');
-      navigate('/mechanic/dashboard');
-    }, 2000);
-=======
-  const handleFileUpload = (field: string, file: File | null) => {
-    setFormData(prev => ({ ...prev, [field]: file }));
-  };
-
-  const handleSpecializationToggle = (spec: string) => {
-    setFormData(prev => ({
-      ...prev,
-      specialization: prev.specialization.includes(spec)
-        ? prev.specialization.filter(s => s !== spec)
-        : [...prev.specialization, spec]
-    }));
-  };
-
-  const handleSubmit = async () => {
-    // Simulate registration logic
-    toast({
-      title: "Pendaftaran Berhasil!",
-      description: "Dokumen Anda sedang diverifikasi. Kami akan mengirim notifikasi dalam 1-2 hari kerja.",
-    });
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    toast.success('Pendaftaran berhasil! Menunggu verifikasi.');
     navigate('/mechanic/dashboard');
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+    setIsSubmitting(false);
   };
 
   const renderStep = () => {
@@ -102,7 +46,7 @@ const MechanicRegistration = () => {
             <h3 className="text-lg font-semibold">Informasi Keahlian</h3>
             <div className="space-y-2">
               <Label htmlFor="speciality">Spesialisasi Utama</Label>
-              <Select>
+              <Select value={formData.speciality} onValueChange={(val) => setFormData({ ...formData, speciality: val })}>
                 <SelectTrigger>
                   <SelectValue placeholder="Pilih Spesialisasi" />
                 </SelectTrigger>
@@ -116,7 +60,13 @@ const MechanicRegistration = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="experience">Pengalaman Kerja (Tahun)</Label>
-              <Input id="experience" type="number" placeholder="Contoh: 5" />
+              <Input 
+                id="experience" 
+                type="number" 
+                placeholder="Contoh: 5" 
+                value={formData.experience}
+                onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+              />
             </div>
           </div>
         );
@@ -149,7 +99,13 @@ const MechanicRegistration = () => {
             </div>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <input type="checkbox" id="terms" className="rounded border-gray-300 text-orange-600 focus:ring-orange-600" />
+                <input 
+                  type="checkbox" 
+                  id="terms" 
+                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+                  checked={formData.termsAccepted}
+                  onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
+                />
                 <Label htmlFor="terms" className="text-sm">Saya menyetujui syarat dan ketentuan</Label>
               </div>
             </div>
@@ -218,7 +174,7 @@ const MechanicRegistration = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Mendaftar...
+                      Mendaftarkan...
                     </>
                   ) : (
                     <>

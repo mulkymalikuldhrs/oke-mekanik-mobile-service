@@ -1,44 +1,76 @@
-
-import React from 'react';
-<<<<<<< HEAD
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Car, MapPin, Calendar, Wrench, ChevronLeft, Loader2 } from 'lucide-react';
-=======
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useMutation } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { MapPin, Car, AlertTriangle } from 'lucide-react';
->>>>>>> origin/feat/project-revamp-10664209957500258455
+import { z } from 'zod';
+import { 
+  Car, MapPin, Navigation, Wrench, ChevronLeft, 
+  Star, Phone, MessageSquare, Clock, Badge
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-<<<<<<< HEAD
-import { Label } from '@/components/ui/label';
-<<<<<<< HEAD
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { toast } from 'sonner';
-import { api } from '@/lib/api';
-import { useAuth } from '@/contexts/AuthContext';
+import { Label } from '@/components/ui/label';
+import { Badge as UIBadge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { bookingApi } from '@/lib/api';
+
+interface Mechanic {
+  id: string;
+  name: string;
+  photo: string;
+  speciality: string;
+  rating: number;
+  distance: string;
+  price: string;
+  eta: string;
+  completedJobs: number;
+  isOnline: boolean;
+  verified: boolean;
+  pricePerHour: number;
+}
+
+interface VehicleData {
+  brand: string;
+  model: string;
+  year: string;
+  licensePlate: string;
+  problem: string;
+}
+
+interface LocationData {
+  address: string;
+}
+
+const vehicleBrands = ['Toyota', 'Honda', 'Suzuki', 'Mitsubishi', 'Nissan', 'Daihatsu', 'Hyundai', 'Kia'];
+const problemTypes = ['Ganti Oli', 'Servis Rutin', 'Masalah Mesin', 'Masalah Ban', 'Masalah Rem', 'Masalah AC', 'Mogok', 'Lainnya'];
 
 const bookingSchema = z.object({
-  serviceType: z.string().min(1, 'Pilih jenis layanan'),
-  vehicleDetails: z.string().min(3, 'Detail kendaraan minimal 3 karakter'),
-  location: z.string().min(5, 'Alamat lengkap diperlukan'),
+  serviceType: z.string().min(1, 'Jenis layanan diperlukan'),
+  vehicleDetails: z.string().min(5, 'Detail kendaraan diperlukan'),
+  location: z.string().min(10, 'Alamat lengkap diperlukan'),
   description: z.string().optional(),
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
 const BookingPage = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const { toast } = useToast();
+  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
+  const [step, setStep] = useState(1);
+  const [isEmergency, setIsEmergency] = useState(false);
+  const [vehicleData, setVehicleData] = useState<VehicleData>({
+    brand: '',
+    model: '',
+    year: '',
+    licensePlate: '',
+    problem: '',
+  });
+  const [location, setLocation] = useState<LocationData>({ address: '' });
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -50,122 +82,30 @@ const BookingPage = () => {
     },
   });
 
-  const onSubmit = async (values: BookingFormValues) => {
-    if (!user) {
-      toast.error('Anda harus masuk terlebih dahulu');
-      navigate('/login');
-      return;
-    }
-=======
-import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/hooks/useLanguage';
-import { useToast } from '@/hooks/use-toast';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { api } from '@/lib/api';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Mechanic } from '@/types';
+  const availableMechanics: Mechanic[] = [
+    { id: 'M001', name: 'Budi Santoso', photo: '👨‍🔧', speciality: 'Ahli Mesin', rating: 4.8, distance: '2.5 km', price: 'Rp 75.000/jam', eta: '15 menit', completedJobs: 156, isOnline: true, verified: true, pricePerHour: 75000 },
+    { id: 'M002', name: 'Sukma Dewi', photo: '👩‍🔧', speciality: 'Ahli Kelistrikan', rating: 4.9, distance: '3.1 km', price: 'Rp 80.000/jam', eta: '20 menit', completedJobs: 89, isOnline: true, verified: true, pricePerHour: 80000 },
+    { id: 'M003', name: 'Joko Prasetyo', photo: '👨‍🔧', speciality: 'Servis Umum', rating: 4.7, distance: '4.0 km', price: 'Rp 70.000/jam', eta: '25 menit', completedJobs: 203, isOnline: false, verified: true, pricePerHour: 70000 },
+  ];
 
-const BookingPage = () => {
-  const { t } = useLanguage();
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { user } = useAuth();
-  const [step, setStep] = useState(1);
-  const [location, setLocation] = useState({ lat: -6.2, lng: 106.8, address: '' });
-  const [vehicleData, setVehicleData] = useState({
-    brand: '',
-    model: '',
-    year: '',
-    licensePlate: '',
-    problem: ''
-  });
-  const [selectedMechanic, setSelectedMechanic] = useState<Mechanic | null>(null);
-  const [isEmergency, setIsEmergency] = useState(false);
-
-  const { data: availableMechanics = [] } = useQuery({
-    queryKey: ['mechanics'],
-    queryFn: () => api.getMechanics(),
-  });
->>>>>>> origin/jules-9588893365322302084-daabd2d3
-
-    setIsSubmitting(true);
-    try {
-      await api.createBooking({
-        customerId: user.id,
-        serviceId: values.serviceType,
-        vehicleDetails: values.vehicleDetails,
-        location: values.location,
+  const bookingMutation = useMutation({
+    mutationFn: async (data: { customerId: number; mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; estimatedCost: number; isEmergency: boolean }) => {
+      return bookingApi.create({
+        mechanicId: data.mechanicId,
+        serviceId: 'S1',
+        vehicle: data.vehicle,
+        problem: data.problem,
+        location: { lat: 0, lng: 0, address: data.location.address },
         scheduledAt: new Date().toISOString(),
+        isEmergency: data.isEmergency,
       });
-      toast.success('Pemesanan berhasil dikirim!');
-      navigate('/customer/dashboard');
-    } catch (error) {
-      toast.error('Gagal mengirim pemesanan. Coba lagi.');
-    } finally {
-      setIsSubmitting(false);
-    }
-=======
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/components/ui/use-toast';
-
-/**
- * Zod schema for the booking form.
- */
-const bookingSchema = z.object({
-  address: z.string().min(10, 'Alamat lengkap diperlukan'),
-  vehicle: z.string().min(2, 'Model kendaraan diperlukan'),
-  licensePlate: z.string().min(3, 'Plat nomor diperlukan'),
-  problem: z.string().min(10, 'Deskripsi masalah diperlukan'),
-  isEmergency: z.boolean().default(false),
-});
-
-type BookingFormValues = z.infer<typeof bookingSchema>;
-
-/**
- * Posts the booking data to the API.
- * @param {BookingFormValues} data The booking form data.
- * @returns {Promise<any>} A promise that resolves to the response from the API.
- */
-const postBooking = async (data: BookingFormValues) => {
-  const response = await fetch('http://localhost:3001/bookings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...data, customerId: 1, mechanicId: 1, date: new Date().toISOString(), status: 'Scheduled' }),
-  });
-  if (!response.ok) {
-    throw new Error('Gagal membuat booking');
-  }
-  return response.json();
-};
-
-/**
- * Renders the booking page, allowing customers to create a new service request.
- */
-const BookingPage = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const form = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingSchema),
-    defaultValues: {
-      address: '',
-      vehicle: '',
-      licensePlate: '',
-      problem: '',
-      isEmergency: false,
     },
-  });
-
-  const mutation = useMutation({
-    mutationFn: postBooking,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Booking Berhasil!',
-        description: 'Mekanik akan segera dihubungi. Anda akan dialihkan ke dashboard.',
+        description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
       });
-      setTimeout(() => navigate('/customer/dashboard'), 2000);
+      navigate(`/customer/tracking?bookingId=${data.id || 1}`);
     },
     onError: () => {
       toast({
@@ -176,70 +116,57 @@ const BookingPage = () => {
     },
   });
 
-  const onSubmit = (data: BookingFormValues) => {
-    mutation.mutate(data);
-  };
-
   useEffect(() => {
     const mechId = searchParams.get('mechanicId');
     if (mechId && availableMechanics.length > 0) {
       const mech = availableMechanics.find(m => m.id === mechId);
       if (mech) {
         setSelectedMechanic(mech);
-        setStep(1);
+        setStep(2);
       }
     }
-  }, [searchParams, availableMechanics]);
-
-  const bookingMutation = useMutation({
-    mutationFn: api.createBooking,
-    onSuccess: (data) => {
-      toast({
-        title: "Booking Berhasil!",
-        description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
-      });
-      navigate(`/customer/tracking?bookingId=${data.id}`);
-    },
-  });
+  }, [searchParams]);
 
   const handleEmergencyBooking = () => {
-<<<<<<< HEAD
-    form.setValue('isEmergency', true);
-    // You might want to pre-fill some fields or show a confirmation
-=======
-    if (!user) { navigate('/login'); return; }
     setIsEmergency(true);
->>>>>>> origin/jules-9588893365322302084-daabd2d3
     toast({
-      title: "🚨 Mode Darurat Aktif",
-      description: "Lengkapi detail di bawah dan panggil sekarang.",
+      title: 'Mode Darurat Aktif',
+      description: 'Lengkapi detail di bawah dan panggil sekarang.',
     });
-<<<<<<< HEAD
->>>>>>> origin/feat/project-revamp-10664209957500258455
-  };
-
-=======
-    
-    // Auto-select first available mechanic
-    const mech = availableMechanics.find(m => m.isOnline);
-    if (mech) {
-      setSelectedMechanic(mech);
-      setStep(3);
-    }
   };
 
   const handleBooking = () => {
-    if (!user || !selectedMechanic) return;
+    if (!selectedMechanic) {
+      toast({
+        title: 'Pilih Mekanik',
+        description: 'Silakan pilih mekanik terlebih dahulu',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     bookingMutation.mutate({
-      customerId: user.id,
+      customerId: 1,
       mechanicId: selectedMechanic.id,
       status: 'pending',
       vehicle: vehicleData,
       problem: vehicleData.problem,
       location,
-      estimatedCost: selectedMechanic.pricePerHour, // Simplified
+      estimatedCost: selectedMechanic.pricePerHour,
       isEmergency,
+    });
+  };
+
+  const onSubmit = (data: BookingFormValues) => {
+    const details = `${vehicleData.brand} ${vehicleData.model} ${vehicleData.year}, ${vehicleData.licensePlate}`;
+    const fullData = {
+      ...data,
+      vehicleDetails: details,
+    };
+    console.log('Booking submitted:', fullData);
+    toast({
+      title: 'Booking Dikirim',
+      description: 'Menunggu konfirmasi dari sistem.',
     });
   };
 
@@ -325,9 +252,11 @@ const BookingPage = () => {
               <option key={problem} value={problem}>{problem}</option>
             ))}
           </select>
-          <Input
+          <Textarea
             placeholder="Deskripsi detail masalah (opsional)"
             className="mt-2"
+            value={vehicleData.problem}
+            onChange={(e) => setVehicleData(prev => ({ ...prev, problem: e.target.value }))}
           />
         </div>
 
@@ -336,7 +265,7 @@ const BookingPage = () => {
             onClick={handleEmergencyBooking}
             className="w-full bg-red-600 hover:bg-red-700 text-white"
           >
-            🚨 DARURAT - Panggil Sekarang
+            DARURAT - Panggil Sekarang
           </Button>
           <p className="text-xs text-red-600 mt-2 text-center">
             Untuk situasi darurat yang membutuhkan bantuan segera
@@ -351,7 +280,7 @@ const BookingPage = () => {
       <CardHeader>
         <CardTitle className="flex items-center">
           <Car className="h-5 w-5 mr-2" />
-          Pilih Mekanik {isEmergency && <Badge className="ml-2 bg-red-600">DARURAT</Badge>}
+          Pilih Mekanik {isEmergency && <UIBadge className="ml-2 bg-red-600">DARURAT</UIBadge>}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -371,7 +300,7 @@ const BookingPage = () => {
                 <div>
                   <h3 className="font-semibold flex items-center">
                     {mechanic.name}
-                    {mechanic.verified && <Badge className="ml-2 bg-green-600">Verified</Badge>}
+                    {mechanic.verified && <UIBadge className="ml-2 bg-green-600 text-xs">Verified</UIBadge>}
                   </h3>
                   <p className="text-sm text-gray-600">{mechanic.speciality}</p>
                   <div className="flex items-center space-x-2 mt-1">
@@ -379,12 +308,12 @@ const BookingPage = () => {
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       <span className="text-sm ml-1">{mechanic.rating}</span>
                     </div>
-                    <Badge variant="outline" className="text-xs">
+                    <UIBadge variant="outline" className="text-xs">
                       {mechanic.distance}
-                    </Badge>
-                    <Badge variant="outline" className="text-xs">
+                    </UIBadge>
+                    <UIBadge variant="outline" className="text-xs">
                       {mechanic.completedJobs} jobs
-                    </Badge>
+                    </UIBadge>
                   </div>
                 </div>
               </div>
@@ -431,14 +360,13 @@ const BookingPage = () => {
           </Button>
         </div>
 
-        <Button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-700">
-          Konfirmasi Booking
+        <Button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-700" disabled={bookingMutation.isPending}>
+          {bookingMutation.isPending ? 'Memproses...' : 'Konfirmasi Booking'}
         </Button>
       </CardContent>
     </Card>
   );
 
->>>>>>> origin/jules-9588893365322302084-daabd2d3
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-2xl mx-auto">
@@ -462,180 +390,64 @@ const BookingPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="serviceType">Jenis Layanan</Label>
-                <Select onValueChange={(v) => form.setValue('serviceType', v)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih Layanan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="S1">Ganti Oli</SelectItem>
-                    <SelectItem value="S2">Servis Rutin</SelectItem>
-                    <SelectItem value="S3">Darurat (Mogok)</SelectItem>
-                    <SelectItem value="S4">Lainnya</SelectItem>
-                  </SelectContent>
-                </Select>
-                {form.formState.errors.serviceType && (
-                  <p className="text-sm text-red-500">{form.formState.errors.serviceType.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="vehicleDetails">Detail Kendaraan</Label>
-                <div className="relative">
-                  <Car className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="vehicleDetails"
-                    placeholder="Contoh: Toyota Avanza 2019, Putih (B 1234 ABC)"
-                    className="pl-10"
-                    {...form.register('vehicleDetails')}
-                  />
-                </div>
-                {form.formState.errors.vehicleDetails && (
-                  <p className="text-sm text-red-500">{form.formState.errors.vehicleDetails.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="location">Lokasi Penjemputan / Servis</Label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                  <Input
-                    id="location"
-                    placeholder="Alamat lengkap atau titik patokan"
-                    className="pl-10"
-                    {...form.register('location')}
-                  />
-                </div>
-                {form.formState.errors.location && (
-                  <p className="text-sm text-red-500">{form.formState.errors.location.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="description">Deskripsi Masalah (Opsional)</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Ceritakan kendala pada kendaraan Anda..."
-                  className="min-h-[100px]"
-                  {...form.register('description')}
-                />
-              </div>
-
-<<<<<<< HEAD
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-bold"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Memproses...
-                  </>
-                ) : (
-                  'Konfirmasi Pemesanan'
-                )}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter className="bg-gray-50 text-center py-4 rounded-b-xl border-t">
-            <p className="text-sm text-gray-500 w-full">
-              Estimasi mekanik tiba dalam 15-30 menit setelah dikonfirmasi.
-            </p>
-          </CardFooter>
-=======
-      <div className="container mx-auto px-4 py-8">
-        <Card className="max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Car className="h-5 w-5 mr-2" />
-              Detail Permintaan Bantuan
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Alamat Lengkap</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Contoh: Jl. Sudirman No. 123, Jakarta" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="vehicle"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Model Kendaraan</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Contoh: Toyota Avanza 2019" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="licensePlate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Plat Nomor</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Contoh: B 1234 XYZ" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="problem"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deskripsi Masalah</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Jelaskan masalah yang Anda alami secara detail."
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="bg-red-50 p-4 rounded-lg border border-red-200">
-                  <Button
-                    type="button"
-                    onClick={handleEmergencyBooking}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    <AlertTriangle className="h-5 w-5 mr-2" />
-                    Klik Jika Darurat
-                  </Button>
-                  <p className="text-xs text-red-700 mt-2 text-center">
-                    Gunakan tombol ini untuk situasi darurat yang butuh penanganan super cepat.
-                  </p>
-                </div>
-
-                <Button type="submit" className="w-full" disabled={mutation.isPending}>
-                  {mutation.isPending ? 'Mengirim...' : 'Panggil Mekanik Sekarang'}
+            {step === 1 && (
+              <div className="space-y-6">
+                {renderLocationStep()}
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    if (location.address && vehicleData.brand && vehicleData.model) {
+                      setStep(2);
+                    } else {
+                      toast({
+                        title: 'Lengkapi Data',
+                        description: 'Silakan isi semua data yang diperlukan',
+                        variant: 'destructive',
+                      });
+                    }
+                  }}
+                >
+                  Lanjutkan ke Pemilihan Mekanik
                 </Button>
-              </form>
-            </Form>
+              </div>
+            )}
+            
+            {step === 2 && (
+              <div className="space-y-6">
+                <Button variant="outline" className="mb-4" onClick={() => setStep(1)}>
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Kembali
+                </Button>
+                {renderMechanicSelection()}
+                <Button 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    if (selectedMechanic) {
+                      setStep(3);
+                    } else {
+                      toast({
+                        title: 'Pilih Mekanik',
+                        description: 'Silakan pilih mekanik terlebih dahulu',
+                        variant: 'destructive',
+                      });
+                    }
+                  }}
+                >
+                  Lanjutkan ke Konfirmasi
+                </Button>
+              </div>
+            )}
+            
+            {step === 3 && (
+              <div className="space-y-6">
+                <Button variant="outline" className="mb-4" onClick={() => setStep(2)}>
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  Kembali
+                </Button>
+                {renderBookingConfirmation()}
+              </div>
+            )}
           </CardContent>
->>>>>>> origin/feat/project-revamp-10664209957500258455
         </Card>
       </div>
     </div>
