@@ -28,6 +28,7 @@ const ChatPage = () => {
     queryKey: ['messages', bookingId],
     queryFn: () => messageApi.getByBookingId(bookingId || ''),
     enabled: !!bookingId,
+    refetchInterval: 3000,
   });
 
   const sendMessageMutation = useMutation({

@@ -40,17 +40,23 @@ const CustomerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-blue-500">
+      {/* Background Glow */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full" />
+        <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] bg-blue-600/10 blur-[100px] rounded-full" />
+      </div>
+
       {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
+      <header className="bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-tr from-blue-600 to-blue-400 p-2 rounded-xl shadow-lg shadow-blue-500/20">
               <Car className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Dashboard Pelanggan</h1>
-              <p className="text-sm text-gray-600">Selamat datang kembali, {user?.name}!</p>
+              <h1 className="text-xl font-bold text-white italic">Dashboard Pelanggan</h1>
+              <p className="text-sm text-gray-400">Selamat datang kembali, {user?.name}!</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -62,27 +68,28 @@ const CustomerDashboard = () => {
         </div>
       </header>
 
-      <div className="container mx-auto p-4 space-y-6">
+      <div className="container mx-auto p-4 space-y-6 relative z-10">
         {/* Quick Actions */}
-        <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white border-none shadow-lg">
-          <CardContent className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Butuh Bantuan Mekanik?</h2>
-            <p className="mb-6 opacity-90">Panggil mekanik terdekat dalam hitungan detik untuk perbaikan kendaraan Anda.</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/40 border border-blue-500/30 backdrop-blur-xl shadow-2xl overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 blur-3xl -mr-16 -mt-16 group-hover:bg-blue-500/40 transition-all duration-700" />
+          <CardContent className="p-8">
+            <h2 className="text-3xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">Butuh Bantuan Mekanik?</h2>
+            <p className="mb-8 text-gray-300 text-lg">Panggil mekanik terdekat dalam hitungan detik untuk perbaikan kendaraan Anda.</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Button 
                 size="lg" 
-                className="bg-white text-blue-600 hover:bg-gray-100 font-bold"
+                className="bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl h-14 text-lg shadow-lg shadow-blue-500/20"
                 onClick={() => navigate('/customer/booking')}
               >
-                <Plus className="h-5 w-5 mr-2" />
+                <Plus className="h-6 w-6 mr-2" />
                 Panggil Mekanik
               </Button>
               <Button 
                 size="lg" 
-                className="bg-red-500 hover:bg-red-600 text-white font-bold border-none"
+                className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-black rounded-2xl h-14 text-lg backdrop-blur-sm"
                 onClick={() => navigate('/customer/booking')}
               >
-                <AlertTriangle className="h-5 w-5 mr-2" />
+                <AlertTriangle className="h-6 w-6 mr-2" />
                 DARURAT
               </Button>
             </div>
