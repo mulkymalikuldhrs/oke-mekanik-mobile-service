@@ -68,14 +68,20 @@ const Index = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-blue-500 selection:text-white overflow-x-hidden">
+      {/* Background Glow */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[120px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-600/20 blur-[120px] rounded-full animate-pulse" />
+      </div>
+
       {/* Header */}
-      <header className="flex justify-between items-center p-4 md:p-6 sticky top-0 bg-white/80 backdrop-blur-md z-50">
+      <header className="flex justify-between items-center p-4 md:p-6 sticky top-0 bg-black/40 backdrop-blur-xl z-50 border-b border-white/10">
         <div className="flex items-center space-x-2">
-          <div className="bg-blue-600 p-2 rounded-lg shadow-lg">
+          <div className="bg-gradient-to-tr from-blue-600 to-blue-400 p-2 rounded-xl shadow-lg shadow-blue-500/20">
             <Wrench className="h-6 w-6 text-white" />
           </div>
-          <h1 className="text-2xl font-black text-gray-900 tracking-tight">OKE MEKANIK</h1>
+          <h1 className="text-2xl font-black text-white tracking-tighter italic">OKE MEKANIK</h1>
         </div>
         <div className="flex items-center space-x-4">
           <LanguageToggle />
@@ -86,15 +92,15 @@ const Index = () => {
       </header>
 
       {/* Hero Section */}
-      <main className="container mx-auto px-4 py-12 md:py-24">
+      <main className="container mx-auto px-4 py-12 md:py-24 relative z-10">
         <div className="text-center mb-16 space-y-6">
-          <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none px-4 py-1 mb-4">
+          <Badge className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-4 py-1 mb-4 backdrop-blur-sm">
             #1 Bengkel Panggilan Indonesia
           </Badge>
-          <h2 className="text-5xl md:text-7xl font-black text-gray-900 leading-tight">
+          <h2 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 leading-tight tracking-tighter">
             {t('hero.title')}
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto font-medium">
             {t('hero.subtitle')}
           </p>
           <div className="flex justify-center pt-4">
@@ -107,42 +113,42 @@ const Index = () => {
         {/* Role Selection Cards */}
         <div className="grid md:grid-cols-2 gap-8 mb-24 max-w-5xl mx-auto">
           <Card 
-            className="group cursor-pointer overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500"
+            className="group cursor-pointer overflow-hidden border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl hover:bg-white/10 hover:border-blue-500/50 transition-all duration-500"
             onClick={() => handleRoleSelection('customer')}
           >
-            <div className="h-2 bg-blue-600" />
+            <div className="h-1 bg-gradient-to-r from-blue-600 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardContent className="p-10 text-center relative">
-              <div className="bg-blue-50 p-6 rounded-2xl w-24 h-24 mx-auto mb-8 flex items-center justify-center group-hover:bg-blue-600 transition-colors duration-500">
-                <Car className="h-12 w-12 text-blue-600 group-hover:text-white transition-colors duration-500" />
+              <div className="bg-blue-500/10 p-6 rounded-3xl w-24 h-24 mx-auto mb-8 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                <Car className="h-12 w-12 text-blue-400" />
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              <h3 className="text-3xl font-bold text-white mb-4">
                 {t('role.customer.title')}
               </h3>
-              <p className="text-gray-600 mb-8 text-lg">
+              <p className="text-gray-400 mb-8 text-lg">
                 {t('role.customer.desc')}
               </p>
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-lg font-bold">
+              <Button className="w-full bg-blue-600 hover:bg-blue-500 h-14 text-lg font-black rounded-2xl shadow-lg shadow-blue-500/20">
                 {t('role.customer.button')}
               </Button>
             </CardContent>
           </Card>
 
           <Card 
-            className="group cursor-pointer overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all duration-500"
+            className="group cursor-pointer overflow-hidden border border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl hover:bg-white/10 hover:border-orange-500/50 transition-all duration-500"
             onClick={() => handleRoleSelection('mechanic')}
           >
-            <div className="h-2 bg-orange-600" />
+            <div className="h-1 bg-gradient-to-r from-orange-600 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardContent className="p-10 text-center">
-              <div className="bg-orange-50 p-6 rounded-2xl w-24 h-24 mx-auto mb-8 flex items-center justify-center group-hover:bg-orange-600 transition-colors duration-500">
-                <Wrench className="h-12 w-12 text-orange-600 group-hover:text-white transition-colors duration-500" />
+              <div className="bg-orange-500/10 p-6 rounded-3xl w-24 h-24 mx-auto mb-8 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                <Wrench className="h-12 w-12 text-orange-400" />
               </div>
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">
+              <h3 className="text-3xl font-bold text-white mb-4">
                 {t('role.mechanic.title')}
               </h3>
-              <p className="text-gray-600 mb-8 text-lg">
+              <p className="text-gray-400 mb-8 text-lg">
                 {t('role.mechanic.desc')}
               </p>
-              <Button className="w-full bg-orange-600 hover:bg-orange-700 h-12 text-lg font-bold">
+              <Button className="w-full bg-orange-600 hover:bg-orange-500 h-14 text-lg font-black rounded-2xl shadow-lg shadow-orange-500/20">
                 {t('role.mechanic.button')}
               </Button>
             </CardContent>

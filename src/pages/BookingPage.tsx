@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { 
   Car, MapPin, Navigation, Wrench, ChevronLeft, 
-  Star, Phone, MessageSquare, Clock, Badge
+  Star, Phone, MessageSquare, Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -15,22 +15,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge as UIBadge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { bookingApi } from '@/lib/api';
-
-interface Mechanic {
-  id: string;
-  name: string;
-  photo: string;
-  speciality: string;
-  rating: number;
-  distance: string;
-  price: string;
-  eta: string;
-  completedJobs: number;
-  isOnline: boolean;
-  verified: boolean;
-  pricePerHour: number;
-}
+import { bookingApi, mechanicApi } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { Mechanic } from '@/types';
 
 interface VehicleData {
   brand: string;
@@ -82,17 +69,19 @@ const BookingPage = () => {
     },
   });
 
-  const availableMechanics: Mechanic[] = [
-    { id: 'M001', name: 'Budi Santoso', photo: '👨‍🔧', speciality: 'Ahli Mesin', rating: 4.8, distance: '2.5 km', price: 'Rp 75.000/jam', eta: '15 menit', completedJobs: 156, isOnline: true, verified: true, pricePerHour: 75000 },
-    { id: 'M002', name: 'Sukma Dewi', photo: '👩‍🔧', speciality: 'Ahli Kelistrikan', rating: 4.9, distance: '3.1 km', price: 'Rp 80.000/jam', eta: '20 menit', completedJobs: 89, isOnline: true, verified: true, pricePerHour: 80000 },
-    { id: 'M003', name: 'Joko Prasetyo', photo: '👨‍🔧', speciality: 'Servis Umum', rating: 4.7, distance: '4.0 km', price: 'Rp 70.000/jam', eta: '25 menit', completedJobs: 203, isOnline: false, verified: true, pricePerHour: 70000 },
-  ];
+  const { user } = useAuth();
+
+  const { data: availableMechanics = [] } = useQuery({
+    queryKey: ['mechanics'],
+    queryFn: mechanicApi.getAll,
+  });
 
   const bookingMutation = useMutation({
-    mutationFn: async (data: { customerId: number; mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; estimatedCost: number; isEmergency: boolean }) => {
+    mutationFn: async (data: { customerId: string; mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; estimatedCost: number; isEmergency: boolean }) => {
       return bookingApi.create({
+        userId: data.customerId,
         mechanicId: data.mechanicId,
-        serviceId: 'S1',
+        serviceId: 'svc-1',
         vehicle: data.vehicle,
         problem: data.problem,
         location: { lat: 0, lng: 0, address: data.location.address },
@@ -105,7 +94,7 @@ const BookingPage = () => {
         title: 'Booking Berhasil!',
         description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
       });
-      navigate(`/customer/tracking?bookingId=${data.id || 1}`);
+      navigate(`/customer/tracking/${data.id}`);
     },
     onError: () => {
       toast({
@@ -146,13 +135,13 @@ const BookingPage = () => {
     }
 
     bookingMutation.mutate({
-      customerId: 1,
+      customerId: user?.id || 'cust-1',
       mechanicId: selectedMechanic.id,
       status: 'pending',
       vehicle: vehicleData,
       problem: vehicleData.problem,
       location,
-      estimatedCost: selectedMechanic.pricePerHour,
+      estimatedCost: selectedMechanic.pricePerHour || 50000,
       isEmergency,
     });
   };
@@ -296,30 +285,27 @@ const BookingPage = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="text-3xl">{mechanic.photo}</div>
+                <div className="text-3xl">{mechanic.avatar || '👨‍🔧'}</div>
                 <div>
                   <h3 className="font-semibold flex items-center">
                     {mechanic.name}
-                    {mechanic.verified && <UIBadge className="ml-2 bg-green-600 text-xs">Verified</UIBadge>}
+                    <UIBadge className="ml-2 bg-green-600 text-xs">Verified</UIBadge>
                   </h3>
-                  <p className="text-sm text-gray-600">{mechanic.speciality}</p>
+                  <p className="text-sm text-gray-600">{mechanic.speciality?.join(', ')}</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
                       <span className="text-sm ml-1">{mechanic.rating}</span>
                     </div>
                     <UIBadge variant="outline" className="text-xs">
-                      {mechanic.distance}
-                    </UIBadge>
-                    <UIBadge variant="outline" className="text-xs">
-                      {mechanic.completedJobs} jobs
+                      Online
                     </UIBadge>
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">ETA: {mechanic.eta}</p>
-                <p className="text-lg font-semibold text-blue-600">{mechanic.price}</p>
+                <p className="text-sm text-gray-600">ETA: 15m</p>
+                <p className="text-lg font-semibold text-blue-600">Rp {mechanic.pricePerHour?.toLocaleString()}/jam</p>
               </div>
             </div>
           </div>

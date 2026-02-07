@@ -10,16 +10,28 @@ import React from 'react';
 
 // Mock the API
 vi.mock('@/lib/api', () => ({
-  api: {
-    getMechanics: vi.fn().mockResolvedValue([
-      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'] }
+  mechanicApi: {
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
     ]),
-    createBooking: vi.fn().mockResolvedValue({ id: 'BK-123' }),
-    getBookingById: vi.fn(),
-    getBookings: vi.fn(),
-    updateBookingStatus: vi.fn(),
-    getMessagesByBookingId: vi.fn(),
-    sendMessage: vi.fn(),
+    getById: vi.fn(),
+    updateStatus: vi.fn(),
+  },
+  bookingApi: {
+    create: vi.fn().mockResolvedValue({ id: 'BK-123' }),
+    getById: vi.fn(),
+    getByUser: vi.fn(),
+    getByMechanic: vi.fn(),
+    updateStatus: vi.fn(),
+    getActiveServices: vi.fn(),
+  },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn(),
+  },
+  messageApi: {
+    getByBookingId: vi.fn(),
+    send: vi.fn(),
   }
 }));
 
@@ -59,7 +71,12 @@ describe('BookingPage', () => {
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    const nextButton = screen.getByText(/Selanjutnya/i);
+    // Fill in required fields to enable "Lanjutkan"
+    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
+    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
+    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+
+    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
     fireEvent.click(nextButton);
 
     await waitFor(() => {

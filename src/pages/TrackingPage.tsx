@@ -26,6 +26,7 @@ const TrackingPage = () => {
     queryKey: ['booking', id],
     queryFn: () => bookingApi.getById(id || ''),
     enabled: !!id,
+    refetchInterval: 3000,
   });
 
   const getCurrentStepIndex = () => {

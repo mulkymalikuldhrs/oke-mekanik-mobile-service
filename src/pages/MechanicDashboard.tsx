@@ -78,16 +78,22 @@ const MechanicDashboard = () => {
   const completedJobs = bookings?.filter(b => b.status === 'completed').length || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-orange-500">
+      {/* Background Glow */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-orange-600/10 blur-[100px] rounded-full" />
+        <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] bg-orange-600/10 blur-[100px] rounded-full" />
+      </div>
+
+      <header className="bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-orange-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-tr from-orange-600 to-orange-400 p-2 rounded-xl shadow-lg shadow-orange-500/20">
               <Wrench className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Dashboard Mekanik</h1>
-              <p className="text-sm text-gray-600">Selamat datang, {user?.name}!</p>
+              <h1 className="text-xl font-bold text-white italic">Dashboard Mekanik</h1>
+              <p className="text-sm text-gray-400">Selamat datang, {user?.name}!</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
