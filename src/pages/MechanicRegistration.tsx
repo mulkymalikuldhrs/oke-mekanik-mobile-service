@@ -42,15 +42,15 @@ const MechanicRegistration = () => {
     switch (step) {
       case 1:
         return (
-          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h3 className="text-lg font-semibold">Informasi Keahlian</h3>
-            <div className="space-y-2">
-              <Label htmlFor="speciality">Spesialisasi Utama</Label>
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            <h3 className="text-xl font-black text-white italic tracking-tight">INFORMASI KEAHLIAN</h3>
+            <div className="space-y-3">
+              <Label htmlFor="speciality" className="text-gray-300">Spesialisasi Utama</Label>
               <Select value={formData.speciality} onValueChange={(val) => setFormData({ ...formData, speciality: val })}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-white/10 text-white h-12">
                   <SelectValue placeholder="Pilih Spesialisasi" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                   <SelectItem value="car">Mobil Penumpang</SelectItem>
                   <SelectItem value="motorcycle">Sepeda Motor</SelectItem>
                   <SelectItem value="truck">Kendaraan Berat / Truk</SelectItem>
@@ -58,12 +58,13 @@ const MechanicRegistration = () => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="experience">Pengalaman Kerja (Tahun)</Label>
+            <div className="space-y-3">
+              <Label htmlFor="experience" className="text-gray-300">Pengalaman Kerja (Tahun)</Label>
               <Input 
                 id="experience" 
                 type="number" 
                 placeholder="Contoh: 5" 
+                className="bg-white/5 border-white/10 text-white h-12"
                 value={formData.experience}
                 onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
               />
@@ -72,42 +73,40 @@ const MechanicRegistration = () => {
         );
       case 2:
         return (
-          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h3 className="text-lg font-semibold">Dokumen Pendukung</h3>
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            <h3 className="text-xl font-black text-white italic tracking-tight">DOKUMEN PENDUKUNG</h3>
             <div className="space-y-4">
-              <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-gray-50 cursor-pointer">
-                <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm font-medium">Unggah KTP</p>
-                <p className="text-xs text-gray-500">Format JPG, PNG (Maks 5MB)</p>
+              <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:bg-white/5 cursor-pointer transition-all group">
+                <Upload className="h-10 w-10 mx-auto text-blue-500 mb-3 group-hover:scale-110 transition-transform" />
+                <p className="text-sm font-bold text-white uppercase tracking-widest">Unggah KTP</p>
+                <p className="text-xs text-gray-500 mt-1">Format JPG, PNG (Maks 5MB)</p>
               </div>
-              <div className="border-2 border-dashed rounded-lg p-6 text-center hover:bg-gray-50 cursor-pointer">
-                <Award className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-                <p className="text-sm font-medium">Unggah Sertifikat Keahlian (Opsional)</p>
-                <p className="text-xs text-gray-500">Meningkatkan peluang diterima</p>
+              <div className="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:bg-white/5 cursor-pointer transition-all group">
+                <Award className="h-10 w-10 mx-auto text-orange-500 mb-3 group-hover:scale-110 transition-transform" />
+                <p className="text-sm font-bold text-white uppercase tracking-widest">Sertifikat Keahlian</p>
+                <p className="text-xs text-gray-500 mt-1">Meningkatkan peluang diterima</p>
               </div>
             </div>
           </div>
         );
       case 3:
         return (
-          <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
-            <h3 className="text-lg font-semibold">Konfirmasi & Persetujuan</h3>
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-              <p className="text-sm text-orange-800">
-                Dengan mendaftar, Anda setuju untuk mengikuti standar pelayanan Oke Mekanik dan mematuhi kode etik mitra.
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+            <h3 className="text-xl font-black text-white italic tracking-tight">KONFIRMASI AKHIR</h3>
+            <div className="bg-orange-500/10 p-6 rounded-2xl border border-orange-500/20 backdrop-blur-md">
+              <p className="text-sm text-orange-200 leading-relaxed">
+                Dengan mendaftar, Anda setuju untuk mengikuti standar pelayanan <span className="font-black italic">OKE MEKANIK</span> dan mematuhi kode etik mitra profesional kami.
               </p>
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <input 
-                  type="checkbox" 
-                  id="terms" 
-                  className="rounded border-gray-300 text-orange-600 focus:ring-orange-600"
-                  checked={formData.termsAccepted}
-                  onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
-                />
-                <Label htmlFor="terms" className="text-sm">Saya menyetujui syarat dan ketentuan</Label>
-              </div>
+            <div className="flex items-center space-x-3 p-2">
+              <input
+                type="checkbox"
+                id="terms"
+                className="w-5 h-5 rounded border-white/10 bg-white/5 text-orange-600 focus:ring-orange-600 transition-all"
+                checked={formData.termsAccepted}
+                onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
+              />
+              <Label htmlFor="terms" className="text-sm text-gray-300 font-medium">Saya menyetujui semua syarat & ketentuan</Label>
             </div>
           </div>
         );
@@ -117,40 +116,46 @@ const MechanicRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
-      <Card className="w-full max-w-lg shadow-xl border-none">
-        <CardHeader className="bg-orange-600 text-white rounded-t-xl">
-          <div className="flex justify-between items-center mb-4">
-            <div className="bg-white/20 p-2 rounded-lg">
-              <Wrench className="h-6 w-6 text-white" />
+    <div className="min-h-screen bg-[#0a0a0a] p-4 flex items-center justify-center relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-orange-600/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-blue-600/10 blur-[120px] rounded-full" />
+
+      <Card className="w-full max-w-lg bg-white/5 border-white/10 backdrop-blur-2xl shadow-2xl relative z-10 rounded-[2.5rem] overflow-hidden">
+        <div className="h-2 bg-gradient-to-r from-orange-600 via-orange-400 to-transparent" />
+        <CardHeader className="pb-4">
+          <div className="flex justify-between items-center mb-6">
+            <div className="bg-orange-600 p-3 rounded-2xl shadow-lg shadow-orange-500/20">
+              <Wrench className="h-8 w-8 text-white" />
             </div>
-            <div className="flex space-x-1">
+            <div className="flex space-x-2">
               {[1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className={`h-1.5 w-8 rounded-full ${i <= step ? 'bg-white' : 'bg-white/30'}`}
+                  className={`h-2 w-10 rounded-full transition-all duration-500 ${i <= step ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.4)]' : 'bg-white/10'}`}
                 />
               ))}
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Pendaftaran Mitra Mekanik</CardTitle>
-          <CardDescription className="text-orange-100">Lengkapi data untuk mulai menerima pesanan</CardDescription>
+          <CardTitle className="text-3xl font-black text-white italic tracking-tighter">MITRA MEKANIK</CardTitle>
+          <CardDescription className="text-gray-400 text-lg">Lengkapi data untuk mulai menghasilkan</CardDescription>
         </CardHeader>
 
-        <CardContent className="pt-8">
+        <CardContent className="pt-4">
           <form onSubmit={handleSubmit}>
             {renderStep()}
             
-            <div className="flex justify-between mt-8 pt-6 border-t">
+            <div className="flex justify-between mt-10 pt-8 border-t border-white/10">
               {step > 1 ? (
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
+                  className="text-gray-400 hover:text-white hover:bg-white/5 h-12 px-6 rounded-xl"
                   onClick={prevStep}
                   disabled={isSubmitting}
                 >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Kembali
+                  <ChevronLeft className="h-5 w-5 mr-2" />
+                  KEMBALI
                 </Button>
               ) : (
                 <div />
@@ -159,27 +164,27 @@ const MechanicRegistration = () => {
               {step < 3 ? (
                 <Button
                   type="button"
-                  className="bg-orange-600 hover:bg-orange-700"
+                  className="bg-orange-600 hover:bg-orange-500 text-white font-black h-12 px-8 rounded-xl shadow-lg shadow-orange-500/20"
                   onClick={nextStep}
                 >
-                  Lanjut
-                  <ChevronRight className="h-4 w-4 ml-2" />
+                  LANJUT
+                  <ChevronRight className="h-5 w-5 ml-2" />
                 </Button>
               ) : (
                 <Button
                   type="submit"
-                  className="bg-orange-600 hover:bg-orange-700 min-w-[120px]"
+                  className="bg-orange-600 hover:bg-orange-500 text-white font-black h-12 px-10 rounded-xl shadow-lg shadow-orange-500/20"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Mendaftarkan...
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      MEMPROSES...
                     </>
                   ) : (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Selesaikan
+                      <Check className="h-5 w-5 mr-2" />
+                      DAFTARKAN
                     </>
                   )}
                 </Button>
@@ -187,10 +192,10 @@ const MechanicRegistration = () => {
             </div>
           </form>
         </CardContent>
-        <CardFooter className="bg-gray-50 text-center py-4 rounded-b-xl border-t flex justify-center">
-          <div className="flex items-center text-xs text-gray-500">
-            <Shield className="h-3 w-3 mr-1 text-green-600" />
-            Keamanan data terjamin dengan enkripsi SSL
+        <CardFooter className="bg-black/20 text-center py-6 border-t border-white/10 flex justify-center">
+          <div className="flex items-center text-[10px] text-gray-500 uppercase tracking-[0.2em] font-bold">
+            <Shield className="h-4 w-4 mr-2 text-green-500" />
+            Security Protocol Encrypted
           </div>
         </CardFooter>
       </Card>

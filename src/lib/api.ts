@@ -49,7 +49,7 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    return fetchApi('/auth/logout', { method: 'POST' });
+    return fetchApi('/auth/logout', { method: 'POST' }).catch(() => {}); // Optional logout
   },
 
   refreshToken: async (): Promise<{ token: string }> => {
@@ -68,7 +68,7 @@ export const mechanicApi = {
   },
 
   getNearby: async (lat: number, lng: number, radiusKm: number = 10): Promise<Mechanic[]> => {
-    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`);
+    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`).catch(() => mechanicApi.getAll());
   },
 
   updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
@@ -82,6 +82,7 @@ export const mechanicApi = {
 // Bookings API
 export const bookingApi = {
   create: async (bookingData: {
+    userId?: string;
     mechanicId: string;
     serviceId: string;
     vehicle: { brand: string; model: string; year: string; licensePlate: string };
@@ -166,18 +167,18 @@ export const serviceApi = {
 // Payments API
 export const paymentApi = {
   create: async (paymentData: {
-    bookingId: number;
+    bookingId: string;
     amount: number;
     paymentMethod: string;
     status: string;
-  }): Promise<{ id: number; status: string }> => {
+  }): Promise<{ id: string; status: string }> => {
     return fetchApi('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   },
 
-  getByBookingId: async (bookingId: string): Promise<{ id: number; amount: number; status: string; paymentMethod: string }> => {
+  getByBookingId: async (bookingId: string): Promise<{ id: string; amount: number; status: string; paymentMethod: string }> => {
     return fetchApi(`/payments?bookingId=${bookingId}`);
   },
 };

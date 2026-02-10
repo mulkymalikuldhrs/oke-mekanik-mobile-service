@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { 
   Car, MapPin, Navigation, Wrench, ChevronLeft, 
-  Star, Phone, MessageSquare, Clock, Badge
+  Star, Phone, MessageSquare, Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -15,22 +15,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge as UIBadge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { bookingApi } from '@/lib/api';
-
-interface Mechanic {
-  id: string;
-  name: string;
-  photo: string;
-  speciality: string;
-  rating: number;
-  distance: string;
-  price: string;
-  eta: string;
-  completedJobs: number;
-  isOnline: boolean;
-  verified: boolean;
-  pricePerHour: number;
-}
+import { useLanguage } from '@/hooks/useLanguage';
+import { bookingApi, mechanicApi } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
+import { Mechanic } from '@/types';
 
 interface VehicleData {
   brand: string;
@@ -71,6 +59,7 @@ const BookingPage = () => {
     problem: '',
   });
   const [location, setLocation] = useState<LocationData>({ address: '' });
+  const { t } = useLanguage();
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -82,17 +71,19 @@ const BookingPage = () => {
     },
   });
 
-  const availableMechanics: Mechanic[] = [
-    { id: 'M001', name: 'Budi Santoso', photo: '👨‍🔧', speciality: 'Ahli Mesin', rating: 4.8, distance: '2.5 km', price: 'Rp 75.000/jam', eta: '15 menit', completedJobs: 156, isOnline: true, verified: true, pricePerHour: 75000 },
-    { id: 'M002', name: 'Sukma Dewi', photo: '👩‍🔧', speciality: 'Ahli Kelistrikan', rating: 4.9, distance: '3.1 km', price: 'Rp 80.000/jam', eta: '20 menit', completedJobs: 89, isOnline: true, verified: true, pricePerHour: 80000 },
-    { id: 'M003', name: 'Joko Prasetyo', photo: '👨‍🔧', speciality: 'Servis Umum', rating: 4.7, distance: '4.0 km', price: 'Rp 70.000/jam', eta: '25 menit', completedJobs: 203, isOnline: false, verified: true, pricePerHour: 70000 },
-  ];
+  const { user } = useAuth();
+
+  const { data: availableMechanics = [] } = useQuery({
+    queryKey: ['mechanics'],
+    queryFn: mechanicApi.getAll,
+  });
 
   const bookingMutation = useMutation({
-    mutationFn: async (data: { customerId: number; mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; estimatedCost: number; isEmergency: boolean }) => {
+    mutationFn: async (data: { customerId: string; mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; estimatedCost: number; isEmergency: boolean }) => {
       return bookingApi.create({
+        userId: data.customerId,
         mechanicId: data.mechanicId,
-        serviceId: 'S1',
+        serviceId: 'svc-1',
         vehicle: data.vehicle,
         problem: data.problem,
         location: { lat: 0, lng: 0, address: data.location.address },
@@ -105,7 +96,7 @@ const BookingPage = () => {
         title: 'Booking Berhasil!',
         description: `${selectedMechanic?.name} sedang menuju lokasi Anda.`,
       });
-      navigate(`/customer/tracking?bookingId=${data.id || 1}`);
+      navigate(`/customer/tracking/${data.id}`);
     },
     onError: () => {
       toast({
@@ -146,13 +137,13 @@ const BookingPage = () => {
     }
 
     bookingMutation.mutate({
-      customerId: 1,
+      customerId: user?.id || 'cust-1',
       mechanicId: selectedMechanic.id,
       status: 'pending',
       vehicle: vehicleData,
       problem: vehicleData.problem,
       location,
-      estimatedCost: selectedMechanic.pricePerHour,
+      estimatedCost: selectedMechanic.pricePerHour || 50000,
       isEmergency,
     });
   };
@@ -171,24 +162,25 @@ const BookingPage = () => {
   };
 
   const renderLocationStep = () => (
-    <Card>
+    <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <MapPin className="h-5 w-5 mr-2" />
+        <CardTitle className="flex items-center text-white">
+          <MapPin className="h-5 w-5 mr-2 text-blue-400" />
           Lokasi & Masalah Kendaraan
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div>
-          <Label htmlFor="address">Alamat Lengkap</Label>
-          <div className="flex space-x-2">
+          <Label htmlFor="address" className="text-gray-300">Alamat Lengkap</Label>
+          <div className="flex space-x-2 mt-1">
             <Input
               id="address"
               value={location.address}
               onChange={(e) => setLocation(prev => ({ ...prev, address: e.target.value }))}
               placeholder="Masukkan alamat lengkap"
+              className="bg-white/5 border-white/10 text-white placeholder:text-gray-600"
             />
-            <Button size="sm" variant="outline">
+            <Button size="sm" variant="outline" className="border-white/10 text-gray-300">
               <Navigation className="h-4 w-4 mr-1" />
               GPS
             </Button>
@@ -197,77 +189,80 @@ const BookingPage = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="brand">Merk Kendaraan</Label>
+            <Label htmlFor="brand" className="text-gray-300">Merk Kendaraan</Label>
             <select
               id="brand"
-              className="w-full p-2 border rounded-md"
+              className="w-full p-2 bg-white/5 border border-white/10 rounded-md text-white mt-1"
               value={vehicleData.brand}
               onChange={(e) => setVehicleData(prev => ({ ...prev, brand: e.target.value }))}
             >
-              <option value="">Pilih merk</option>
+              <option value="" className="bg-[#1a1a1a]">Pilih merk</option>
               {vehicleBrands.map(brand => (
-                <option key={brand} value={brand}>{brand}</option>
+                <option key={brand} value={brand} className="bg-[#1a1a1a]">{brand}</option>
               ))}
             </select>
           </div>
           <div>
-            <Label htmlFor="model">Model/Tipe</Label>
+            <Label htmlFor="model" className="text-gray-300">Model/Tipe</Label>
             <Input
               id="model"
               value={vehicleData.model}
               onChange={(e) => setVehicleData(prev => ({ ...prev, model: e.target.value }))}
               placeholder="Avanza, Vario, dll"
+              className="bg-white/5 border-white/10 text-white mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="year">Tahun</Label>
+            <Label htmlFor="year" className="text-gray-300">Tahun</Label>
             <Input
               id="year"
               value={vehicleData.year}
               onChange={(e) => setVehicleData(prev => ({ ...prev, year: e.target.value }))}
               placeholder="2019"
+              className="bg-white/5 border-white/10 text-white mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="licensePlate">Plat Nomor</Label>
+            <Label htmlFor="licensePlate" className="text-gray-300">Plat Nomor</Label>
             <Input
               id="licensePlate"
               value={vehicleData.licensePlate}
               onChange={(e) => setVehicleData(prev => ({ ...prev, licensePlate: e.target.value }))}
               placeholder="B 1234 XYZ"
+              className="bg-white/5 border-white/10 text-white mt-1"
             />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="problem">Masalah Kendaraan</Label>
+          <Label htmlFor="problem" className="text-gray-300">Masalah Kendaraan</Label>
           <select
             id="problem"
-            className="w-full p-2 border rounded-md mb-2"
+            className="w-full p-2 bg-white/5 border border-white/10 rounded-md text-white mt-1 mb-2"
             value={vehicleData.problem}
             onChange={(e) => setVehicleData(prev => ({ ...prev, problem: e.target.value }))}
           >
-            <option value="">Pilih masalah</option>
+            <option value="" className="bg-[#1a1a1a]">Pilih masalah</option>
             {problemTypes.map(problem => (
-              <option key={problem} value={problem}>{problem}</option>
+              <option key={problem} value={problem} className="bg-[#1a1a1a]">{problem}</option>
             ))}
           </select>
           <Textarea
             placeholder="Deskripsi detail masalah (opsional)"
-            className="mt-2"
+            className="mt-2 bg-white/5 border-white/10 text-white placeholder:text-gray-600"
             value={vehicleData.problem}
             onChange={(e) => setVehicleData(prev => ({ ...prev, problem: e.target.value }))}
           />
         </div>
 
-        <div className="bg-red-50 p-4 rounded-lg">
+        <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl backdrop-blur-sm">
           <Button 
             onClick={handleEmergencyBooking}
-            className="w-full bg-red-600 hover:bg-red-700 text-white"
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-black"
           >
             DARURAT - Panggil Sekarang
           </Button>
-          <p className="text-xs text-red-600 mt-2 text-center">
+          <p className="text-xs text-red-400 mt-2 text-center">
             Untuk situasi darurat yang membutuhkan bantuan segera
           </p>
         </div>
@@ -276,10 +271,10 @@ const BookingPage = () => {
   );
 
   const renderMechanicSelection = () => (
-    <Card>
+    <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <Car className="h-5 w-5 mr-2" />
+        <CardTitle className="flex items-center text-white">
+          <Car className="h-5 w-5 mr-2 text-blue-400" />
           Pilih Mekanik {isEmergency && <UIBadge className="ml-2 bg-red-600">DARURAT</UIBadge>}
         </CardTitle>
       </CardHeader>
@@ -288,38 +283,35 @@ const BookingPage = () => {
           <div
             key={mechanic.id}
             onClick={() => setSelectedMechanic(mechanic)}
-            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+            className={`p-4 border rounded-2xl cursor-pointer transition-all duration-300 ${
               selectedMechanic?.id === mechanic.id
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:bg-gray-50'
+                ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/10'
+                : 'border-white/10 hover:bg-white/5'
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="text-3xl">{mechanic.photo}</div>
+                <div className="text-4xl bg-white/5 p-2 rounded-xl">{mechanic.avatar || '👨‍🔧'}</div>
                 <div>
-                  <h3 className="font-semibold flex items-center">
+                  <h3 className="font-bold flex items-center text-white text-lg">
                     {mechanic.name}
-                    {mechanic.verified && <UIBadge className="ml-2 bg-green-600 text-xs">Verified</UIBadge>}
+                    <UIBadge className="ml-2 bg-blue-500/20 text-blue-400 border-blue-500/30 text-[10px]">Verified</UIBadge>
                   </h3>
-                  <p className="text-sm text-gray-600">{mechanic.speciality}</p>
+                  <p className="text-sm text-gray-400">{mechanic.speciality?.join(', ')}</p>
                   <div className="flex items-center space-x-2 mt-1">
                     <div className="flex items-center">
                       <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                      <span className="text-sm ml-1">{mechanic.rating}</span>
+                      <span className="text-sm ml-1 text-gray-300 font-medium">{mechanic.rating}</span>
                     </div>
-                    <UIBadge variant="outline" className="text-xs">
-                      {mechanic.distance}
-                    </UIBadge>
-                    <UIBadge variant="outline" className="text-xs">
-                      {mechanic.completedJobs} jobs
+                    <UIBadge variant="outline" className="text-[10px] border-green-500/30 text-green-400 bg-green-500/10">
+                      Online
                     </UIBadge>
                   </div>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">ETA: {mechanic.eta}</p>
-                <p className="text-lg font-semibold text-blue-600">{mechanic.price}</p>
+                <p className="text-xs text-gray-500 mb-1 font-medium">ETA: 15m</p>
+                <p className="text-xl font-black text-blue-400">Rp {mechanic.pricePerHour?.toLocaleString()}</p>
               </div>
             </div>
           </div>
@@ -329,67 +321,68 @@ const BookingPage = () => {
   );
 
   const renderBookingConfirmation = () => (
-    <Card>
+    <Card className="bg-white/5 border-white/10 backdrop-blur-xl">
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <Clock className="h-5 w-5 mr-2" />
+        <CardTitle className="flex items-center text-white">
+          <Clock className="h-5 w-5 mr-2 text-blue-400" />
           Konfirmasi Booking
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="bg-blue-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-blue-900">Detail Booking</h3>
-          <div className="mt-2 space-y-2">
-            <p><strong>Mekanik:</strong> {selectedMechanic?.name}</p>
-            <p><strong>Lokasi:</strong> {location.address}</p>
-            <p><strong>Kendaraan:</strong> {vehicleData.brand} {vehicleData.model} ({vehicleData.licensePlate})</p>
-            <p><strong>Masalah:</strong> {vehicleData.problem}</p>
-            <p><strong>Estimasi Biaya:</strong> {selectedMechanic?.price}</p>
-            <p><strong>ETA:</strong> {selectedMechanic?.eta}</p>
+        <div className="bg-blue-500/10 border border-blue-500/20 p-6 rounded-2xl backdrop-blur-sm">
+          <h3 className="font-bold text-white text-lg mb-4">Ringkasan Pesanan</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between"><span className="text-gray-400">Mekanik:</span> <span className="text-white font-medium">{selectedMechanic?.name}</span></div>
+            <div className="flex justify-between"><span className="text-gray-400">Lokasi:</span> <span className="text-white font-medium text-right max-w-[200px]">{location.address}</span></div>
+            <div className="flex justify-between"><span className="text-gray-400">Kendaraan:</span> <span className="text-white font-medium">{vehicleData.brand} {vehicleData.model}</span></div>
+            <div className="flex justify-between border-t border-white/10 pt-3 mt-3">
+              <span className="text-gray-400 font-bold">Total Estimasi:</span>
+              <span className="text-blue-400 font-black text-lg">Rp {selectedMechanic?.pricePerHour?.toLocaleString()}</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex space-x-2">
-          <Button variant="outline" className="flex-1">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Chat
-          </Button>
-          <Button variant="outline" className="flex-1">
-            <Phone className="h-4 w-4 mr-2" />
-            Telepon
-          </Button>
-        </div>
-
-        <Button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-700" disabled={bookingMutation.isPending}>
-          {bookingMutation.isPending ? 'Memproses...' : 'Konfirmasi Booking'}
+        <Button
+          onClick={handleBooking}
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black h-14 rounded-2xl shadow-lg shadow-blue-500/20 mt-4"
+          disabled={bookingMutation.isPending}
+        >
+          {bookingMutation.isPending ? 'MEMPROSES...' : 'KONFIRMASI SEKARANG'}
         </Button>
       </CardContent>
     </Card>
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-[#0a0a0a] text-white p-4 md:p-8 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-600/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="max-w-2xl mx-auto relative z-10">
         <Button
           variant="ghost"
-          className="mb-6 hover:bg-white"
+          className="mb-6 hover:bg-white/5 text-gray-400 hover:text-white"
           onClick={() => navigate('/customer/dashboard')}
         >
           <ChevronLeft className="h-4 w-4 mr-2" />
-          Kembali ke Dashboard
+          Dashboard
         </Button>
 
-        <Card className="shadow-lg border-none">
-          <CardHeader className="bg-blue-600 text-white rounded-t-xl">
-            <CardTitle className="text-2xl flex items-center">
-              <Wrench className="h-6 w-6 mr-3" />
-              Pesan Mekanik
+        <Card className="shadow-2xl border-white/10 bg-white/5 backdrop-blur-2xl overflow-hidden rounded-[2rem]">
+          <div className="h-2 bg-gradient-to-r from-blue-600 via-blue-400 to-transparent" />
+          <CardHeader className="pb-8">
+            <CardTitle className="text-3xl font-black flex items-center italic tracking-tighter">
+              <Wrench className="h-8 w-8 mr-3 text-blue-500" />
+              PESAN MEKANIK
             </CardTitle>
-            <CardDescription className="text-blue-100">
-              Isi formulir di bawah ini untuk memanggil mekanik ke lokasi Anda
+            <CardDescription className="text-gray-400 text-lg">
+              Solusi cepat untuk kendala kendaraan Anda
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-0">
             {step === 1 && (
               <div className="space-y-6">
                 {renderLocationStep()}
