@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { mechanicApi } from '@/lib/api';
 
 const MechanicRegistration = () => {
   const navigate = useNavigate();
@@ -31,11 +32,22 @@ const MechanicRegistration = () => {
     }
 
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    toast.success('Pendaftaran berhasil! Menunggu verifikasi.');
-    navigate('/mechanic/dashboard');
-    setIsSubmitting(false);
+    try {
+      await mechanicApi.register({
+        speciality: formData.speciality,
+        experience: parseInt(formData.experience) || 0,
+        phone: '08123456789', // Mock phone for now or add to form
+        identityNumber: '1234567890', // Mock identity
+        bio: 'Mekanik berpengalaman',
+      });
+      toast.success('Pendaftaran berhasil! Menunggu verifikasi.');
+      navigate('/mechanic/dashboard');
+    } catch (error) {
+      toast.error('Gagal mendaftar. Silakan coba lagi.');
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStep = () => {
