@@ -28,19 +28,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Check for existing session on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('auth_user');
-
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem('auth_token');
+      if (storedToken) {
+        try {
+          // Verify token with backend
+          const response = await authApi.getMe();
+          setUser(response.user);
+          setToken(storedToken);
+        } catch (e) {
+          console.error('Session verification failed:', e);
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          setUser(null);
+          setToken(null);
+        }
       }
-    }
-    setIsLoading(false);
+      setIsLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const login = async (email: string, password: string, role: UserRole) => {

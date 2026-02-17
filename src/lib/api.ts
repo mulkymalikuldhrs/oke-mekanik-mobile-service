@@ -3,17 +3,19 @@ import { Booking, Mechanic, Message, User, UserRole } from '@/types';
 // Environment-based API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
-// Generic fetch wrapper with error handling
+// Generic fetch wrapper with error handling and automatic auth token injection
 async function fetchApi<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
+  const token = localStorage.getItem('auth_token');
   
   const response = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
@@ -48,12 +50,14 @@ export const authApi = {
     });
   },
 
-  logout: async (): Promise<void> => {
-    return fetchApi('/auth/logout', { method: 'POST' });
+  getMe: async (): Promise<{ user: User }> => {
+    return fetchApi('/auth/me');
   },
 
-  refreshToken: async (): Promise<{ token: string }> => {
-    return fetchApi('/auth/refresh', { method: 'POST' });
+  logout: async (): Promise<void> => {
+    // Local cleanup is usually enough, but we can have an endpoint if needed
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
   },
 };
 
@@ -68,7 +72,8 @@ export const mechanicApi = {
   },
 
   getNearby: async (lat: number, lng: number, radiusKm: number = 10): Promise<Mechanic[]> => {
-    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`);
+    // Mocking nearby search using getAll if endpoint not specialized
+    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`).catch(() => mechanicApi.getAll());
   },
 
   updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
@@ -129,7 +134,6 @@ export const messageApi = {
   send: async (messageData: {
     bookingId: string;
     text: string;
-    senderId: string;
   }): Promise<Message> => {
     return fetchApi('/messages', {
       method: 'POST',
@@ -166,34 +170,21 @@ export const serviceApi = {
 // Payments API
 export const paymentApi = {
   create: async (paymentData: {
-    bookingId: number;
+    bookingId: string;
     amount: number;
     paymentMethod: string;
     status: string;
-  }): Promise<{ id: number; status: string }> => {
+  }): Promise<{ id: string; status: string }> => {
     return fetchApi('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   },
 
-  getByBookingId: async (bookingId: string): Promise<{ id: number; amount: number; status: string; paymentMethod: string }> => {
+  getByBookingId: async (bookingId: string): Promise<{ id: string; amount: number; status: string; paymentMethod: string }> => {
     return fetchApi(`/payments?bookingId=${bookingId}`);
   },
 };
 
-// Helper function for authenticated requests
-export async function fetchWithAuth<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = localStorage.getItem('auth_token');
-  
-  return fetchApi<T>(endpoint, {
-    ...options,
-    headers: {
-      ...options.headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
+// Re-export fetchApi as fetchWithAuth for compatibility if needed
+export { fetchApi as fetchWithAuth };

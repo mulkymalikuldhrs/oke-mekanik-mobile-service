@@ -13,6 +13,15 @@ vi.mock('@/hooks/useLanguage', () => ({
   }),
 }));
 
+// Mock useAuth hook
+vi.mock('@/contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: 'cust-1', name: 'John Customer', role: 'customer' },
+    isLoading: false,
+    logout: vi.fn(),
+  }),
+}));
+
 const queryClient = new QueryClient();
 
 const renderComponent = () => {
@@ -26,8 +35,24 @@ const renderComponent = () => {
 };
 
 describe('CustomerDashboard', () => {
-  it('renders the dashboard title', () => {
+  it('renders the dashboard title', async () => {
+    window.fetch = vi.fn().mockImplementation((url) => {
+      if (url.includes('/bookings?userId=')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
+        });
+      }
+      if (url.includes('/mechanics')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
+        });
+      }
+      return Promise.reject(new Error('Unknown URL'));
+    });
+
     renderComponent();
-    expect(screen.getByText('Dashboard Pelanggan')).toBeInTheDocument();
+    expect(await screen.findByText('Dashboard Pelanggan')).toBeInTheDocument();
   });
 });

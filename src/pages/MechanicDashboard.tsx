@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
@@ -43,14 +44,6 @@ const MechanicDashboard = () => {
     ['accepted', 'otw', 'arrived', 'working'].includes(b.status)
   );
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoaderCircle className="h-12 w-12 animate-spin text-orange-600" />
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -78,16 +71,22 @@ const MechanicDashboard = () => {
   const completedJobs = bookings?.filter(b => b.status === 'completed').length || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
+    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-orange-500">
+      {/* Background Glow */}
+      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
+        <div className="absolute top-[20%] right-[-10%] w-[30%] h-[30%] bg-orange-600/10 blur-[100px] rounded-full" />
+        <div className="absolute bottom-[20%] left-[-10%] w-[30%] h-[30%] bg-orange-600/10 blur-[100px] rounded-full" />
+      </div>
+
+      <header className="bg-black/40 backdrop-blur-xl border-b border-white/10 sticky top-0 z-20">
         <div className="flex justify-between items-center p-4">
           <div className="flex items-center space-x-3">
-            <div className="bg-orange-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-tr from-orange-600 to-orange-400 p-2 rounded-xl shadow-lg shadow-orange-500/20">
               <Wrench className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">Dashboard Mekanik</h1>
-              <p className="text-sm text-gray-600">Selamat datang, {user?.name}!</p>
+              <h1 className="text-xl font-bold text-white italic">Dashboard Mekanik</h1>
+              <p className="text-sm text-gray-400">Selamat datang, {user?.name}!</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -105,52 +104,52 @@ const MechanicDashboard = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 relative z-10">
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <Card>
+          <Card className="bg-white/5 backdrop-blur-xl border-white/10">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-orange-600">{pendingOrders.length}</p>
-              <p className="text-sm text-gray-600">Pesanan Masuk</p>
+              <p className="text-2xl font-bold text-orange-400">{pendingOrders.length}</p>
+              <p className="text-sm text-gray-400">Pesanan Masuk</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white/5 backdrop-blur-xl border-white/10">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-blue-600">{currentJob ? '1' : '0'}</p>
-              <p className="text-sm text-gray-600">Pekerjaan Aktif</p>
+              <p className="text-2xl font-bold text-blue-400">{currentJob ? '1' : '0'}</p>
+              <p className="text-sm text-gray-400">Pekerjaan Aktif</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white/5 backdrop-blur-xl border-white/10">
             <CardContent className="p-4 text-center">
-              <p className="text-2xl font-bold text-green-600">{completedJobs}</p>
-              <p className="text-sm text-gray-600">Pekerjaan Selesai</p>
+              <p className="text-2xl font-bold text-green-400">{completedJobs}</p>
+              <p className="text-sm text-gray-400">Pekerjaan Selesai</p>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white/5 backdrop-blur-xl border-white/10">
             <CardContent className="p-4 text-center">
               <div className="flex justify-center items-center">
-                <p className="text-2xl font-bold text-yellow-600 mr-1">{mechanicData?.rating?.toFixed(1) || '4.9'}</p>
-                <Star className="h-4 w-4 fill-yellow-600 text-yellow-600" />
+                <p className="text-2xl font-bold text-yellow-400 mr-1">{mechanicData?.rating?.toFixed(1) || '4.9'}</p>
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
               </div>
-              <p className="text-sm text-gray-600">Rating</p>
+              <p className="text-sm text-gray-400">Rating</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Current Job */}
         {currentJob && (
-          <Card className="mb-8">
+          <Card className="mb-8 bg-orange-500/5 backdrop-blur-xl border-orange-500/30">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Wrench className="h-5 w-5 mr-2 text-orange-600" />
+              <CardTitle className="flex items-center text-white">
+                <Wrench className="h-5 w-5 mr-2 text-orange-400" />
                 Pekerjaan Saat Ini
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="font-semibold">{currentJob.vehicle?.brand} {currentJob.vehicle?.model}</p>
-                  <p className="text-gray-600">{currentJob.problem}</p>
+                  <p className="font-semibold text-white">{currentJob.vehicle?.brand} {currentJob.vehicle?.model}</p>
+                  <p className="text-gray-400">{currentJob.problem}</p>
                   <p className="text-sm text-gray-500 mt-2">
                     <MapPin className="h-4 w-4 inline mr-1" />
                     {currentJob.location?.address}
@@ -164,16 +163,16 @@ const MechanicDashboard = () => {
                 </Badge>
               </div>
               <div className="flex space-x-2 mt-4">
-                <Button size="sm" variant="outline" onClick={() => navigate(`/mechanic/chat/${currentJob.id}`)}>
+                <Button size="sm" variant="outline" className="border-white/10 text-white hover:bg-white/10" onClick={() => navigate(`/mechanic/chat/${currentJob.id}`)}>
                   <MessageSquare className="h-4 w-4 mr-1" />
                   Chat
                 </Button>
-                <Button size="sm" variant="outline">
+                <Button size="sm" variant="outline" className="border-white/10 text-white hover:bg-white/10">
                   <Phone className="h-4 w-4 mr-1" />
                   Telepon
                 </Button>
                 {currentJob.status !== 'completed' && (
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleCompleteJob(currentJob.id)}>
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleCompleteJob(currentJob.id)}>
                     <CheckCircle className="h-4 w-4 mr-1" />
                     Selesai
                   </Button>
@@ -184,21 +183,30 @@ const MechanicDashboard = () => {
         )}
 
         {/* Pending Orders */}
-        <Card>
+        <Card className="bg-white/5 backdrop-blur-xl border-white/10 shadow-2xl">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Clock className="h-5 w-5 mr-2 text-blue-600" />
+            <CardTitle className="flex items-center text-white">
+              <Clock className="h-5 w-5 mr-2 text-blue-400" />
               Pesanan Masuk ({pendingOrders.length})
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {pendingOrders.length > 0 ? (
+            {isLoading ? (
+              Array(3).fill(0).map((_, i) => (
+                <div key={i} className="flex items-center justify-between p-4 border border-white/5 rounded-2xl">
+                  <div className="space-y-2 w-full">
+                    <Skeleton className="h-4 w-3/4 bg-white/10" />
+                    <Skeleton className="h-3 w-1/2 bg-white/10" />
+                  </div>
+                </div>
+              ))
+            ) : pendingOrders.length > 0 ? (
               pendingOrders.map((order) => (
-                <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50">
+                <div key={order.id} className="border border-white/5 rounded-2xl p-4 hover:bg-white/5 transition-colors">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-semibold">{order.vehicle?.brand} {order.vehicle?.model}</p>
-                      <p className="text-gray-600">{order.problem}</p>
+                      <p className="font-semibold text-white">{order.vehicle?.brand} {order.vehicle?.model}</p>
+                      <p className="text-gray-400">{order.problem}</p>
                       <p className="text-sm text-gray-500 mt-1">
                         <MapPin className="h-4 w-4 inline mr-1" />
                         {order.location?.address}
@@ -208,7 +216,7 @@ const MechanicDashboard = () => {
                       <Button 
                         size="sm" 
                         variant="outline" 
-                        className="text-red-600 border-red-200 hover:bg-red-50"
+                        className="text-red-400 border-red-500/30 hover:bg-red-500/10"
                         onClick={() => handleRejectOrder(order.id)}
                       >
                         <XCircle className="h-4 w-4 mr-1" />
@@ -216,7 +224,7 @@ const MechanicDashboard = () => {
                       </Button>
                       <Button 
                         size="sm" 
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-green-600 hover:bg-green-700 text-white"
                         onClick={() => handleAcceptOrder(order.id)}
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
