@@ -49,7 +49,11 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    return fetchApi('/auth/logout', { method: 'POST' });
+    return fetchApi('/auth/logout', { method: 'POST' }).catch(() => {}); // Optional logout
+  },
+
+  getMe: async (): Promise<User> => {
+    return fetchWithAuth('/auth/me');
   },
 
   refreshToken: async (): Promise<{ token: string }> => {
@@ -68,7 +72,7 @@ export const mechanicApi = {
   },
 
   getNearby: async (lat: number, lng: number, radiusKm: number = 10): Promise<Mechanic[]> => {
-    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`);
+    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`).catch(() => mechanicApi.getAll());
   },
 
   updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
@@ -77,11 +81,25 @@ export const mechanicApi = {
       body: JSON.stringify({ isOnline }),
     });
   },
+
+  register: async (data: {
+    speciality: string;
+    experience: number;
+    phone: string;
+    identityNumber: string;
+    bio: string;
+  }): Promise<{ success: boolean; mechanicId: string }> => {
+    return fetchWithAuth('/mechanics/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
 };
 
 // Bookings API
 export const bookingApi = {
   create: async (bookingData: {
+    userId?: string;
     mechanicId: string;
     serviceId: string;
     vehicle: { brand: string; model: string; year: string; licensePlate: string };
@@ -166,18 +184,18 @@ export const serviceApi = {
 // Payments API
 export const paymentApi = {
   create: async (paymentData: {
-    bookingId: number;
+    bookingId: string;
     amount: number;
     paymentMethod: string;
     status: string;
-  }): Promise<{ id: number; status: string }> => {
+  }): Promise<{ id: string; status: string }> => {
     return fetchApi('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   },
 
-  getByBookingId: async (bookingId: string): Promise<{ id: number; amount: number; status: string; paymentMethod: string }> => {
+  getByBookingId: async (bookingId: string): Promise<{ id: string; amount: number; status: string; paymentMethod: string }> => {
     return fetchApi(`/payments?bookingId=${bookingId}`);
   },
 };
@@ -192,8 +210,8 @@ export async function fetchWithAuth<T>(
   return fetchApi<T>(endpoint, {
     ...options,
     headers: {
-      ...options.headers,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
     },
   });
 }
