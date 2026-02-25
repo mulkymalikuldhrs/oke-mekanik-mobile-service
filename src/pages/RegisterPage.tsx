@@ -43,31 +43,36 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 py-12 relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute top-[-20%] right-[-20%] w-[60%] h-[60%] bg-blue-600/10 blur-[120px] rounded-full" />
+      <div className="absolute bottom-[-20%] left-[-20%] w-[60%] h-[60%] bg-blue-600/10 blur-[120px] rounded-full" />
+
+      <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-2xl shadow-2xl relative z-10">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-tr from-blue-600 to-blue-400 p-3 rounded-2xl shadow-lg shadow-blue-500/20">
               <Wrench className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Daftar Oke Mekanik</CardTitle>
-          <CardDescription>Mulai perjalanan Anda bersama kami</CardDescription>
+          <CardTitle className="text-3xl font-black text-white italic tracking-tighter">DAFTAR OKE MEKANIK</CardTitle>
+          <CardDescription className="text-gray-400">Mulai perjalanan masa depan Anda bersama kami</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Nama Lengkap</Label>
+              <Label htmlFor="name" className="text-gray-300">Nama Lengkap</Label>
               <Input
                 id="name"
                 placeholder="Joko Susilo"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-300">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -75,10 +80,11 @@ const RegisterPage = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-300">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -86,41 +92,43 @@ const RegisterPage = () => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="phone">Nomor Telepon</Label>
+              <Label htmlFor="phone" className="text-gray-300">Nomor Telepon</Label>
               <Input
                 id="phone"
                 placeholder="0812XXXXXXXX"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="role">Daftar sebagai</Label>
+              <Label htmlFor="role" className="text-gray-300">Daftar sebagai</Label>
               <Select
                 value={formData.role}
                 onValueChange={(val) => setFormData({ ...formData, role: val as UserRole })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-blue-500/50">
                   <SelectValue placeholder="Pilih peran" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                   <SelectItem value="customer">Pelanggan</SelectItem>
                   <SelectItem value="mechanic">Mekanik</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-              {isLoading ? 'Memuat...' : 'Daftar'}
+          <CardFooter className="flex flex-col space-y-6">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl h-12 shadow-lg shadow-blue-500/20" disabled={isLoading}>
+              {isLoading ? 'Memuat...' : 'DAFTAR SEKARANG'}
             </Button>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-400">
               Sudah punya akun?{' '}
-              <Link to="/login" className="text-blue-600 hover:underline">
+              <Link to="/login" className="text-blue-400 font-bold hover:text-blue-300 transition-colors">
                 Masuk di sini
               </Link>
             </p>
