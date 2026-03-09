@@ -19,8 +19,19 @@ async function fetchApi<T>(
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+    const error = await response.json().catch(() => ({ message: null }));
+
+    if (response.status === 401) {
+      throw new Error('Sesi Anda telah berakhir. Silakan login kembali.');
+    } else if (response.status === 403) {
+      throw new Error('Anda tidak memiliki akses untuk melakukan tindakan ini.');
+    } else if (response.status === 404) {
+      throw new Error('Data tidak ditemukan.');
+    } else if (response.status === 500) {
+      throw new Error('Terjadi kesalahan pada server. Silakan coba lagi nanti.');
+    }
+
+    throw new Error(error.message || `Terjadi kesalahan (Status: ${response.status})`);
   }
 
   return response.json();
@@ -49,11 +60,15 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    return fetchApi('/auth/logout', { method: 'POST' });
+    return fetchApi('/auth/logout', { method: 'POST' }).catch(() => {}); // Optional logout
+  },
+
+  getMe: async (): Promise<User> => {
+    return fetchWithAuth('/auth/me');
   },
 
   refreshToken: async (): Promise<{ token: string }> => {
-    return fetchApi('/auth/refresh', { method: 'POST' });
+    return fetchWithAuth('/auth/refresh', { method: 'POST' });
   },
 };
 
@@ -68,13 +83,33 @@ export const mechanicApi = {
   },
 
   getNearby: async (lat: number, lng: number, radiusKm: number = 10): Promise<Mechanic[]> => {
-    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`);
+    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`).catch(() => mechanicApi.getAll());
   },
 
   updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
-    return fetchApi(`/mechanics/${id}/status`, {
+    return fetchWithAuth(`/mechanics/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ isOnline }),
+    });
+  },
+
+  updateLocation: async (id: string, lat: number, lng: number): Promise<void> => {
+    return fetchWithAuth(`/mechanics/${id}/location`, {
+      method: 'PATCH',
+      body: JSON.stringify({ lat, lng }),
+    });
+  },
+
+  register: async (data: {
+    speciality: string;
+    experience: number;
+    phone: string;
+    identityNumber: string;
+    bio: string;
+  }): Promise<{ success: boolean; mechanicId: string }> => {
+    return fetchWithAuth('/mechanics/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   },
 };
@@ -90,48 +125,47 @@ export const bookingApi = {
     scheduledAt?: string;
     isEmergency?: boolean;
   }): Promise<Booking> => {
-    return fetchApi('/bookings', {
+    return fetchWithAuth('/bookings', {
       method: 'POST',
       body: JSON.stringify(bookingData),
     });
   },
 
   getById: async (id: string): Promise<Booking> => {
-    return fetchApi(`/bookings/${id}`);
+    return fetchWithAuth(`/bookings/${id}`);
   },
 
   getByUser: async (userId: string): Promise<Booking[]> => {
-    return fetchApi(`/bookings?userId=${userId}`);
+    return fetchWithAuth(`/bookings?userId=${userId}`);
   },
 
   getByMechanic: async (mechanicId: string): Promise<Booking[]> => {
-    return fetchApi(`/bookings?mechanicId=${mechanicId}`);
+    return fetchWithAuth(`/bookings?mechanicId=${mechanicId}`);
   },
 
   updateStatus: async (id: string, status: Booking['status']): Promise<Booking> => {
-    return fetchApi(`/bookings/${id}/status`, {
+    return fetchWithAuth(`/bookings/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });
   },
 
   getActiveServices: async (): Promise<Booking[]> => {
-    return fetchApi('/bookings/active');
+    return fetchWithAuth('/bookings/active');
   },
 };
 
 // Messages API
 export const messageApi = {
   getByBookingId: async (bookingId: string): Promise<Message[]> => {
-    return fetchApi(`/messages?bookingId=${bookingId}`);
+    return fetchWithAuth(`/messages?bookingId=${bookingId}`);
   },
 
   send: async (messageData: {
     bookingId: string;
     text: string;
-    senderId: string;
   }): Promise<Message> => {
-    return fetchApi('/messages', {
+    return fetchWithAuth('/messages', {
       method: 'POST',
       body: JSON.stringify(messageData),
     });
@@ -141,11 +175,11 @@ export const messageApi = {
 // User API
 export const userApi = {
   getProfile: async (userId: string): Promise<User> => {
-    return fetchApi(`/users/${userId}`);
+    return fetchWithAuth(`/users/${userId}`);
   },
 
   updateProfile: async (userId: string, data: Partial<User>): Promise<User> => {
-    return fetchApi(`/users/${userId}`, {
+    return fetchWithAuth(`/users/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -166,19 +200,38 @@ export const serviceApi = {
 // Payments API
 export const paymentApi = {
   create: async (paymentData: {
-    bookingId: number;
+    bookingId: string;
     amount: number;
     paymentMethod: string;
     status: string;
-  }): Promise<{ id: number; status: string }> => {
-    return fetchApi('/payments', {
+  }): Promise<{ id: string; status: string }> => {
+    return fetchWithAuth('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   },
 
-  getByBookingId: async (bookingId: string): Promise<{ id: number; amount: number; status: string; paymentMethod: string }> => {
-    return fetchApi(`/payments?bookingId=${bookingId}`);
+  getByBookingId: async (bookingId: string): Promise<{ id: string; amount: number; status: string; paymentMethod: string }> => {
+    return fetchWithAuth(`/payments?bookingId=${bookingId}`);
+  },
+};
+
+// Reviews API
+export const reviewApi = {
+  getByMechanicId: async (mechanicId: string): Promise<{ id: string; bookingId: string; userId: string; rating: number; comment: string; createdAt: string }[]> => {
+    return fetchApi(`/reviews?mechanicId=${mechanicId}`);
+  },
+
+  create: async (reviewData: {
+    bookingId: string;
+    mechanicId: string;
+    rating: number;
+    comment: string;
+  }): Promise<any> => {
+    return fetchWithAuth('/reviews', {
+      method: 'POST',
+      body: JSON.stringify(reviewData),
+    });
   },
 };
 
@@ -192,8 +245,8 @@ export async function fetchWithAuth<T>(
   return fetchApi<T>(endpoint, {
     ...options,
     headers: {
-      ...options.headers,
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
     },
   });
 }
