@@ -11,8 +11,8 @@ interface LanguageContextType {
 
 const translations = {
   id: {
-    'hero.title': 'Bengkel Keliling Terpercaya',
-    'hero.subtitle': 'Panggil mekanik profesional ke lokasi Anda kapan saja, dimana saja',
+    'hero.title': 'BENGKEL MASA DEPAN',
+    'hero.subtitle': 'Ekosistem mekanik digital tercanggih. Panggil bantuan profesional dalam hitungan detik dengan AI.',
     'role.customer.title': 'Saya Pelanggan',
     'role.customer.desc': 'Butuh bantuan mekanik? Panggil sekarang juga!',
     'role.customer.button': 'Panggil Mekanik',
@@ -34,8 +34,8 @@ const translations = {
     'cta.mechanic': 'Mulai sebagai Mekanik'
   },
   en: {
-    'hero.title': 'Trusted Mobile Mechanic',
-    'hero.subtitle': 'Call professional mechanics to your location anytime, anywhere',
+    'hero.title': 'FUTURE MECHANIC ECOSYSTEM',
+    'hero.subtitle': 'The most advanced digital mechanic ecosystem. Call professional help in seconds with AI.',
     'role.customer.title': "I'm a Customer",
     'role.customer.desc': 'Need mechanic help? Call now!',
     'role.customer.button': 'Call Mechanic',
