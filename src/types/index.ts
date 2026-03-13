@@ -59,6 +59,10 @@ export interface Booking {
   estimatedCost: number;
   finalCost?: number;
   isEmergency: boolean;
+  mechanicLocation?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export interface Message {
@@ -66,7 +70,7 @@ export interface Message {
   bookingId: string;
   senderId: string;
   text: string;
-  timestamp: string;
+  createdAt: string;
 }
 
 export interface Review {
