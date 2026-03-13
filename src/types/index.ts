@@ -66,7 +66,7 @@ export interface Message {
   bookingId: string;
   senderId: string;
   text: string;
-  timestamp: string;
+  createdAt: string;
 }
 
 export interface Review {
