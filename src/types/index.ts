@@ -37,7 +37,7 @@ export type BookingStatus =
 
 export interface Booking {
   id: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
   status: BookingStatus;
   vehicle: {
@@ -53,12 +53,16 @@ export interface Booking {
     address: string;
   };
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   scheduledAt?: string;
   eta?: string;
   estimatedCost: number;
   finalCost?: number;
-  isEmergency: boolean;
+  isEmergency?: boolean;
+  mechanicLocation?: {
+    lat: number;
+    lng: number;
+  };
 }
 
 export interface Message {
@@ -66,13 +70,13 @@ export interface Message {
   bookingId: string;
   senderId: string;
   text: string;
-  timestamp: string;
+  createdAt: string;
 }
 
 export interface Review {
   id: string;
   bookingId: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
   rating: number;
   comment: string;
