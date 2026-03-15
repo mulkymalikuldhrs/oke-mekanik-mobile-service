@@ -1,6 +1,6 @@
 
 import { renderHook, act } from '@testing-library/react';
-import { useLanguage, LanguageProvider } from './useLanguage';
+import { useLanguage, LanguageProvider } from '@/hooks/useLanguage';
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 
@@ -26,7 +26,7 @@ describe('useLanguage', () => {
     });
 
     expect(result.current.language).toBe('en');
-    expect(result.current.t('hero.title')).toBe('Trusted Mobile Mechanic');
+    expect(result.current.t('hero.title')).toBe('Future Mechanic Ecosystem');
   });
 
   it('should return key if translation is missing', () => {
