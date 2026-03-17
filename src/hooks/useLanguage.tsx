@@ -34,7 +34,7 @@ const translations = {
     'cta.mechanic': 'Mulai sebagai Mekanik'
   },
   en: {
-    'hero.title': 'Trusted Mobile Mechanic',
+    'hero.title': 'Future Mechanic Ecosystem',
     'hero.subtitle': 'Call professional mechanics to your location anytime, anywhere',
     'role.customer.title': "I'm a Customer",
     'role.customer.desc': 'Need mechanic help? Call now!',
