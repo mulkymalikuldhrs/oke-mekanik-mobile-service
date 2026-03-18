@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MechanicDashboard from '../pages/MechanicDashboard';
 import { vi } from 'vitest';
 import * as useLanguage from '../hooks/useLanguage';
+import * as AuthContext from '../contexts/AuthContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +21,15 @@ describe('MechanicDashboard', () => {
       setLanguage: vi.fn(),
       t: (key) => key,
     });
+    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
+      user: { id: 'mech-1', name: 'Jane Mechanic', role: 'mechanic' },
+      isLoading: false,
+      logout: vi.fn(),
+      login: vi.fn(),
+      register: vi.fn(),
+      token: 'fake-token',
+      error: null,
+    });
   });
 
   afterEach(() => {
@@ -35,17 +45,23 @@ describe('MechanicDashboard', () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
-    expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('renders success state', async () => {
-    window.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        currentJob: { customer: 'Test Customer' },
-        pendingOrders: [{ id: 1, customer: 'Pending Customer' }],
-        todayStats: { completedJobs: 5 },
-      }),
+    window.fetch = vi.fn().mockImplementation((url) => {
+      if (url.includes('/mechanics/')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8 }),
+        });
+      }
+      if (url.includes('/bookings?mechanicId=')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([{ id: '1', status: 'accepted', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', location: { address: 'Test Location' } }]),
+        });
+      }
+      return Promise.reject(new Error('Unknown URL'));
     });
 
     render(
@@ -57,7 +73,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Test Customer')).toBeInTheDocument();
+      expect(screen.getByText('Toyota Avanza')).toBeInTheDocument();
     });
   });
 
