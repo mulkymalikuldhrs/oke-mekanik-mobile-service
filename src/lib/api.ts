@@ -20,10 +20,32 @@ async function fetchApi<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || `HTTP error! status: ${response.status}`);
+    let errorMsg = error.message || `HTTP error! status: ${response.status}`;
+
+    // Custom Indonesian error messages for common status codes
+    if (response.status === 401) errorMsg = "Sesi berakhir, silakan masuk kembali.";
+    if (response.status === 403) errorMsg = "Akses ditolak: Anda tidak memiliki izin untuk tindakan ini.";
+
+    throw new Error(errorMsg);
   }
 
   return response.json();
+}
+
+// Helper function for authenticated requests
+export async function fetchWithAuth<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = localStorage.getItem('auth_token');
+
+  return fetchApi<T>(endpoint, {
+    ...options,
+    headers: {
+      ...options.headers,
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
 }
 
 // Auth API
@@ -53,7 +75,17 @@ export const authApi = {
   },
 
   refreshToken: async (): Promise<{ token: string }> => {
-    return fetchApi('/auth/refresh', { method: 'POST' });
+    return fetchWithAuth('/auth/refresh', { method: 'POST' });
+  },
+};
+
+// AI API
+export const aiApi = {
+  diagnose: async (problem: string): Promise<{ suggestion: string; serviceId: string }> => {
+    return fetchWithAuth('/ai/diagnose', {
+      method: 'POST',
+      body: JSON.stringify({ problem }),
+    });
   },
 };
 
@@ -72,7 +104,7 @@ export const mechanicApi = {
   },
 
   updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
-    return fetchApi(`/mechanics/${id}/status`, {
+    return fetchWithAuth(`/mechanics/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ isOnline }),
     });
@@ -90,48 +122,49 @@ export const bookingApi = {
     scheduledAt?: string;
     isEmergency?: boolean;
   }): Promise<Booking> => {
-    return fetchApi('/bookings', {
+    // Note: userId is now automatically handled by the backend using the JWT token
+    return fetchWithAuth('/bookings', {
       method: 'POST',
       body: JSON.stringify(bookingData),
     });
   },
 
   getById: async (id: string): Promise<Booking> => {
-    return fetchApi(`/bookings/${id}`);
+    return fetchWithAuth(`/bookings/${id}`);
   },
 
   getByUser: async (userId: string): Promise<Booking[]> => {
-    return fetchApi(`/bookings?userId=${userId}`);
+    return fetchWithAuth(`/bookings?userId=${userId}`);
   },
 
   getByMechanic: async (mechanicId: string): Promise<Booking[]> => {
-    return fetchApi(`/bookings?mechanicId=${mechanicId}`);
+    return fetchWithAuth(`/bookings?mechanicId=${mechanicId}`);
   },
 
   updateStatus: async (id: string, status: Booking['status']): Promise<Booking> => {
-    return fetchApi(`/bookings/${id}/status`, {
+    return fetchWithAuth(`/bookings/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status }),
     });
   },
 
   getActiveServices: async (): Promise<Booking[]> => {
-    return fetchApi('/bookings/active');
+    return fetchWithAuth('/bookings/active');
   },
 };
 
 // Messages API
 export const messageApi = {
   getByBookingId: async (bookingId: string): Promise<Message[]> => {
-    return fetchApi(`/messages?bookingId=${bookingId}`);
+    return fetchWithAuth(`/messages?bookingId=${bookingId}`);
   },
 
   send: async (messageData: {
     bookingId: string;
     text: string;
-    senderId: string;
   }): Promise<Message> => {
-    return fetchApi('/messages', {
+    // senderId is now handled by the backend
+    return fetchWithAuth('/messages', {
       method: 'POST',
       body: JSON.stringify(messageData),
     });
@@ -141,11 +174,11 @@ export const messageApi = {
 // User API
 export const userApi = {
   getProfile: async (userId: string): Promise<User> => {
-    return fetchApi(`/users/${userId}`);
+    return fetchWithAuth(`/users/${userId}`);
   },
 
   updateProfile: async (userId: string, data: Partial<User>): Promise<User> => {
-    return fetchApi(`/users/${userId}`, {
+    return fetchWithAuth(`/users/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -166,34 +199,37 @@ export const serviceApi = {
 // Payments API
 export const paymentApi = {
   create: async (paymentData: {
-    bookingId: number;
+    bookingId: string;
     amount: number;
     paymentMethod: string;
     status: string;
-  }): Promise<{ id: number; status: string }> => {
-    return fetchApi('/payments', {
+  }): Promise<{ id: string; status: string }> => {
+    return fetchWithAuth('/payments', {
       method: 'POST',
       body: JSON.stringify(paymentData),
     });
   },
 
-  getByBookingId: async (bookingId: string): Promise<{ id: number; amount: number; status: string; paymentMethod: string }> => {
-    return fetchApi(`/payments?bookingId=${bookingId}`);
+  getByBookingId: async (bookingId: string): Promise<{ id: string; amount: number; status: string; paymentMethod: string }> => {
+    return fetchWithAuth(`/payments?bookingId=${bookingId}`);
   },
 };
 
-// Helper function for authenticated requests
-export async function fetchWithAuth<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = localStorage.getItem('auth_token');
-  
-  return fetchApi<T>(endpoint, {
-    ...options,
-    headers: {
-      ...options.headers,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-}
+// Reviews API
+export const reviewApi = {
+  create: async (reviewData: {
+    bookingId: string;
+    mechanicId: string;
+    rating: number;
+    comment: string;
+  }): Promise<{ id: string }> => {
+    return fetchWithAuth('/reviews', {
+      method: 'POST',
+      body: JSON.stringify(reviewData),
+    });
+  },
+
+  getByMechanicId: async (mechanicId: string): Promise<any[]> => {
+    return fetchApi(`/reviews?mechanicId=${mechanicId}`);
+  },
+};
