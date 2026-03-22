@@ -37,7 +37,7 @@ export type BookingStatus =
 
 export interface Booking {
   id: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
   status: BookingStatus;
   vehicle: {
@@ -72,7 +72,7 @@ export interface Message {
 export interface Review {
   id: string;
   bookingId: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
   rating: number;
   comment: string;
