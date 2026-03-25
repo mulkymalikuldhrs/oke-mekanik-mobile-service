@@ -1,245 +1,64 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-# Oke Mekanik - Your On-Demand Mechanic Solution
+# OKE MEKANIK - Masterpiece Full-Stack Ecosystem
 
-Oke Mekanik is a web application that connects customers with mechanics for on-demand vehicle repair and maintenance services. It provides a platform for customers to easily book mechanics, track the status of their service requests, and make payments. For mechanics, it offers a way to manage their jobs, communicate with customers, and receive payments.
+Oke Mekanik adalah platform mekanik panggilan (mobile mechanic) profesional yang menghubungkan pelanggan dengan mekanik ahli secara real-time. Dibangun dengan fokus pada kecepatan, keamanan, dan pengalaman pengguna futuristik.
 
-## Features
+## 🚀 Fitur Utama
 
-- **Customer Dashboard**: View active and past service requests, and manage your profile.
-- **Mechanic Dashboard**: View and manage incoming job requests, and track your earnings.
-- **Booking System**: Easily book a mechanic by providing your location, vehicle details, and the problem you're facing.
-- **Real-Time Tracking**: Track the mechanic's location and the status of your service request in real-time.
-- **In-App Chat**: Communicate with your mechanic directly through the app.
-- **Secure Payments**: Pay for services securely through the app.
-- **Authentication**: Secure login and registration for customers and mechanics.
+- **Real-time Tracking**: Pantau lokasi mekanik secara langsung menuju lokasi Anda menggunakan integrasi GPS & Socket.io.
+- **AI Diagnostic Engine**: Diagnosa masalah kendaraan secara instan dengan bantuan AI (Weighted Keyword Analysis).
+- **Holographic Glassmorphism UI**: Antarmuka futuristik dengan intensitas blur tinggi dan animasi halus (Framer Motion).
+- **Instant Booking & Emergency**: Panggil mekanik untuk keadaan darurat atau jadwalkan perawatan rutin.
+- **Verified Mechanics**: Seluruh mitra mekanik telah melalui proses verifikasi dan memiliki sistem rating transparan.
+- **Secure Full-Stack System**: Backend Node.js/Express mandiri dengan enkripsi JWT, Rate Limiting, dan SQLite persistence.
 
-## Technologies Used
+## 🛠 Tech Stack
 
-- **Vite**: A fast build tool that provides a lightning-fast development experience.
-- **React**: A popular JavaScript library for building user interfaces.
-- **TypeScript**: A typed superset of JavaScript that enhances code quality and maintainability.
-- **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
-- **shadcn-ui**: A collection of accessible and customizable UI components.
-- **React Query**: A data-fetching library that simplifies the process of fetching, caching, and updating data.
-- **React Hook Form**: A library for building performant, flexible, and extensible forms.
-- **Zod**: A TypeScript-first schema declaration and validation library.
-- **Mock Service Worker (MSW)**: An API mocking library for seamless development and testing.
+### Frontend
+- **Framework**: React 19 + Vite
+- **Styling**: Tailwind CSS + Shadcn UI (Glassmorphism Theme)
+- **Animations**: Framer Motion
+- **State Management**: TanStack Query (React Query) v5
+- **Communication**: Socket.io-client
 
-## Getting Started
+### Backend
+- **Server**: Node.js + Express 4
+- **Database**: Better-SQLite3
+- **Authentication**: JWT (JSON Web Token) + BcryptJS
+- **Real-time**: Socket.io
+- **Security**: Express Rate Limit + Zod Validation
 
-To get a local copy up and running, follow these simple steps.
+## 📦 Memulai Pengembangan
 
-### Prerequisites
-
-- Node.js (v16 or higher)
+### Prasyarat
+- Node.js (v20+)
 - npm
 
-### Installation
-
-1. Clone the repo
-   ```sh
-   git clone https://github.com/your_username_/Project-Name.git
-   ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
-3. Start the development server
-   ```sh
-   npm run dev
-   ```
-4. Open your browser and navigate to `http://localhost:5173`
-
-## Project Structure
-
-The project is structured as follows:
-
-- `src/components`: Contains reusable UI components.
-- `src/hooks`: Contains custom React hooks.
-- `src/lib`: Contains utility functions.
-- `src/mocks`: Contains the mock API handlers and server setup.
-- `src/pages`: Contains the application's pages.
-- `public`: Contains static assets, including the MSW service worker.
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
->>>>>>> origin/feat/project-revamp-10664209957500258455
-=======
-# Oke Mekanik
-
-Oke Mekanik is a web platform designed to connect customers with mechanics for vehicle repair and maintenance services. The platform features separate dashboards for customers and mechanics, a booking system, service tracking, a chat feature for communication, and a payment system.
-
-## Tech Stack
-
-- **Frontend:** React, Vite, TypeScript
-- **Styling:** Tailwind CSS, shadcn-ui
-- **State Management:** @tanstack/react-query
-- **Routing:** react-router-dom
-- **Testing:** Vitest, React Testing Library
-- **Mock API:** json-server
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- npm
-
-### Installation
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/lovable-community/oke-mekanik.git
-    ```
-
-2.  **Navigate to the project directory:**
-
-    ```bash
-    cd oke-mekanik
-    ```
-
-3.  **Install the dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-### Running the Application
-
-=======
-# Oke Mekanik
-
-Oke Mekanik is a web platform designed to connect customers with mechanics for vehicle repair and maintenance services. The platform features separate dashboards for customers and mechanics, a booking system, service tracking, a chat feature for communication, and a payment system.
-
-## Tech Stack
-
-- **Frontend:** React, Vite, TypeScript
-- **Styling:** Tailwind CSS, shadcn-ui
-- **State Management:** @tanstack/react-query
-- **Routing:** react-router-dom
-- **Testing:** Vitest, React Testing Library
-- **Mock API:** json-server
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- npm
-
-### Installation
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone https://github.com/lovable-community/oke-mekanik.git
-    ```
-
-2.  **Navigate to the project directory:**
-
-    ```bash
-    cd oke-mekanik
-    ```
-
-3.  **Install the dependencies:**
-
-    ```bash
-    npm install
-    ```
-
-### Running the Application
-
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-To run the application in development mode, which includes the Vite development server for the UI and the `json-server` for the mock API, run the following command:
-
-```bash
-npm run dev
-```
-
-This will start two servers concurrently:
-
-- The **frontend application** will be available at `http://localhost:5173`.
-- The **mock API server** will be running at `http://localhost:3001`.
-
-### Running Tests
-
-To run the test suite, use the following command:
-
-```bash
-npm test
-```
-
-This will execute the tests using Vitest and provide a report in the console.
-<<<<<<< HEAD
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-# Oke Mekanik
-
-Oke Mekanik is a comprehensive mobile mechanic platform designed to bring professional vehicle services directly to the customer's location.
-
-## Features
-
-- **Real-time Tracking**: Monitor the mechanic's location as they head towards you.
-- **Instant Booking**: Call a mechanic for emergency repairs or schedule routine maintenance.
-- **Verified Mechanics**: All mechanics are vetted and rated by the community.
-- **In-app Chat**: Seamless communication between customers and mechanics.
-- **Secure Payments**: Transparent pricing and digital payment records.
-- **Multi-language Support**: Available in Bahasa Indonesia and English.
-
-## Tech Stack
-
-- **Framework**: [React 18](https://reactjs.org/) with [Vite](https://vitejs.dev/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
-- **State Management**: [React Query](https://tanstack.com/query/latest) & Context API
-- **Testing**: [Vitest](https://vitest.dev/) & [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-
-## Getting Started
-
-1. **Install Dependencies**:
+### Instalasi
+1. Clone repositori
+2. Instal dependensi:
    ```bash
    npm install
    ```
-
-2. **Start Development Server**:
+3. Jalankan server pengembangan (Frontend & Backend):
    ```bash
    npm run dev
    ```
 
-3. **Run Tests**:
-   ```bash
-   npm test
-   ```
+### Pengujian
+- **Unit & Integration Test**: `npm test`
+- **E2E Verification**: `node verify_backend.js`
 
-## Project Structure
+## 🏗 Struktur Proyek
 
-- `src/components`: Reusable UI components.
-- `src/contexts`: React Context providers (Auth, etc.).
-- `src/hooks`: Custom React hooks.
-- `src/lib`: Utility functions and API client.
-- `src/pages`: Application pages/routes.
-- `src/types`: TypeScript definitions.
+- `server/`: Backend logic, database schema, dan socket handlers.
+- `src/components/`: Reusable UI components dengan standar Shadcn.
+- `src/contexts/`: Session management & Auth state.
+- `src/lib/api.ts`: Centralized production-ready API client.
+- `src/pages/`: Halaman aplikasi dengan desain futuristik.
+- `tests/`: End-to-end testing suite.
 
-## License
+## 🛡 Kebijakan Produksi
+Proyek ini mengadopsi standar **Zero-Mock Policy**. Seluruh data dan logika bisnis dijalankan secara nyata pada backend, tanpa simulasi client-side atau mock API di lingkungan produksi.
 
-This project is private and intended for the Oke Mekanik platform.
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+---
+© 2024 Oke Mekanik. Elevating Mobile Mechanic Experience.

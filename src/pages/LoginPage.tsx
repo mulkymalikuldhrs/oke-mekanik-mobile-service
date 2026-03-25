@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Wrench } from 'lucide-react';
+import { Wrench, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { UserRole } from '@/types';
 
@@ -36,21 +37,31 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] px-4 relative overflow-hidden font-sans">
+      {/* Background Glow */}
+      <div className="absolute top-[-20%] left-[-20%] w-[60%] h-[60%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute bottom-[-20%] right-[-20%] w-[60%] h-[60%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse [animation-delay:2s]" />
+
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-md relative z-10"
+      >
+      <Card className="w-full bg-white/5 border-white/10 backdrop-blur-[40px] shadow-2xl overflow-hidden rounded-[2.5rem]">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-tr from-blue-600 to-blue-400 p-3 rounded-2xl shadow-lg shadow-blue-500/20">
               <Wrench className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Oke Mekanik</CardTitle>
-          <CardDescription>Masuk ke akun Anda</CardDescription>
+          <CardTitle className="text-3xl font-black text-white italic tracking-tighter">OKE MEKANIK</CardTitle>
+          <CardDescription className="text-gray-400">Masuk ke masa depan servis kendaraan</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-300">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -58,10 +69,11 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-300">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -69,34 +81,36 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-600 focus:border-blue-500/50"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="role">Masuk sebagai</Label>
+              <Label htmlFor="role" className="text-gray-300">Masuk sebagai</Label>
               <Select value={role} onValueChange={(val) => setRole(val as UserRole)}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white/5 border-white/10 text-white focus:border-blue-500/50">
                   <SelectValue placeholder="Pilih peran" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                   <SelectItem value="customer">Pelanggan</SelectItem>
                   <SelectItem value="mechanic">Mekanik</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
-              {isLoading ? 'Memuat...' : 'Masuk'}
+          <CardFooter className="flex flex-col space-y-6">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black rounded-xl h-12 shadow-lg shadow-blue-500/20" disabled={isLoading}>
+              {isLoading ? 'Memuat...' : 'MASUK SEKARANG'}
             </Button>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-400">
               Belum punya akun?{' '}
-              <Link to="/register" className="text-blue-600 hover:underline">
+              <Link to="/register" className="text-blue-400 font-bold hover:text-blue-300 transition-colors">
                 Daftar sekarang
               </Link>
             </p>
           </CardFooter>
         </form>
       </Card>
+      </motion.div>
     </div>
   );
 };
