@@ -1,6 +1,6 @@
 
 import { renderHook, act } from '@testing-library/react';
-import { useLanguage, LanguageProvider } from './useLanguage';
+import { useLanguage, LanguageProvider } from '@/hooks/useLanguage';
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 
