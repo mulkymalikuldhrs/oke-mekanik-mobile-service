@@ -101,3 +101,58 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-[40px] border border-white/10 shadow-2xl;
+  }
+
+  .backdrop-blur-ultra {
+    backdrop-filter: blur(40px);
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-scan {
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(59, 130, 246, 0.2),
+      transparent
+    );
+    background-size: 100% 200%;
+    animation: scan 3s linear infinite;
+  }
+
+  @keyframes scan {
+    0% {
+      background-position: 0 -100%;
+    }
+    100% {
+      background-position: 0 100%;
+    }
+  }
+
+  .holographic-glow {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2),
+                inset 0 0 20px rgba(59, 130, 246, 0.1);
+  }
+}

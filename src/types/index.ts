@@ -15,15 +15,15 @@ export interface Mechanic extends User {
   role: 'mechanic';
   speciality: string[];
   rating: number;
-  totalJobs: number;
+  totalJobs?: number;
   isOnline: boolean;
-  location?: {
-    lat: number;
-    lng: number;
-    address: string;
-  };
-  verified: boolean;
+  lat?: number;
+  lng?: number;
+  verified?: boolean;
   pricePerHour: number;
+  avatar?: string;
+  yearsOfExperience?: number;
+  bio?: string;
 }
 
 export type BookingStatus =
@@ -37,8 +37,9 @@ export type BookingStatus =
 
 export interface Booking {
   id: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
+  serviceId?: string;
   status: BookingStatus;
   vehicle: {
     brand: string;
@@ -52,13 +53,17 @@ export interface Booking {
     lng: number;
     address: string;
   };
+  mechanicLocation?: {
+    lat: number;
+    lng: number;
+  } | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   scheduledAt?: string;
   eta?: string;
   estimatedCost: number;
   finalCost?: number;
-  isEmergency: boolean;
+  isEmergency?: boolean;
 }
 
 export interface Message {

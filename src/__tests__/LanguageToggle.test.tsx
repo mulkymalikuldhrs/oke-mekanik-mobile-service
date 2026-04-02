@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import LanguageToggle from './LanguageToggle';
-import { LanguageProvider } from '../hooks/useLanguage';
+import LanguageToggle from '@/components/LanguageToggle';
+import { LanguageProvider } from '@/hooks/useLanguage';
 
 describe('LanguageToggle', () => {
   it('should render without crashing', () => {
