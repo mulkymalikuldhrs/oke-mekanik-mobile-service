@@ -31,7 +31,25 @@ const translations = {
     'cta.title': 'Siap Memulai?',
     'cta.subtitle': 'Bergabunglah dengan ribuan pengguna yang puas',
     'cta.customer': 'Mulai sebagai Pelanggan',
-    'cta.mechanic': 'Mulai sebagai Mekanik'
+    'cta.mechanic': 'Mulai sebagai Mekanik',
+    'footer.services': 'Layanan',
+    'footer.panggil': 'Panggil Mekanik',
+    'footer.servis': 'Servis Rutin',
+    'footer.oli': 'Ganti Oli',
+    'footer.emergency': 'Emergency 24/7',
+    'footer.contact': 'Hubungi Kami',
+    'footer.rights': '© 2024 Oke Mekanik Masterpiece. Hak cipta dilindungi undang-undang.',
+    'login.title': 'Masuk ke akun Anda',
+    'login.role.label': 'Masuk sebagai',
+    'login.role.placeholder': 'Pilih peran',
+    'login.role.customer': 'Pelanggan',
+    'login.role.mechanic': 'Mekanik',
+    'login.button.loading': 'Memuat...',
+    'login.button': 'MASUK SEKARANG',
+    'login.no_account': 'Belum punya akun?',
+    'login.register_link': 'Daftar sekarang',
+    'login.success': 'Login berhasil!',
+    'login.error': 'Login gagal. Silakan coba lagi.'
   },
   en: {
     'hero.title': 'Trusted Mobile Mechanic',
@@ -54,7 +72,25 @@ const translations = {
     'cta.title': 'Ready to Start?',
     'cta.subtitle': 'Join thousands of satisfied users',
     'cta.customer': 'Start as Customer',
-    'cta.mechanic': 'Start as Mechanic'
+    'cta.mechanic': 'Start as Mechanic',
+    'footer.services': 'Services',
+    'footer.panggil': 'Call Mechanic',
+    'footer.servis': 'Routine Service',
+    'footer.oli': 'Oil Change',
+    'footer.emergency': 'Emergency 24/7',
+    'footer.contact': 'Contact Us',
+    'footer.rights': '© 2024 Oke Mekanik Masterpiece. All rights reserved.',
+    'login.title': 'Login to your account',
+    'login.role.label': 'Login as',
+    'login.role.placeholder': 'Select role',
+    'login.role.customer': 'Customer',
+    'login.role.mechanic': 'Mechanic',
+    'login.button.loading': 'Loading...',
+    'login.button': 'LOGIN NOW',
+    'login.no_account': "Don't have an account?",
+    'login.register_link': 'Register now',
+    'login.success': 'Login successful!',
+    'login.error': 'Login failed. Please try again.'
   }
 };
 
