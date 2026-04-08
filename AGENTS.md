@@ -1,114 +1,38 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+# AGENTS.md - Masterpiece v28 Full-Stack Directives
 
-# Agent Documentation - Production-Ready Implementation
+This document defines the absolute operational constraints for all AI agents working on the **Oke Mekanik Masterpiece v28** codebase.
 
-Project "Oke Mekanik" telah ditingkatkan menjadi aplikasi fungsional dengan arsitektur yang siap digunakan untuk produksi. Berikut adalah detail implementasi:
+## 🏛 Project Architecture (Masterpiece v28)
 
-## 1. Arsitektur & Data Layer
-- **Centralized API Client**: Menggunakan `src/lib/api.ts` sebagai abstraksi data fetching, siap diintegrasikan dengan backend API nyata.
-- **TypeScript Types**: Kontrak data didefinisikan secara ketat di `src/types/index.ts`.
-- **Server State Management**: Menggunakan TanStack Query untuk efisiensi caching dan sinkronisasi data.
+Oke Mekanik is a production-ready, mock-free full-stack ecosystem.
 
-## 2. Sistem Autentikasi
-- **AuthProvider**: Session management yang persisten dengan dukungan multi-role (Pelanggan & Mekanik).
-- **Validasi Robust**: Menggunakan React Hook Form dan Zod untuk memastikan integritas data input.
+- **Backend**: Node.js/Express (`server/index.js`) with SQLite persistence (`server/db.js`).
+- **Frontend**: React 19 + Vite (`src/`).
+- **Communication**: Real-time Socket.io integration for status updates and chat.
+- **Diagnostics**: AI Smart Diagnostic Engine v5.0 (Ultimate Weighted Technical Analysis).
 
-## 3. Fitur Utama
-- **Real-time Tracking**: Implementasi visualisasi progres mekanik menuju lokasi pelanggan.
-- **Sistem Pesan**: Integrasi komunikasi dua arah antara mitra dan pelanggan.
-- **Multi-step Workflow**: Alur pendaftaran dan pemesanan yang terstruktur untuk efisiensi UX.
+## 🚫 Absolute Constraints
 
-## 4. Kualitas & Pengujian
-- **Performance**: Implementasi skeleton loaders untuk transisi UI yang mulus.
-- **Scalability**: Struktur folder yang modular memudahkan pengembangan fitur di masa depan.
-- **Testing**: Infrastruktur pengujian menggunakan Vitest telah dikonfigurasi dan diverifikasi.
+1. **NO MOCKING**: All logic must be real and implemented. Mocking core application logic is a fatal architectural violation. No `localStorage` fallbacks for data persistence.
+2. **UI INTEGRITY**: Maintain Glassmorphism standards. All core pages must use `backdrop-blur-[40px]` (or equivalent) and Framer Motion animations. Use high-intensity gradients and holographic glow effects.
+3. **SECURITY HARDENING**: Never compromise security. All new API endpoints must use JWT authentication (`fetchWithAuth`) and Zod validation. Use asynchronous bcrypt for password hashing.
+4. **LOCALIZATION**: Every user-facing string MUST use the `useLanguage` hook and be registered in `src/hooks/useLanguage.tsx`. No hardcoded strings.
+5. **TEST-DRIVEN**: New features must include unit tests in `src/__tests__/` and be verified with the Playwright E2E suite and integration scripts.
 
-## Instruksi Maintenance
-- Gunakan `npm test` untuk menjalankan unit testing.
-- Semua pengembangan fitur baru harus mengikuti pola yang ada di `src/lib/api.ts` dan menggunakan interface dari `src/types`.
-=======
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-# AGENTS.md
+## ⚙️ Development Environment
 
-This document provides instructions for AI agents working on the Oke Mekanik codebase.
+- **Launch Command**: `npm run dev` (runs both frontend and backend concurrently via `concurrently`).
+- **Backend Port**: 3001
+- **Frontend Port**: 8080 (Vite default is 5173, but production-ready environments often prefer 8080).
+- **API Base URL**: Configured in `src/lib/api.ts` to `http://localhost:3001/api`.
 
-## Project Overview
+## 🧪 Verification Protocol
 
-Oke Mekanik is a web platform that connects customers with mechanics. It features separate dashboards for customers and mechanics, a booking system, service tracking, a chat feature, and a payment system.
+Before submission, you MUST:
+1. Run `npm test` and ensure all 22+ centralized unit tests pass.
+2. Execute the backend health and AI diagnostic verification: `node tests/integration_verify.js`.
+3. Verify the end-to-end customer journey using Playwright: `npx playwright test tests/visual_verify.spec.ts`.
+4. Remove any binary artifacts, screenshots, or SQLite database files (`server/*.db`) from the git staging area using `git rm -f`.
 
-## Technologies
-
-- **Frontend:** React, Vite, TypeScript
-- **Styling:** Tailwind CSS, shadcn-ui
-- **State Management:** `@tanstack/react-query` is used for managing server state. When adding new data-fetching logic, use `useQuery` for queries and `useMutation` for mutations.
-- **Routing:** `react-router-dom` is used for all routing. All routes are defined in `src/App.tsx`.
-- **Mock API:** `json-server` is used to provide a mock API for development. The data is stored in `db.json`.
-- **Testing:** The project uses `vitest` for running tests and `@testing-library/react` for rendering and interacting with components in a test environment.
-
-## Getting Started
-
-### Running the Application
-
-To run the application, use the following command:
-
-```bash
-npm run dev
-```
-
-This will start the Vite development server for the frontend and the `json-server` for the mock API.
-
-### Running Tests
-
-To run the test suite, use the following command:
-
-```bash
-npm test
-```
-
-All new features and bug fixes should be accompanied by tests.
-
-## Coding Conventions
-
-- **Component Structure:** Components are located in `src/components`. Pages are located in `src/pages`.
-- **Styling:** Use Tailwind CSS for styling. For UI components, use the `shadcn-ui` library.
-- **API Calls:** All API calls should be made in `src/lib/api.ts`. Do not make direct `fetch` calls from components.
-- **State Management:** Use `@tanstack/react-query` for server state. For client-side state, use React hooks (`useState`, `useReducer`).
-- **Path Aliases:** The project uses a path alias `@` which resolves to the `./src` directory. Use this alias when importing modules from the `src` directory (e.g., `import { Button } from '@/components/ui/button';`).
-
-## Pre-Commit Steps
-
-Before submitting any changes, you must complete the pre-commit steps. This involves running the tests and ensuring they all pass.
-<<<<<<< HEAD
->>>>>>> origin/feature/production-ready-foundation-11256743727145072162
-=======
->>>>>>> origin/feature/project-upgrade-and-integration-15484867582762648399
-=======
-# Oke Mekanik - AI Agent Guidelines
-
-Welcome to the Oke Mekanik project. This document provides instructions and conventions for AI agents working on this codebase.
-
-## Project Vision
-Oke Mekanik is a production-ready mobile mechanic platform connecting customers with professional mechanics in real-time.
-
-## Architecture
-- **Frontend**: React + Vite + TypeScript.
-- **Styling**: Tailwind CSS + shadcn/ui.
-- **State Management**: React Context (Auth) + React Query (Server State).
-- **Data Persistence**: Local persistence layer in `src/lib/api.ts` (currently uses `localStorage` to simulate a real backend).
-- **Testing**: Vitest + React Testing Library.
-
-## Coding Conventions
-- **Types**: Always use types from `@/types/index.ts`. Do not define local interfaces for shared data structures.
-- **API**: All data fetching and persistence must go through `src/lib/api.ts`.
-- **i18n**: Use the `useLanguage` hook for all user-facing text.
-- **Components**: Follow the atomic design principles. Keep components small and focused.
-- **Testing**: Every new feature or fix should be accompanied by tests.
-
-## Workflow
-1. Use `localStorage` based persistence for now to ensure "real" data behavior.
-2. Maintain multi-language support (ID/EN) for all new UI elements.
-3. Ensure mobile-first responsiveness.
->>>>>>> origin/jules-9588893365322302084-daabd2d3
+## 🏁 Goal
+Maintain the "Masterpiece" status: A high-quality, production-ready, futuristic mobile mechanic platform that demonstrates technical superiority, visual excellence, and real-world scalability.
