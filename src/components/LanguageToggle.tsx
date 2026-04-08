@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/hooks/useLanguage';
 
 const LanguageToggle = () => {
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <div className="flex items-center space-x-2">
@@ -15,7 +15,7 @@ const LanguageToggle = () => {
         className="flex items-center space-x-1"
       >
         <span className="text-lg">🇮🇩</span>
-        <span>ID</span>
+        <span>{t('common.id')}</span>
       </Button>
       <Button
         variant={language === 'en' ? 'default' : 'outline'}
@@ -24,7 +24,7 @@ const LanguageToggle = () => {
         className="flex items-center space-x-1"
       >
         <span className="text-lg">🇺🇸</span>
-        <span>EN</span>
+        <span>{t('common.en')}</span>
       </Button>
     </div>
   );
