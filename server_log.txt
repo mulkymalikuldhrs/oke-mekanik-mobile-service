@@ -1,0 +1,13 @@
+
+> oke-mekanik-mobile-service@1.0.0 backend
+> node server/index.js
+
+Seeding initial data...
+Server running on http://localhost:3001
+[2026-04-17T12:31:13.076Z] GET /api/health 200 - 6ms
+[2026-04-17T12:31:13.100Z] POST /api/ai/diagnose 200 - 2ms
+[2026-04-17T12:31:13.105Z] POST /api/ai/diagnose 200 - 1ms
+[2026-04-17T12:31:13.110Z] POST /api/ai/diagnose 200 - 1ms
+[2026-04-17T12:31:13.115Z] POST /api/ai/diagnose 200 - 1ms
+[2026-04-17T12:31:13.119Z] POST /api/ai/diagnose 200 - 1ms
+Terminated
