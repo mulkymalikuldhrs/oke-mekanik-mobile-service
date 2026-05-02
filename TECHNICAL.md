@@ -1,0 +1,63 @@
+# 🛠️ Oke Mekanik - Technical Architecture (v5.5.0 ULTIMATE+)
+
+This document defines the technical standards and architectural patterns for the **Masterpiece v28** ecosystem.
+
+## 1. Full-Stack Philosophy
+Oke Mekanik operates on a **Zero-Mock Policy**. All data must originate from the authoritative backend. Static JSON files or client-side simulations for API calls are strictly prohibited in the production codebase.
+
+## 2. Backend & Persistence
+### Express 5.2.1
+The backend is built on the latest Express 5 series, providing a high-performance middleware stack and hardened security.
+- **Security**: Implements `helmet` for header security and `express-rate-limit` (100req/15min) for API protection.
+- **Error Handling**: Centralized global error handler in `server/index.js` returns standardized JSON responses with error codes and timestamps.
+
+### SQLite (Better-SQLite3)
+We use SQLite for its reliability, performance, and "local-first" persistence capabilities.
+- **Schema Management**: Managed via `server/db.js`. Includes automated seeding for development environments.
+- **Indexes**: Optimized for performance with specific indexes on `users(email)`, `bookings(user_id)`, and `reviews(mechanic_id)`.
+
+## 3. AI Diagnostic Engine v5.5.0
+The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context.
+
+### Confidence Scoring Algorithm
+Confidence is calculated using a base weight sum for keywords, followed by an exponential bonus for multiple symptom matches:
+```javascript
+let score = baseWeightSum;
+if (matches > 1) {
+  score += Math.pow(matches, 2);
+}
+// Add technical term boosts (+20 points)
+if (technicalTermsFound) score += 20;
+```
+This ensures that specific, complex descriptions result in higher confidence than vague ones.
+
+### Technical Keyword Mapping
+- **`svc-4` (Tune Up)**: `brebet`, `pincang`, `ngelitik`, `ngeden`, `asap putih/hitam`.
+- **`svc-5` (Electrical)**: `limp mode`, `check engine`, `korslet`, `ecu`.
+- **`svc-2` (Routine/Suspension)**: `gluduk`, `kaki-kaki`, `setir narik`.
+
+## 4. Frontend Standards (Masterpiece v28)
+### Glassmorphism UI
+All primary containers must use the `.glass-card` utility class:
+```css
+.glass-card {
+  @apply bg-black/40 backdrop-blur-[160px] border border-white/10;
+}
+```
+This ensures a consistent, high-fidelity futuristic aesthetic across the platform.
+
+### Real-Time Infrastructure
+- **Socket.io**: Used for real-time mechanic location updates and instant messaging.
+- **TanStack Query**: Manages server state, caching, and optimistic updates.
+- **Language Engine**: `useLanguage.tsx` provides a centralized dictionary for ID/EN localization.
+
+## 5. PWA & Offline Readiness
+The `public/sw.js` implements a specialized caching strategy:
+- **Static Assets**: `Stale-While-Revalidate` ensures instant load times for the UI shell.
+- **API Requests**: `Network-First` ensures data freshnest while providing fallback for offline booking viewing.
+
+## 6. Quality & Verification
+All changes must pass:
+1. **AI Verification**: `node tests/verify_ai_v55.js`
+2. **Visual Fidelity**: Playwright E2E screenshots.
+3. **Build Integrity**: `tsc && vite build`
