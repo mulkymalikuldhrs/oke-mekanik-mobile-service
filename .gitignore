@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+server/*.db
+server/*.db-journal
+/verification/
+/screenshots/
+test-results/
