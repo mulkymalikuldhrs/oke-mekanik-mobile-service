@@ -7,23 +7,24 @@ export interface User {
   phone?: string;
   role: UserRole;
   avatar?: string;
-  createdAt: string;
+  createdAt?: string;
   updatedAt?: string;
 }
 
-export interface Mechanic extends User {
-  role: 'mechanic';
+export interface Mechanic {
+  id: string;
+  user_id?: string;
+  name: string;
   speciality: string[];
   rating: number;
-  totalJobs: number;
-  isOnline: boolean;
-  location?: {
-    lat: number;
-    lng: number;
-    address: string;
-  };
-  verified: boolean;
   pricePerHour: number;
+  isOnline: boolean;
+  lat: number;
+  lng: number;
+  avatar?: string;
+  phone?: string;
+  years_of_experience?: number;
+  bio?: string;
 }
 
 export type BookingStatus =
@@ -37,8 +38,9 @@ export type BookingStatus =
 
 export interface Booking {
   id: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
+  serviceId: string;
   status: BookingStatus;
   vehicle: {
     brand: string;
@@ -52,13 +54,17 @@ export interface Booking {
     lng: number;
     address: string;
   };
+  mechanicLocation?: {
+    lat: number;
+    lng: number;
+  } | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   scheduledAt?: string;
   eta?: string;
   estimatedCost: number;
   finalCost?: number;
-  isEmergency: boolean;
+  isEmergency?: boolean;
 }
 
 export interface Message {
@@ -66,13 +72,13 @@ export interface Message {
   bookingId: string;
   senderId: string;
   text: string;
-  timestamp: string;
+  createdAt: string;
 }
 
 export interface Review {
   id: string;
   bookingId: string;
-  customerId: string;
+  userId: string;
   mechanicId: string;
   rating: number;
   comment: string;
@@ -84,6 +90,6 @@ export interface Service {
   name: string;
   description: string;
   basePrice: number;
-  duration?: number; // in minutes
+  duration?: number;
   category?: string;
 }
