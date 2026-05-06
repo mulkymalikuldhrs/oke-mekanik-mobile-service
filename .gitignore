@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
+=======
+server/*.db
+server/*.db-journal
+/verification/
+/screenshots/
+test-results/
+>>>>>>> jules-1751083910730374172-8e0c37a0

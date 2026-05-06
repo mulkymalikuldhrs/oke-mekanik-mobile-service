@@ -2,8 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+<<<<<<< HEAD
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. */
 
+=======
+>>>>>>> jules-1751083910730374172-8e0c37a0
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -15,7 +18,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
+<<<<<<< HEAD
     --primary: 222.2 47.4% 11.2%;
+=======
+    --primary: 221.2 83.2% 53.3%;
+>>>>>>> jules-1751083910730374172-8e0c37a0
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -32,6 +39,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
+<<<<<<< HEAD
     --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
@@ -51,6 +59,11 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+=======
+    --ring: 221.2 83.2% 53.3%;
+
+    --radius: 1rem;
+>>>>>>> jules-1751083910730374172-8e0c37a0
   }
 
   .dark {
@@ -63,7 +76,11 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
+<<<<<<< HEAD
     --primary: 210 40% 98%;
+=======
+    --primary: 217.2 91.2% 59.8%;
+>>>>>>> jules-1751083910730374172-8e0c37a0
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -80,6 +97,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
+<<<<<<< HEAD
     --ring: 212.7 26.8% 83.9%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -89,6 +107,9 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+=======
+    --ring: 224.3 76.3% 48%;
+>>>>>>> jules-1751083910730374172-8e0c37a0
   }
 }
 
@@ -96,8 +117,61 @@
   * {
     @apply border-border;
   }
+<<<<<<< HEAD
 
   body {
     @apply bg-background text-foreground;
   }
 }
+=======
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .backdrop-blur-ultra {
+    backdrop-filter: blur(160px);
+    -webkit-backdrop-filter: blur(160px);
+  }
+
+  .glass-card {
+    @apply bg-black/40 backdrop-blur-[160px] border border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)];
+  }
+
+  .holographic-glow {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .holographic-glow::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      45deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 45%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.1) 55%,
+      transparent 100%
+    );
+    transform: rotate(-45deg);
+    animation: holographic 3s infinite linear;
+    pointer-events: none;
+  }
+
+  @keyframes holographic {
+    0% { transform: translateX(-100%) rotate(-45deg); }
+    100% { transform: translateX(100%) rotate(-45deg); }
+  }
+
+  .text-gradient-intense {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-orange-500;
+  }
+}
+>>>>>>> jules-1751083910730374172-8e0c37a0

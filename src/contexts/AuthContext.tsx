@@ -28,6 +28,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Check for existing session on mount
   useEffect(() => {
+<<<<<<< HEAD
     const storedToken = localStorage.getItem('auth_token');
     const storedUser = localStorage.getItem('auth_user');
 
@@ -41,6 +42,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     }
     setIsLoading(false);
+=======
+    const initAuth = async () => {
+      const storedToken = localStorage.getItem('auth_token');
+      if (storedToken) {
+        try {
+          setToken(storedToken);
+          // Fetch fresh user data from server
+          const userData = await authApi.getMe();
+          setUser(userData);
+          localStorage.setItem('auth_user', JSON.stringify(userData));
+        } catch (e) {
+          console.error('Failed to restore session:', e);
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+          setToken(null);
+          setUser(null);
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initAuth();
+>>>>>>> jules-1751083910730374172-8e0c37a0
   }, []);
 
   const login = async (email: string, password: string, role: UserRole) => {
