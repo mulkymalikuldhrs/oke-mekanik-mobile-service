@@ -163,6 +163,16 @@ const CustomerDashboard = () => {
   const activeBooking = bookings?.find(b => 
     ['pending', 'accepted', 'otw', 'arrived', 'working'].includes(b.status)
   );
+
+  const { data: activityFeed } = useQuery({
+    queryKey: ['activityFeed'],
+    queryFn: async () => {
+      const res = await fetch('/api/activity-feed', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      return res.json();
+    }
+  });
   const recentBookings = bookings?.filter(b => b.status === 'completed').slice(0, 5) || [];
 
   if (isLoadingBookings) {
@@ -325,6 +335,30 @@ const CustomerDashboard = () => {
           </Card>
           </motion.div>
         )}
+
+        {/* Social Timeline (Uber/Grab Style Feed) */}
+        <motion.div variants={itemVariants}>
+          <div className="flex items-center space-x-3 mb-6 px-2">
+            <Sparkles className="h-6 w-6 text-blue-400" />
+            <h2 className="text-xl font-black text-white italic tracking-tighter uppercase">OKE FEED</h2>
+          </div>
+          <div className="flex overflow-x-auto space-x-4 pb-4 scrollbar-hide">
+             {activityFeed?.map((item: any) => (
+               <div key={item.id} className="min-w-[300px] glass-card p-5 rounded-3xl border border-white/5 hover:border-blue-500/20 transition-all group">
+                  <div className="flex items-center space-x-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
+                      <Star className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-black text-white uppercase">{item.title}</p>
+                      <p className="text-[8px] text-gray-500 font-mono">{new Date(item.created_at).toLocaleTimeString()}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-400 leading-relaxed italic">"{item.content}"</p>
+               </div>
+             ))}
+          </div>
+        </motion.div>
 
         {/* Nearby Mechanics */}
         <motion.div variants={itemVariants}>

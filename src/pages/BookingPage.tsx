@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { 
   Car, MapPin, Navigation, Wrench, ChevronLeft, 
-  Star, Phone, MessageSquare, Clock, Sparkles, BrainCircuit, Loader2
+  Star, Phone, MessageSquare, Clock, Sparkles, BrainCircuit, Loader2,
+  Plus, CheckCircle2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -91,8 +92,20 @@ const BookingPage = () => {
     queryFn: () => serviceApi.getAll(),
   });
 
+  const { data: spareParts = [] } = useQuery({
+    queryKey: ['spareParts'],
+    queryFn: async () => {
+      const res = await fetch('/api/spare-parts', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
+      return res.json();
+    },
+  });
+
+  const [selectedParts, setSelectedParts] = useState<string[]>([]);
+
   const bookingMutation = useMutation({
-    mutationFn: async (data: { mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; coords: { lat: number; lng: number }; estimatedCost: number; isEmergency: boolean; serviceId: string }) => {
+    mutationFn: async (data: { mechanicId: string; status: string; vehicle: VehicleData; problem: string; location: LocationData; coords: { lat: number; lng: number }; estimatedCost: number; isEmergency: boolean; serviceId: string; partsRequested: string[] }) => {
       return bookingApi.create({
         mechanicId: data.mechanicId,
         serviceId: data.serviceId,
@@ -101,6 +114,7 @@ const BookingPage = () => {
         location: { lat: data.coords.lat, lng: data.coords.lng, address: data.location.address },
         scheduledAt: new Date().toISOString(),
         isEmergency: data.isEmergency,
+        partsRequested: data.partsRequested
       });
     },
     onSuccess: (data) => {
@@ -160,6 +174,7 @@ const BookingPage = () => {
       estimatedCost: selectedMechanic.pricePerHour || 50000,
       isEmergency,
       serviceId: selectedService?.id || serviceTypes[0]?.id || 'svc-1',
+      partsRequested: selectedParts
     });
   };
 
@@ -439,6 +454,44 @@ const BookingPage = () => {
             {t('booking.step1.emergency_desc')}
           </p>
         </div>
+
+        {/* Spare Parts Selection (Uber-like upsell) */}
+        <div className="pt-4 border-t border-white/5 space-y-4">
+           <div className="flex items-center space-x-2">
+             <Plus className="h-4 w-4 text-blue-400" />
+             <h4 className="text-sm font-black uppercase italic text-gray-300">Rekomendasi Suku Cadang</h4>
+           </div>
+           <div className="grid grid-cols-1 gap-2">
+              {spareParts.slice(0, 3).map((part: any) => (
+                <div
+                  key={part.id}
+                  className={`p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                    selectedParts.includes(part.id) ? 'bg-blue-600/20 border-blue-500/50' : 'bg-white/5 border-white/10 hover:bg-white/10'
+                  }`}
+                  onClick={() => {
+                    setSelectedParts(prev =>
+                      prev.includes(part.id) ? prev.filter(id => id !== part.id) : [...prev, part.id]
+                    );
+                  }}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-xl bg-black/40 flex items-center justify-center text-blue-400">
+                      <Sparkles className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-white">{part.name}</p>
+                      <p className="text-[10px] text-gray-500 font-mono">Rp {part.price.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-colors ${
+                    selectedParts.includes(part.id) ? 'bg-blue-500 border-blue-500' : 'border-white/20'
+                  }`}>
+                    {selectedParts.includes(part.id) && <CheckCircle2 className="h-4 w-4 text-white" />}
+                  </div>
+                </div>
+              ))}
+           </div>
+        </div>
       </CardContent>
     </Card>
   );
@@ -493,44 +546,104 @@ const BookingPage = () => {
     </Card>
   );
 
-  const renderBookingConfirmation = () => (
-    <Card className="glass-card overflow-hidden">
-      <CardHeader>
-        <CardTitle className="flex items-center text-white">
-          <Clock className="h-5 w-5 mr-2 text-orange-400" />
-          {t('booking.step3.title')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl">
-          <h3 className="font-bold text-blue-400">{t('booking.step3.details')}</h3>
-          <div className="mt-2 space-y-2 text-gray-300 text-sm">
-            <p><strong className="text-white">{t('booking.step3.mechanic')}</strong> {selectedMechanic?.name}</p>
-            <p><strong className="text-white">{t('booking.step3.location')}</strong> {location.address}</p>
-            <p><strong className="text-white">{t('booking.step3.vehicle')}</strong> {vehicleData.brand} {vehicleData.model} ({vehicleData.licensePlate})</p>
-            <p><strong className="text-white">{t('booking.step3.problem')}</strong> {vehicleData.problem}</p>
-            <p><strong className="text-white">{t('booking.step3.cost')}</strong> Rp {selectedMechanic?.pricePerHour?.toLocaleString()}</p>
-            <p><strong className="text-white">{t('booking.step3.eta')}</strong> 15 {t('common.minutes')}</p>
+  const renderBookingConfirmation = () => {
+    const laborCost = serviceTypes.find(s => s.name === vehicleData.problem)?.basePrice || 50000;
+    const partsCost = selectedParts.reduce((acc, partId) => {
+      const part = spareParts.find(p => p.id === partId);
+      return acc + (part?.price || 0);
+    }, 0);
+    const serviceFee = 15000;
+    const emergencyFee = isEmergency ? 50000 : 0;
+    const total = laborCost + partsCost + serviceFee + emergencyFee;
+
+    return (
+      <Card className="glass-card overflow-hidden">
+        <CardHeader>
+          <CardTitle className="flex items-center text-white italic uppercase tracking-tighter">
+            <Clock className="h-5 w-5 mr-2 text-orange-400" />
+            {t('booking.step3.title')}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="bg-white/5 border border-white/10 p-5 rounded-3xl space-y-4">
+            <div className="flex items-center space-x-4">
+              <div className="text-4xl">{selectedMechanic?.avatar || '👨‍🔧'}</div>
+              <div>
+                <h4 className="font-black text-white italic uppercase">{selectedMechanic?.name}</h4>
+                <div className="flex items-center text-xs text-yellow-500">
+                  <Star className="h-3 w-3 fill-current mr-1" />
+                  {selectedMechanic?.rating} • {t('common.verified')}
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2 pt-4 border-t border-white/5">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400 uppercase tracking-widest font-bold text-[10px]">{t('booking.step3.vehicle')}</span>
+                <span className="text-white font-medium">{vehicleData.brand} {vehicleData.model}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400 uppercase tracking-widest font-bold text-[10px]">{t('booking.step3.problem')}</span>
+                <span className="text-blue-400 font-black italic">{vehicleData.problem}</span>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex space-x-2">
-          <Button variant="outline" className="flex-1 border-white/10 text-white hover:bg-white/10">
-            <MessageSquare className="h-4 w-4 mr-2" />
-            {t('booking.step3.btn_chat')}
-          </Button>
-          <Button variant="outline" className="flex-1 border-white/10 text-white hover:bg-white/10">
-            <Phone className="h-4 w-4 mr-2" />
-            {t('booking.step3.btn_phone')}
-          </Button>
-        </div>
+          <div className="space-y-3">
+             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 ml-1">RINCIAN BIAYA (UBER-STYLE)</h4>
+             <div className="bg-black/40 border border-white/5 p-5 rounded-3xl space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Jasa Perbaikan</span>
+                  <span className="text-white font-mono">Rp {laborCost.toLocaleString()}</span>
+                </div>
+                {selectedParts.length > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">Suku Cadang ({selectedParts.length} item)</span>
+                    <span className="text-white font-mono">Rp {partsCost.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Service Fee</span>
+                  <span className="text-white font-mono">Rp {serviceFee.toLocaleString()}</span>
+                </div>
+                {isEmergency && (
+                  <div className="flex justify-between text-sm text-red-400">
+                    <span>Emergency Surcharge</span>
+                    <span className="font-mono">Rp {emergencyFee.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="pt-3 border-t border-white/10 flex justify-between items-center">
+                  <span className="font-black text-white italic uppercase">Total Pembayaran</span>
+                  <span className="text-xl font-black text-blue-400 font-mono">Rp {total.toLocaleString()}</span>
+                </div>
+             </div>
+          </div>
 
-        <Button onClick={handleBooking} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold h-12 rounded-xl" disabled={bookingMutation.isPending}>
-          {bookingMutation.isPending ? t('booking.step3.processing') : t('booking.step3.confirm')}
-        </Button>
-      </CardContent>
-    </Card>
-  );
+          <div className="flex space-x-3">
+            <Button variant="outline" className="flex-1 h-12 rounded-2xl border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px]">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              {t('booking.step3.btn_chat')}
+            </Button>
+            <Button variant="outline" className="flex-1 h-12 rounded-2xl border-white/10 text-white hover:bg-white/5 font-black uppercase tracking-widest text-[10px]">
+              <Phone className="h-4 w-4 mr-2" />
+              {t('booking.step3.btn_phone')}
+            </Button>
+          </div>
+
+          <Button
+            onClick={handleBooking}
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black h-16 rounded-[2rem] text-lg shadow-[0_0_30px_rgba(37,99,235,0.3)] group relative overflow-hidden"
+            disabled={bookingMutation.isPending}
+          >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform" />
+            <span className="relative z-10">
+              {bookingMutation.isPending ? t('booking.step3.processing') : t('booking.step3.confirm')}
+            </span>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-blue-500 p-4 md:p-8 relative overflow-hidden">

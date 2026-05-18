@@ -74,7 +74,8 @@ const bookingSchema = z.object({
     lng: z.number(),
     address: z.string()
   }),
-  isEmergency: z.boolean().optional()
+  isEmergency: z.boolean().optional(),
+  partsRequested: z.array(z.string()).optional()
 });
 
 // Helper for coordinates
@@ -195,7 +196,12 @@ app.post('/api/auth/logout', (req, res) => {
 app.get('/api/health', (req, res) => {
   try {
     db.prepare('SELECT 1').get();
-    res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString() });
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      version: 'v5.8.1-ultimate',
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
     res.status(500).json({ status: 'error', database: 'disconnected', message: error.message });
   }
@@ -452,37 +458,71 @@ app.post('/api/ai/diagnose', (req, res) => {
   });
 });
 
-// --- Service Endpoints ---
+// --- Service & Spare Parts Endpoints ---
 app.get('/api/services', (req, res) => {
   const services = db.prepare('SELECT * FROM services').all();
   res.json(services.map(s => ({
     id: s.id,
     name: s.name,
     description: s.description,
-    basePrice: s.base_price
+    basePrice: s.base_price,
+    estimatedDuration: s.estimated_duration
   })));
+});
+
+app.get('/api/spare-parts', (req, res) => {
+  const parts = db.prepare('SELECT * FROM spare_parts').all();
+  res.json(parts);
+});
+
+// --- Activity Feed Endpoints ---
+app.get('/api/activity-feed', (req, res) => {
+  const feed = db.prepare('SELECT * FROM activity_feed ORDER BY created_at DESC LIMIT 20').all();
+  res.json(feed);
 });
 
 // --- Booking Endpoints ---
 app.post('/api/bookings', verifyToken, (req, res, next) => {
   try {
-    const { mechanicId, serviceId, vehicle, problem, location, isEmergency } = bookingSchema.parse(req.body);
+    const { mechanicId, serviceId, vehicle, problem, location, isEmergency, partsRequested } = bookingSchema.parse(req.body);
     const id = `BOOK-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const service = db.prepare('SELECT base_price FROM services WHERE id = ?').get(serviceId);
-    const estimatedCost = (service?.base_price || 50000) + (isEmergency ? 50000 : 0);
+    const laborCost = service?.base_price || 50000;
+    const serviceFee = 15000;
+    let partsCost = 0;
+
+    // Calculate parts cost and insert items
+    if (partsRequested && partsRequested.length > 0) {
+      for (const partId of partsRequested) {
+        const part = db.prepare('SELECT * FROM spare_parts WHERE id = ?').get(partId);
+        if (part) {
+          partsCost += part.price;
+          db.prepare(`
+            INSERT INTO booking_items (id, booking_id, item_type, item_id, name, unit_price, total_price)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+          `).run(uuidv4(), id, 'part', part.id, part.name, part.price, part.price);
+        }
+      }
+    }
+
+    const totalCost = laborCost + partsCost + serviceFee + (isEmergency ? 50000 : 0);
 
     db.prepare(`
       INSERT INTO bookings (
         id, user_id, mechanic_id, service_id, vehicle_brand, vehicle_model,
         vehicle_year, vehicle_license_plate, problem, status,
-        location_lat, location_lng, location_address, estimated_cost
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        location_lat, location_lng, location_address, labor_cost, parts_cost, service_fee, total_cost, is_emergency
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).run(
       id, req.userId, mechanicId, serviceId, vehicle.brand, vehicle.model,
       vehicle.year, vehicle.licensePlate, problem, 'pending',
-      location.lat, location.lng, location.address, estimatedCost
+      location.lat, location.lng, location.address, laborCost, partsCost, serviceFee, totalCost, isEmergency ? 1 : 0
     );
+
+    // Create system message
+    db.prepare('INSERT INTO messages (id, booking_id, sender_id, text, type) VALUES (?, ?, ?, ?, ?)')
+      .run(uuidv4(), id, 'system', `Booking created for ${vehicle.brand} ${vehicle.model}`, 'system');
 
     res.json(formatBooking(db.prepare('SELECT * FROM bookings WHERE id = ?').get(id)));
   } catch (err) { next(err); }
@@ -631,14 +671,40 @@ app.post('/api/reviews', verifyToken, (req, res) => {
 
 // Helper to format booking response
 function formatBooking(b) {
-  const mechanic = db.prepare('SELECT lat, lng FROM mechanics WHERE id = ?').get(b.mechanic_id);
+  const mechanic = db.prepare('SELECT lat, lng, name, avatar, rating FROM mechanics WHERE id = ?').get(b.mechanic_id);
+  const items = db.prepare('SELECT * FROM booking_items WHERE booking_id = ?').all(b.id);
+
   return {
-    id: b.id, userId: b.user_id, mechanicId: b.mechanic_id, serviceId: b.service_id,
-    vehicle: { brand: b.vehicle_brand, model: b.vehicle_model, year: b.vehicle_year, licensePlate: b.vehicle_license_plate },
-    problem: b.problem, status: b.status,
-    location: { lat: b.location_lat, lng: b.location_lng, address: b.location_address },
+    id: b.id,
+    userId: b.user_id,
+    mechanicId: b.mechanic_id,
+    mechanicName: mechanic?.name,
+    mechanicAvatar: mechanic?.avatar,
+    mechanicRating: mechanic?.rating,
+    serviceId: b.service_id,
+    vehicle: {
+      brand: b.vehicle_brand,
+      model: b.vehicle_model,
+      year: b.vehicle_year,
+      licensePlate: b.vehicle_license_plate
+    },
+    problem: b.problem,
+    status: b.status,
+    location: {
+      lat: b.location_lat,
+      lng: b.location_lng,
+      address: b.location_address
+    },
     mechanicLocation: mechanic ? { lat: mechanic.lat, lng: mechanic.lng } : null,
-    estimatedCost: b.estimated_cost, createdAt: b.created_at
+    financials: {
+      laborCost: b.labor_cost,
+      partsCost: b.parts_cost,
+      serviceFee: b.service_fee,
+      totalCost: b.total_cost,
+      isEmergency: !!b.is_emergency
+    },
+    items: items,
+    createdAt: b.created_at
   };
 }
 
