@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Link, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { LanguageProvider } from "@/hooks/useLanguage";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
@@ -26,8 +26,8 @@ const ProtectedRoute = () => {
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
       </div>
     );
   }
@@ -36,17 +36,31 @@ const ProtectedRoute = () => {
 };
 
 const AppLayout = ({ children }: { children: React.ReactNode }) => (
-  <div className="flex flex-col min-h-screen">
-    <nav className="bg-gray-800 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="font-bold text-xl">Oke Mekanik</Link>
-        <div className="flex gap-4">
-          <Link to="/customer/dashboard" className="hover:text-gray-300">Pelanggan</Link>
-          <Link to="/mechanic/dashboard" className="hover:text-gray-300">Mekanik</Link>
+  <div className="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30">
+    {/* Global Sticky Navigation with Glassmorphism */}
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/20 backdrop-blur-[160px] supports-[backdrop-filter]:bg-black/10">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/20">
+            O
+          </div>
+          <span className="font-bold text-xl tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
+            OKE MEKANIK <span className="text-[10px] font-medium text-blue-400 ml-1">v28.1</span>
+          </span>
         </div>
       </div>
     </nav>
-    <main className="flex-grow">{children}</main>
+
+    {/* Main Content Area */}
+    <main className="pt-16 pb-20">
+      {children}
+    </main>
+
+    {/* Global Background Elements */}
+    <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 blur-[120px] rounded-full animate-pulse delay-700" />
+    </div>
   </div>
 );
 
