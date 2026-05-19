@@ -101,7 +101,7 @@ app.use('/api/reviews', reviewRoutes);
 app.get('/api/health', (req, res) => {
   try {
     db.prepare('SELECT 1').get();
-    res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString(), version: 'v5.8.1-modular' });
+    res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString(), version: 'v5.8.1-ultimate' });
   } catch (error) {
     res.status(500).json({ status: 'error', database: 'disconnected', message: error.message });
   }
