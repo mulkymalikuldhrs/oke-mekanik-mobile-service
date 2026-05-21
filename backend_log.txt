@@ -1,0 +1,32 @@
+
+> oke-mekanik-mobile-service@5.8.1 backend
+> node server/index.js
+
+Server running on http://localhost:3001
+[2026-05-21T16:03:39.236Z] POST /diagnose 200 - 5ms
+[2026-05-21T16:03:39.248Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.252Z] POST /diagnose 200 - 0ms
+[2026-05-21T16:03:39.257Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.262Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.265Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.268Z] POST /diagnose 200 - 0ms
+[2026-05-21T16:03:39.272Z] POST /diagnose 200 - 0ms
+[2026-05-21T16:03:39.278Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.283Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.286Z] POST /diagnose 200 - 1ms
+[2026-05-21T16:03:39.288Z] POST /diagnose 200 - 0ms
+[2026-05-21T16:03:39.291Z] POST /diagnose 200 - 0ms
+[2026-05-21T16:05:25.257Z] GET /?userId=cust-1 403 - 6ms
+[2026-05-21T16:05:25.263Z] GET /nearby?lat=-6.2088&lng=106.8456&radius=15 200 - 4ms
+[2026-05-21T16:05:25.385Z] GET /mech-1 200 - 6ms
+[2026-05-21T16:05:25.400Z] GET /?mechanicId=mech-1 403 - 2ms
+[2026-05-21T16:08:47.690Z] GET /?userId=cust-1 403 - 6ms
+[2026-05-21T16:08:47.698Z] GET /nearby?lat=-6.2088&lng=106.8456&radius=15 200 - 7ms
+[2026-05-21T16:08:47.918Z] GET /mech-1 200 - 2ms
+[2026-05-21T16:08:47.921Z] GET /?mechanicId=mech-1 403 - 1ms
+[2026-05-21T16:13:04.692Z] GET /api/health 200 - 1ms
+[2026-05-21T16:16:48.382Z] GET /?mechanicId=mech-1 403 - 0ms
+[2026-05-21T16:16:48.387Z] GET /mech-1 200 - 1ms
+[2026-05-21T16:16:49.515Z] GET /?userId=cust-1 403 - 1ms
+[2026-05-21T16:16:49.516Z] GET /nearby?lat=-6.2088&lng=106.8456&radius=15 200 - 0ms
+Terminated
