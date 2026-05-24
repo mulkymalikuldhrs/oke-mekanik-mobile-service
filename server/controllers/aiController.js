@@ -54,6 +54,13 @@ const AI_MODEL = [
     keywords: { rutin: 12, servis: 12, service: 12, berkala: 11, checkup: 10, 'ganti sparepart': 9, 'maintenance': 11, 'tahunan': 7, 'bulanan': 6, 'perawatan': 9, 'km': 8, 'kilometer': 8, 'inspeksi': 10, 'gluduk': 14, 'kaki-kaki': 13, 'shockbreaker': 12, 'tierod': 11, 'balljoint': 11, 'bunyi mendengung': 12, 'setir goyang': 10, 'bunyi kaki-kaki': 15, 'setir narik': 12 },
     causes: ['Sudah waktunya perawatan berkala', 'Mencegah kerusakan komponen lebih lanjut', 'Menjaga performa kendaraan tetap optimal', 'Memastikan keselamatan berkendara'],
     urgency: 'MEDIUM'
+  },
+  {
+    id: 'svc-9',
+    name: 'Cek Sistem EV/Hybrid',
+    keywords: { hybrid: 12, ev: 12, 'baterai hv': 15, inverter: 14, 'motor listrik': 13, 'regenerative braking': 12, 'ngecas': 10, 'charging': 11, 'phev': 12, 'lithium': 10, 'high voltage': 15, 'kinetik': 8, 'dual engine': 10, 'power split': 11 },
+    causes: ['Penurunan kesehatan (SOH) baterai traksi', 'Kerusakan pada inverter atau converter DC-DC', 'Masalah pada sistem pendingin baterai', 'Kegagalan modul kontrol hibrida'],
+    urgency: 'HIGH'
   }
 ];
 
@@ -81,7 +88,8 @@ export const diagnoseProblem = (req, res) => {
       'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm']
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm'],
+      'svc-9': ['baterai hv', 'inverter panas', 'regenerative braking', 'hybrid system failure', 'high voltage leak']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {
@@ -102,6 +110,6 @@ export const diagnoseProblem = (req, res) => {
     confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
-    version: 'v5.8.1-ultimate'
+    version: 'v5.8.2-ultimate'
   });
 };

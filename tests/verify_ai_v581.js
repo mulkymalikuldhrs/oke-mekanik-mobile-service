@@ -16,7 +16,8 @@ async function verifyAI() {
     { problem: 'ada oli meler di bawah mesin', expected: 'Ganti Oli' },
     { problem: 'klakson mati dan sekring putus', expected: 'Cek Kelistrikan' },
     { problem: 'mobil turun mesin total', expected: 'Tune Up' },
-    { problem: 'rack steer oblak dan gluduk', expected: 'Servis Rutin' }
+    { problem: 'rack steer oblak dan gluduk', expected: 'Servis Rutin' },
+    { problem: 'baterai hv saya inverter panas', expected: 'Cek Sistem EV/Hybrid' }
   ];
 
   for (const tc of testCases) {
@@ -29,7 +30,7 @@ async function verifyAI() {
       const data = await response.json();
 
       console.log(`Case: "${tc.problem}"`);
-      if (data.suggestion === tc.expected && data.version === 'v5.8.1-ultimate') {
+      if (data.suggestion === tc.expected && data.version === 'v5.8.2-ultimate') {
         console.log(`✅ PASSED (Got: ${data.suggestion}, Urgency: ${data.urgency_level}, Confidence: ${data.confidence}%)`);
       } else {
         console.log(`❌ FAILED (Got: ${data.suggestion}, Version: ${data.version})`);

@@ -144,6 +144,7 @@ const seedData = async () => {
     insertService.run('svc-6', 'Ganti Kampas Rem', 'Penggantian kampas kampas rem depan atau belakang', 120000);
     insertService.run('svc-7', 'Cek Aki', 'Pengecekan tegangan dan kondisi aki', 30000);
     insertService.run('svc-8', 'Isi Freon AC', 'Pengisian ulang freon AC mobil', 150000);
+    insertService.run('svc-9', 'Cek Sistem EV/Hybrid', 'Diagnosa dan pengecekan sistem kendaraan listrik dan hibrida', 250000);
 
     // Seed Bookings (Historic and Current)
     const insertBooking = db.prepare(`

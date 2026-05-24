@@ -18,7 +18,7 @@ We use SQLite for its reliability, performance, and "local-first" persistence ca
 - **Schema Management**: Managed via `server/db.js`. Includes automated seeding for development environments.
 - **Indexes**: Optimized for performance with specific indexes on `users(email)`, `bookings(user_id)`, and `reviews(mechanic_id)`.
 
-## 3. AI Diagnostic Engine v5.8.1
+## 3. AI Diagnostic Engine v5.8.2
 The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context.
 
 ### Confidence Scoring Algorithm
@@ -38,6 +38,7 @@ This ensures that specific, complex descriptions result in higher confidence tha
 - **`svc-4` (Tune Up)**: `brebet`, `pincang`, `ngelitik`, `ngeden`, `asap putih/hitam`, `ngobos`, `injector`, `bore up`, `overhaul`, `turun mesin`.
 - **`svc-5` (Electrical)**: `limp mode`, `check engine`, `korslet`, `ecu`, `sekring putus`, `short circuit`, `grounding`.
 - **`svc-2` (Routine/Suspension)**: `gluduk`, `kaki-kaki`, `setir narik`, `v-belt`, `cv joint`, `bushing arm`.
+- **`svc-9` (EV/Hybrid)**: `baterai hv`, `inverter panas`, `regenerative braking`, `hybrid system failure`, `high voltage leak`.
 
 ## 4. Frontend Standards (Masterpiece v28.1)
 ### Glassmorphism UI

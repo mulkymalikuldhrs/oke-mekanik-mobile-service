@@ -1,10 +1,10 @@
-# Oke Mekanik - Masterpiece v28.1 ULTIMATE+ v5.8.1
+# Oke Mekanik - Masterpiece v28.1 ULTIMATE+ v5.8.2
 
 Oke Mekanik is a comprehensive mobile mechanic platform designed to bring professional vehicle services directly to the customer's location. This version (v28.1 ULTIMATE+) represents the pinnacle of autonomous, production-ready full-stack implementation.
 
 ## Features
 
-- **AI Diagnostic Engine v5.8.1**: Automated vehicle problem diagnosis using advanced pattern matching.
+- **AI Diagnostic Engine v5.8.2**: Automated vehicle problem diagnosis with EV/Hybrid support.
 - **Real-time Tracking**: Monitor the mechanic's location as they head towards you via Socket.io.
 - **Instant Booking**: Call a mechanic for emergency repairs or schedule routine maintenance.
 - **Verified Mechanics**: All mechanics are vetted and rated by the community.

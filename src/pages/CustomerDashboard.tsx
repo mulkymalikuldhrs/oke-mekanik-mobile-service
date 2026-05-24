@@ -248,7 +248,7 @@ const CustomerDashboard = () => {
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-              <span className="text-[8px] font-black uppercase text-green-400 tracking-widest">v5.8.1 ULTIMATE+</span>
+              <span className="text-[8px] font-black uppercase text-green-400 tracking-widest">v5.8.2 ULTIMATE+</span>
             </div>
           </div>
         </motion.div>
