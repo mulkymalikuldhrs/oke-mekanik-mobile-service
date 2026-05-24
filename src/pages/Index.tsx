@@ -17,7 +17,8 @@ const Index = () => {
   useEffect(() => {
     const checkSystem = async () => {
       try {
-        const res = await fetch('/api/health');
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+        const res = await fetch(`${apiUrl}/health`);
         if (res.ok) setSystemStatus('online');
         else setSystemStatus('offline');
       } catch {

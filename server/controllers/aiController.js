@@ -77,11 +77,11 @@ export const diagnoseProblem = (req, res) => {
       score += Math.pow(matches, 2);
     }
     const technicalBoosts = {
-      'svc-1': ['oli meler', 'oli rembes', 'oil seal', 'karter'],
-      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin'],
-      'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding'],
-      'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm']
+      'svc-1': ['oli meler', 'oli rembes', 'oil seal', 'karter', 'oil filter macet'],
+      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
+      'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
+      'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {

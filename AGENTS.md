@@ -1,34 +1,35 @@
-# AGENTS.md - Masterpiece v28.1 ULTIMATE+
+# AGENTS.md - Autonomous Developer Protocol (Masterpiece v28.1)
 
-This document provides instructions for AI agents working on the Masterpiece v28.1 ULTIMATE+ codebase.
+This document provides strict instructions for AI agents working on the Oke Mekanik ecosystem.
 
-## Project Vision
-Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce a **Zero-Mock Policy**. All data must flow through the Express/SQLite backend.
+## 1. Project Vision
+Oke Mekanik is a high-fidelity, production-ready full-stack mechanic platform. The goal is to deliver an experience that is 100x better than standard simulations.
 
-## Core Mandates
-1. **Zero-Mock Policy**: No mock data, placeholders, or simulations. Use the real backend API.
-2. **Autonomous Excellence**: Think and act independently to ensure technical excellence and production readiness.
-3. **Fidelity**: Maintain high UI fidelity ('100x better') and robust full-stack integration.
-4. **Localization**: All UI must support both Indonesian (default) and English via `useLanguage`.
+## 2. Core Directives
+- **Zero-Mock Policy**: Strictly no mock data in production. All data must flow from the Express/SQLite backend.
+- **Autonomous Quality**: You are responsible for end-to-end quality. Do not wait for user validation if you can verify it yourself via tests.
+- **Fidelity First**: Maintain the Glassmorphism UI standards (`.glass-card` with `backdrop-blur-[160px]`).
 
-## Architecture
-- **Backend**: Modular Express routes/controllers located in `server/`.
-- **Database**: Persistent SQLite (`server/okemekanik.db`).
-- **Frontend**: React 19 + Vite 8.
-- **Communication**: Socket.io for real-time events.
+## 3. Technical Standards
+- **Backend**: Express 5.2.1 + Better-SQLite3.
+- **Frontend**: React 19 + Vite + TypeScript + TanStack Query.
+- **AI Engine**: v5.8.1 ULTIMATE+ (Technical Indonesian Mapping).
+- **Security**: Hardened headers, rate limiting, and JWT authentication.
 
-## Workflow
-- **API Calls**: Must use `src/lib/api.ts`.
-- **Environment**: Use `.env` for configuration (see `.env.example`).
-- **Verification**: Always run `python3 tests/final_verification.py` after significant changes.
+## 4. Verification Workflow
+Before submitting any changes, you MUST:
+1. **Verify AI**: `node tests/verify_ai_v581.js` (Must pass all 11+ test cases).
+2. **Build Check**: `npm run build` (Must have zero TS errors).
+3. **Unit Tests**: `npm test` (Ensure no regressions in core logic).
+4. **Visual Check**: Use Playwright if available to confirm UI fidelity.
 
-## Development Commands
-- `npm run dev`: Starts both Vite and Express (via concurrently).
-- `npm run backend`: Starts only the Express server.
+## 5. Development Commands
+- `npm run dev`: Starts both Vite (8080) and Express (3001) concurrently.
+- `npm run backend`: Starts only the production backend.
 - `npm test`: Runs Vitest suite.
 
-## Verification Memory
-- Visual fidelity is confirmed via Playwright screenshots in `tests/`.
-- AI Diagnostic mapping is verified in `server/controllers/aiController.js`.
-
-© 2024 OKE MEKANIK MASTERPIECE v28. ENGINEERED FOR EXCELLENCE.
+## 6. Coding Conventions
+- Use `@/` path aliases for all internal imports.
+- All API interactions must reside in `src/lib/api.ts`.
+- Multi-language support (ID/EN) is mandatory for all new UI strings.
+- Strictly follow the types defined in `src/types/index.ts`.

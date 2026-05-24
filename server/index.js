@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -52,18 +53,19 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 app.use(cors());
 app.use(express.json());
 
-// Attach Socket.io to Request
+// Request Trace ID & Socket Attach
 app.use((req, res, next) => {
+  req.id = crypto.randomUUID();
   req.io = io;
   next();
 });
 
-// Logging Middleware
+// Advanced Observability Middleware
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`);
+    console.log(`[TRACE:${req.id}] ${new Date().toISOString()} | ${req.method} ${req.originalUrl} | STATUS:${res.statusCode} | ${duration}ms`);
   });
   next();
 });
