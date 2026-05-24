@@ -1,7 +1,22 @@
 {
   "name": "oke-mekanik-mobile-service",
-  "private": true,
-  "version": "5.8.1",
+  "private": false,
+  "version": "5.8.2",
+  "license": "MIT",
+  "author": {
+    "name": "Mulky Malikul Dhaher",
+    "email": "mulkymalikuldhaher@email.com",
+    "url": "https://github.com/mulkymalikuldhrs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service/issues"
+  },
+  "homepage": "https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service#readme",
+  "keywords": ["mekanik", "mechanic", "vehicle-service", "saas", "real-time-tracking", "socket-io", "ai-diagnostic", "react", "express", "typescript", "tailwindcss", "shadcn-ui", "pwa", "glassmorphism"],
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"npm run backend\"",

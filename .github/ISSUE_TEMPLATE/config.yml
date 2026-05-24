@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service/discussions
+    about: Ask questions, share ideas, and discuss with the community
+  - name: 📧 Security Vulnerability
+    url: mailto:mulkymalikuldhaher@email.com
+    about: Please report security vulnerabilities via email instead of public issues
+  - name: 📖 Documentation
+    url: https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service#readme
+    about: Read the project documentation and README before opening an issue
