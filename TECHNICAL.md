@@ -65,3 +65,9 @@ All changes must pass:
 2. **Visual Fidelity**: Playwright E2E screenshots.
 3. **Build Integrity**: `tsc && vite build`
 4. **Zero-Mock Enforcement**: No `db.json` files allowed.
+
+---
+
+> **Contact:** Mulky Malikul Dhaher — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
+>
+> **Disclaimer:** This project is for Education Purpose only. Risiko apapun tidak kita tanggung. (We are not responsible for any risks or damages.)

@@ -93,3 +93,9 @@ For any security-related questions or concerns:
 - **GitHub:** [@mulkymalikuldhrs](https://github.com/mulkymalikuldhrs)
 
 Thank you for helping keep Oke Mekanik and our users safe!
+
+---
+
+> **Contact:** Mulky Malikul Dhaher — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
+>
+> **Disclaimer:** This project is for Education Purpose only. Risiko apapun tidak kita tanggung. (We are not responsible for any risks or damages.)

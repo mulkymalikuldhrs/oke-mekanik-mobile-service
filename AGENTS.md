@@ -32,3 +32,9 @@ Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce 
 - AI Diagnostic mapping is verified in `server/controllers/aiController.js`.
 
 © 2024 OKE MEKANIK MASTERPIECE v28. ENGINEERED FOR EXCELLENCE.
+
+---
+
+> **Contact:** Mulky Malikul Dhaher — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
+>
+> **Disclaimer:** This project is for Education Purpose only. Risiko apapun tidak kita tanggung. (We are not responsible for any risks or damages.)
