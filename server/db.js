@@ -215,7 +215,8 @@ const seedData = async () => {
     insertService.run('svc-1', 'Ganti Oli', 'Penggantian oli mesin + filter oli berkualitas', 75000, 'engine', 'droplets', 30, 0);
     insertService.run('svc-4', 'Tune Up', 'Pembersihan ruang bakar dan optimasi mesin', 200000, 'engine', 'gauge', 120, 0);
     insertService.run('svc-2', 'Servis Rutin', 'Pengecekan menyeluruh kendaraan secara berkala', 150000, 'engine', 'clipboard-check', 90, 0);
-    insertService.run('svc-9', 'Overhaul / Turun Mesin', 'Perbaikan mesin besar (overhaul)', 500000, 'engine', 'cog', 480, 0);
+    insertService.run('svc-9', 'Cek Sistem EV/Hybrid', 'Diagnosa baterai HV, inverter, dan motor listrik', 300000, 'electrical', 'battery', 60, 0);
+    insertService.run('svc-13', 'Overhaul / Turun Mesin', 'Perbaikan mesin besar (overhaul)', 500000, 'engine', 'cog', 480, 0);
     
     // Brakes & Suspension
     insertService.run('svc-6', 'Ganti Kampas Rem', 'Penggantian kampas rem depan atau belakang', 120000, 'brakes', 'disc', 60, 0);
