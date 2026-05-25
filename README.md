@@ -35,7 +35,7 @@
 <br/>
 
 <!-- Shields.io Badges -->
-[![Version](https://img.shields.io/badge/Version-6.1.0-0A84FF?style=for-the-badge&logo=semanticrelease&logoColor=white)](https://github.com/mulkymalikuldhrs/oke-mekanik)
+[![Version](https://img.shields.io/badge/Version-6.2.0-0A84FF?style=for-the-badge&logo=semanticrelease&logoColor=white)](https://github.com/mulkymalikuldhrs/oke-mekanik)
 [![Production Ready](https://img.shields.io/badge/Production-Ready-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](https://github.com/mulkymalikuldhrs/oke-mekanik)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -133,7 +133,7 @@ npm run dev
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     OKE MEKANIK v5.8.1                      │
+│                     OKE MEKANIK v5.8.2                      │
 │                                                             │
 │  ┌─────────────────────┐     ┌─────────────────────────┐   │
 │  │   🖥️  FRONTEND       │     │   ⚙️  BACKEND            │   │
@@ -159,7 +159,7 @@ npm run dev
 │              Real-time Location & Chat                      │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │  🤖 AI DIAGNOSTIC ENGINE v5.8.1                     │   │
+│  │  🤖 AI DIAGNOSTIC ENGINE v5.8.2 ULTIMATE+           │   │
 │  │  Pattern Matching → Symptom Analysis → Recommendations│   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘

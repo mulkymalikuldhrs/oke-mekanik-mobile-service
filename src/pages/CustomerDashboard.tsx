@@ -225,7 +225,7 @@ const CustomerDashboard = () => {
 
         {/* Map Section */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <Card className="rounded-2xl overflow-hidden border-white/5">
+          <Card className="glass-card rounded-2xl overflow-hidden">
             <CardHeader className="pb-2 pt-3 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
