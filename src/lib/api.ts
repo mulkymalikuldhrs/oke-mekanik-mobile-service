@@ -1,4 +1,4 @@
-import { Booking, Mechanic, Message, User, UserRole } from '@/types';
+import { Booking, Mechanic, Message, User, UserRole, Service } from '@/types';
 
 // Environment-based API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
@@ -9,10 +9,6 @@ async function fetchApi<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
-  if (import.meta.env.DEV) {
-    console.log(`[API Request] ${options.method || 'GET'} ${url}`, options.body ? JSON.parse(options.body as string) : '');
-  }
 
   const response = await fetch(url, {
     ...options,
@@ -24,10 +20,6 @@ async function fetchApi<T>(
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: null }));
-
-    if (import.meta.env.DEV) {
-      console.error(`[API Error] ${options.method || 'GET'} ${url}`, error);
-    }
 
     if (response.status === 401) {
       throw new Error('Sesi Anda telah berakhir. Silakan login kembali.');
@@ -42,11 +34,23 @@ async function fetchApi<T>(
     throw new Error(error.message || `Terjadi kesalahan (Status: ${response.status})`);
   }
 
-  const data = await response.json();
-  if (import.meta.env.DEV) {
-    console.log(`[API Response] ${options.method || 'GET'} ${url}`, data);
-  }
-  return data;
+  return response.json();
+}
+
+// Helper function for authenticated requests
+export async function fetchWithAuth<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const token = localStorage.getItem('auth_token');
+  
+  return fetchApi<T>(endpoint, {
+    ...options,
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
 }
 
 // Auth API
@@ -72,7 +76,7 @@ export const authApi = {
   },
 
   logout: async (): Promise<void> => {
-    return fetchApi('/auth/logout', { method: 'POST' }).catch(() => {}); // Optional logout
+    return fetchApi('/auth/logout', { method: 'POST' }).catch(() => {});
   },
 
   getMe: async (): Promise<User> => {
@@ -94,8 +98,17 @@ export const mechanicApi = {
     return fetchApi(`/mechanics/${id}`);
   },
 
-  getNearby: async (lat: number, lng: number, radiusKm: number = 10): Promise<Mechanic[]> => {
-    return fetchApi(`/mechanics/nearby?lat=${lat}&lng=${lng}&radius=${radiusKm}`).catch(() => mechanicApi.getAll());
+  getNearby: async (lat: number, lng: number, radiusKm: number = 15, serviceId?: string): Promise<Mechanic[]> => {
+    const params = new URLSearchParams({ lat: String(lat), lng: String(lng), radius: String(radiusKm) });
+    if (serviceId) params.append('serviceId', serviceId);
+    return fetchApi(`/mechanics/nearby?${params}`).catch(() => mechanicApi.getAll());
+  },
+
+  autoDispatch: async (lat: number, lng: number, serviceId?: string, isEmergency?: boolean): Promise<{ mechanic: Mechanic; found: boolean }> => {
+    return fetchApi('/mechanics/auto-dispatch', {
+      method: 'POST',
+      body: JSON.stringify({ lat, lng, serviceId, isEmergency }),
+    });
   },
 
   updateStatus: async (id: string, isOnline: boolean): Promise<void> => {
@@ -118,11 +131,17 @@ export const mechanicApi = {
     phone: string;
     identityNumber: string;
     bio: string;
+    vehicleType?: string;
+    vehiclePlate?: string;
   }): Promise<{ success: boolean; mechanicId: string }> => {
     return fetchWithAuth('/mechanics/register', {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  },
+
+  getPendingBookings: async (): Promise<any[]> => {
+    return fetchWithAuth('/mechanics/pending-bookings');
   },
 };
 
@@ -134,12 +153,37 @@ export const bookingApi = {
     vehicle: { brand: string; model: string; year: string; licensePlate: string };
     problem: string;
     location: { lat: number; lng: number; address: string };
-    scheduledAt?: string;
     isEmergency?: boolean;
   }): Promise<Booking> => {
     return fetchWithAuth('/bookings', {
       method: 'POST',
       body: JSON.stringify(bookingData),
+    });
+  },
+
+  // Auto-dispatch: system finds nearest mechanic
+  autoDispatch: async (bookingData: {
+    serviceId: string;
+    vehicle: { brand: string; model: string; year: string; licensePlate: string };
+    problem: string;
+    location: { lat: number; lng: number; address: string };
+    isEmergency?: boolean;
+  }): Promise<Booking> => {
+    return fetchWithAuth('/bookings/auto-dispatch', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    });
+  },
+
+  // SOS Emergency booking
+  sos: async (data: {
+    location: { lat: number; lng: number; address?: string };
+    vehicle?: { brand: string; model: string; year: string; licensePlate: string };
+    problem?: string;
+  }): Promise<Booking> => {
+    return fetchWithAuth('/bookings/sos', {
+      method: 'POST',
+      body: JSON.stringify(data),
     });
   },
 
@@ -200,11 +244,11 @@ export const userApi = {
 
 // Service Types API
 export const serviceApi = {
-  getAll: async (): Promise<{ id: string; name: string; description: string; basePrice: number }[]> => {
+  getAll: async (): Promise<Service[]> => {
     return fetchApi('/services');
   },
 
-  getById: async (id: string): Promise<{ id: string; name: string; description: string; basePrice: number }> => {
+  getById: async (id: string): Promise<Service> => {
     return fetchApi(`/services/${id}`);
   },
 };
@@ -263,19 +307,3 @@ export const reviewApi = {
     });
   },
 };
-
-// Helper function for authenticated requests
-export async function fetchWithAuth<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = localStorage.getItem('auth_token');
-  
-  return fetchApi<T>(endpoint, {
-    ...options,
-    headers: {
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
-}

@@ -28,7 +28,7 @@ const LoginPage = () => {
     try {
       await login(email, password, role);
       toast.success(t('login.success'));
-      navigate(role === 'customer' ? '/customer/dashboard' : '/mechanic/dashboard');
+      navigate(role === 'customer' ? '/customer/dashboard' : role === 'workshop' ? '/workshop/dashboard' : '/mechanic/dashboard');
     } catch (error) {
       toast.error(t('login.error'));
     } finally {
@@ -99,6 +99,7 @@ const LoginPage = () => {
                 <SelectContent className="bg-[#1a1a1a] border-white/10 text-white">
                   <SelectItem value="customer">{t('login.role.customer')}</SelectItem>
                   <SelectItem value="mechanic">{t('login.role.mechanic')}</SelectItem>
+                  <SelectItem value="workshop">Bengkel / Workshop</SelectItem>
                 </SelectContent>
               </Select>
             </div>

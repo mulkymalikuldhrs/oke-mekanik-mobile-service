@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Car, Clock, Star, MessageSquare, Plus, History, AlertTriangle, LogOut, LoaderCircle, CheckCircle2, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { MapPin, Car, Clock, Star, Plus, History, AlertTriangle, LogOut, LoaderCircle, CheckCircle2, Phone, Navigation, Wrench, Zap, ShieldCheck, MessageSquare } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -12,457 +14,462 @@ import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { bookingApi, mechanicApi, reviewApi } from '@/lib/api';
+import { bookingApi, mechanicApi, reviewApi, serviceApi } from '@/lib/api';
 import { toast } from 'sonner';
 
-const ServiceHistoryTimeline = ({ bookings, onOpenReview, t }: { bookings: any[], onOpenReview: (b: any) => void, t: any }) => {
-  return (
-    <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-blue-500/20 before:to-transparent">
-      {bookings.map((booking, index) => (
-        <motion.div
-          key={booking.id}
-          initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
-        >
-          {/* Icon */}
-          <div className="flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-[#0a0a0a] text-blue-500 shadow-[0_0_15px_rgba(37,99,235,0.2)] shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 transition-transform group-hover:scale-125">
-             <CheckCircle2 className="h-5 w-5" />
-          </div>
+// Custom map icons
+const mechanicIcon = L.divIcon({
+  html: `<div style="background:#f97316;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span style="font-size:18px">🔧</span></div>`,
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  className: '',
+});
 
-          {/* Content */}
-          <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-card p-6 rounded-3xl border border-white/10 hover:border-blue-500/30 transition-all duration-500 group-hover:bg-white/5">
-            <div className="flex items-center justify-between mb-3">
-              <time className="text-[10px] font-black uppercase tracking-widest text-blue-400">
-                {new Date(booking.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </time>
-              <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20 text-[8px] uppercase font-black">
-                {t('dashboard.customer.status_completed')}
-              </Badge>
-            </div>
-            <h3 className="text-lg font-black text-white italic uppercase tracking-tight mb-1">{booking.problem}</h3>
-            <p className="text-xs text-gray-400 mb-4 font-medium italic">
-              {t('dashboard.customer.vehicle')} {booking.vehicle?.brand} {booking.vehicle?.model}
-            </p>
-            <div className="flex items-center justify-between pt-4 border-t border-white/5">
-              <span className="text-sm font-black text-orange-400 italic">Rp {booking.estimatedCost?.toLocaleString()}</span>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="text-[10px] h-8 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 font-black uppercase tracking-widest"
-                onClick={() => onOpenReview(booking)}
-              >
-                <Sparkles className="h-3 w-3 mr-1" />
-                {t('dashboard.customer.btn_review')}
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      ))}
-    </div>
-  );
-};
+const workshopIcon = L.divIcon({
+  html: `<div style="background:#3b82f6;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span style="font-size:20px">🏭</span></div>`,
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  className: '',
+});
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+const userIcon = L.divIcon({
+  html: `<div style="background:#22c55e;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span style="font-size:16px">📍</span></div>`,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  className: '',
+});
 
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100
-    }
-  }
-};
+function MapUpdater({ center }: { center: [number, number] }) {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, 14);
+  }, [center, map]);
+  return null;
+}
 
 const CustomerDashboard = () => {
   const { t } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number }>({ lat: -6.2088, lng: 106.8456 });
+  const [locationReady, setLocationReady] = useState(false);
+  const [reviewDialog, setReviewDialog] = useState<any>(null);
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
 
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-
-  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
-
+  // Get user's GPS location
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
+        (pos) => {
+          setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          setLocationReady(true);
         },
-        (error) => {
-          console.error("Error getting location:", error);
-          // Fallback to Jakarta
-          setUserLocation({ lat: -6.2088, lng: 106.8456 });
-        }
+        () => {
+          setLocationReady(true); // Use default Jakarta location
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
       );
     } else {
-      setUserLocation({ lat: -6.2088, lng: 106.8456 });
+      setLocationReady(true);
     }
   }, []);
 
-  const { data: bookings, isLoading: isLoadingBookings, error } = useQuery({
-    queryKey: ['customerBookings', user?.id],
+  // Fetch nearby mechanics
+  const { data: nearbyMechanics = [], isLoading: mechanicsLoading } = useQuery({
+    queryKey: ['nearbyMechanics', userLocation.lat, userLocation.lng],
+    queryFn: () => mechanicApi.getNearby(userLocation.lat, userLocation.lng, 15),
+    enabled: locationReady,
+  });
+
+  // Fetch user bookings
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['userBookings', user?.id],
     queryFn: () => bookingApi.getByUser(user?.id || ''),
     enabled: !!user?.id,
   });
 
-  const { data: nearbyMechanics, isLoading: isLoadingMechanics } = useQuery({
-    queryKey: ['nearbyMechanics', userLocation],
-    queryFn: () => mechanicApi.getNearby(userLocation!.lat, userLocation!.lng, 15),
-    enabled: !!userLocation,
+  // Active booking
+  const activeBooking = bookings.find(b => !['completed', 'cancelled'].includes(b.status));
+
+  // Completed bookings without review
+  const completedBookings = bookings.filter(b => b.status === 'completed');
+
+  // Services
+  const { data: services = [] } = useQuery({
+    queryKey: ['services'],
+    queryFn: serviceApi.getAll,
   });
 
-  const submitReviewMutation = useMutation({
-    mutationFn: (data: any) => reviewApi.create(data),
+  const reviewMutation = useMutation({
+    mutationFn: (data: { bookingId: string; mechanicId: string; rating: number; comment: string }) => reviewApi.create(data),
     onSuccess: () => {
       toast.success(t('common.review_success'));
-      setReviewDialogOpen(false);
-      setComment('');
-      setRating(5);
-      queryClient.invalidateQueries({ queryKey: ['customerBookings'] });
+      setReviewDialog(null);
+      queryClient.invalidateQueries({ queryKey: ['userBookings'] });
     },
-    onError: () => {
-      toast.error(t('common.review_error'));
-    }
+    onError: () => toast.error(t('common.review_error')),
   });
 
-  const handleOpenReview = (booking: any) => {
-    setSelectedBooking(booking);
-    setReviewDialogOpen(true);
+  const handleSOS = async () => {
+    try {
+      const booking = await bookingApi.sos({
+        location: { lat: userLocation.lat, lng: userLocation.lng, address: 'Lokasi GPS saat ini' },
+      });
+      toast.success('Panggilan darurat terkirim! Mekanik terdekat sedang menuju Anda.');
+      navigate(`/customer/tracking/${booking.id}`);
+    } catch (err: any) {
+      toast.error(err.message || 'Gagal mengirim panggilan darurat');
+    }
   };
 
-  const handleSubmitReview = () => {
-    if (!selectedBooking) return;
-    submitReviewMutation.mutate({
-      bookingId: selectedBooking.id,
-      mechanicId: selectedBooking.mechanicId,
-      rating,
-      comment
-    });
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
-  const activeBooking = bookings?.find(b => 
-    ['pending', 'accepted', 'otw', 'arrived', 'working'].includes(b.status)
-  );
-  const recentBookings = bookings?.filter(b => b.status === 'completed').slice(0, 5) || [];
-
-  if (isLoadingBookings) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white p-4 space-y-6">
-        <div className="flex justify-between items-center mb-8">
-          <Skeleton className="h-10 w-40 bg-white/5" />
-          <Skeleton className="h-10 w-10 rounded-full bg-white/5" />
-        </div>
-        <Skeleton className="h-48 w-full rounded-3xl bg-white/5" />
-        <div className="grid grid-cols-1 gap-4">
-          <Skeleton className="h-32 w-full rounded-2xl bg-white/5" />
-          <Skeleton className="h-32 w-full rounded-2xl bg-white/5" />
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-center">
-          <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
-          <h2 className="mt-4 text-xl font-semibold text-white">{t('error.load_failed')}</h2>
-          <p className="text-gray-400">{t('error.data_error')}</p>
-          <Button className="mt-4" onClick={() => window.location.reload()}>{t('common.retry')}</Button>
-        </div>
-      </div>
-    );
-  }
+  const emergencyServices = services.filter(s => s.isEmergencyAvailable);
+  const regularServices = services.filter(s => !s.isEmergencyAvailable);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-blue-500">
-      {/* Background Glow */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 blur-[160px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-600/10 blur-[160px] rounded-full animate-pulse delay-1000" />
-        <div className="absolute top-[30%] right-[10%] w-[30%] h-[30%] bg-purple-600/10 blur-[160px] rounded-full" />
-      </div>
-
+    <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
-      <header className="bg-black/40 backdrop-blur-[160px] border-b border-white/10 sticky top-0 z-50">
-        <div className="flex justify-between items-center p-4 md:px-8">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-tr from-blue-600 to-blue-400 p-2.5 rounded-2xl shadow-lg shadow-blue-500/30">
-              <Car className="h-6 w-6 text-white" />
+      <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/5">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-br from-blue-600 to-blue-400 p-2 rounded-xl">
+              <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase">OKE MEKANIK</h1>
-              <p className="text-xs font-bold text-blue-400 uppercase tracking-widest">{t('role.customer.title')}</p>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                {user?.name || t('role.customer.title')}
+              </p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="hidden sm:block text-right mr-2">
-              <p className="text-sm font-bold text-white">{user?.name}</p>
-              <p className="text-xs text-gray-400">{user?.email}</p>
-            </div>
+          <div className="flex items-center gap-2">
             <LanguageToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-red-500/10 hover:text-red-500 text-gray-400 transition-colors"
-              onClick={() => { logout(); navigate('/'); }}
-            >
-              <LogOut className="h-5 w-5" />
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </header>
 
-      <motion.div
-        className="container mx-auto p-4 space-y-6 relative z-10"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Intelligence Status */}
-        <motion.div variants={itemVariants}>
-          <div className="glass-card p-4 rounded-2xl flex items-center justify-between border-blue-500/20">
-            <div className="flex items-center space-x-3">
-              <Sparkles className="h-5 w-5 text-blue-400 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100/50">Neural Diagnostic: <span className="text-blue-400">OPTIMIZED</span></span>
+      <div className="container mx-auto px-4 py-4 space-y-4">
+        {/* SOS Emergency Button */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 to-orange-600/30 animate-pulse" />
+          <div className="relative p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-red-600 p-3 rounded-xl shadow-lg shadow-red-500/30">
+                <AlertTriangle className="h-6 w-6 text-white animate-pulse" />
+              </div>
+              <div>
+                <h3 className="font-black text-red-400 text-sm uppercase">SOS Darurat</h3>
+                <p className="text-xs text-gray-400">Mogok di jalan? Tekan tombol ini!</p>
+              </div>
             </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-              <span className="text-[8px] font-black uppercase text-green-400 tracking-widest">v5.8.1 ULTIMATE+</span>
-            </div>
+            <Button
+              className="bg-red-600 hover:bg-red-500 text-white font-black px-6 rounded-xl shadow-lg shadow-red-500/30"
+              onClick={handleSOS}
+            >
+              <Zap className="h-4 w-4 mr-2" /> SOS
+            </Button>
           </div>
         </motion.div>
 
-        {/* Quick Actions */}
-        <motion.div variants={itemVariants}>
-          <Card className="bg-gradient-to-br from-blue-600/20 to-blue-900/40 border border-blue-500/30 glass-card shadow-2xl overflow-hidden group relative">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/20 blur-[80px] -mr-20 -mt-20 group-hover:bg-blue-500/40 transition-all duration-700 animate-pulse" />
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none" />
-          <CardContent className="p-8 relative z-10">
-            <h2 className="text-4xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60 tracking-tighter italic uppercase">{t('dashboard.customer.help_title')}</h2>
-            <p className="mb-8 text-gray-300 text-lg font-medium">{t('dashboard.customer.help_subtitle')}</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <Button 
-                size="lg" 
-                className="bg-blue-600 hover:bg-blue-500 text-white font-black rounded-2xl h-16 text-xl shadow-xl shadow-blue-500/30 transition-all active:scale-95 relative overflow-hidden group/btn"
-                onClick={() => navigate('/customer/booking')}
-              >
-                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
-                <Plus className="h-7 w-7 mr-2 relative z-10" />
-                <span className="relative z-10">{t('dashboard.customer.btn_call')}</span>
-              </Button>
-              <Button 
-                size="lg" 
-                className="bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 font-black rounded-2xl h-16 text-xl backdrop-blur-[160px] transition-all active:scale-95"
-                onClick={() => navigate('/customer/booking')}
-              >
-                <AlertTriangle className="h-7 w-7 mr-2 animate-bounce" />
-                {t('dashboard.customer.btn_emergency')}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-        </motion.div>
-
-        {/* Active Service */}
+        {/* Active Booking Status */}
         {activeBooking && (
-          <motion.div variants={itemVariants} className="relative">
-          <Card className="border-orange-500/50 bg-orange-500/10 backdrop-blur-[160px] relative overflow-hidden shadow-[0_0_20px_rgba(249,115,22,0.2)] animate-pulse-border">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-transparent animate-shimmer" />
-            <CardHeader>
-              <CardTitle className="flex items-center text-orange-400 uppercase">
-                <Clock className="h-5 w-5 mr-2 animate-pulse" />
-                {t('dashboard.customer.active_service')} - {activeBooking.status.toUpperCase()}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                  <p className="font-semibold text-white">{t('dashboard.customer.heading_to_loc')}</p>
-                  <p className="text-sm text-gray-400">{t('dashboard.customer.vehicle')} {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
-                  <p className="text-sm text-gray-400">{t('dashboard.customer.problem')} {activeBooking.problem}</p>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+            <Card className="bg-blue-600/10 border-blue-500/20 rounded-2xl overflow-hidden">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-blue-500/20 p-2 rounded-lg">
+                      <Navigation className="h-5 w-5 text-blue-400 animate-pulse" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-blue-400 font-bold uppercase">{t('dashboard.customer.active_service')}</p>
+                      <p className="text-sm font-bold text-white">{activeBooking.problem}</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                    {activeBooking.status.toUpperCase()}
+                  </Badge>
                 </div>
-                <div className="flex space-x-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="border-white/10 text-white hover:bg-white/10"
-                    onClick={() => navigate(`/customer/chat/${activeBooking.id}`)}
-                  >
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    {t('dashboard.customer.btn_chat')}
+                <div className="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                  <Car className="h-3 w-3" />
+                  <span>{activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</span>
+                  <span className="text-gray-600">|</span>
+                  <Clock className="h-3 w-3" />
+                  <span>ETA {activeBooking.etaMinutes || 15} min</span>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" className="flex-1 bg-blue-600 hover:bg-blue-500 rounded-xl" onClick={() => navigate(`/customer/tracking/${activeBooking.id}`)}>
+                    <MapPin className="h-4 w-4 mr-1" /> {t('dashboard.customer.btn_track')}
                   </Button>
-                  <Button
-                    size="sm"
-                    className="bg-blue-600 hover:bg-blue-500 text-white"
-                    onClick={() => navigate(`/customer/tracking/${activeBooking.id}`)}
-                  >
-                    {t('dashboard.customer.btn_track')}
+                  <Button size="sm" variant="outline" className="flex-1 border-white/10 text-white rounded-xl" onClick={() => navigate(`/customer/chat/${activeBooking.id}`)}>
+                    <MessageSquare className="h-4 w-4 mr-1" /> {t('dashboard.customer.btn_chat')}
                   </Button>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
           </motion.div>
         )}
 
-        {/* Nearby Mechanics */}
-        <motion.div variants={itemVariants}>
-        <Card className="glass-card relative overflow-hidden hover:border-blue-500/50 transition-all duration-500 backdrop-blur-[160px] border-white/10">
-          <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500/50" />
-          <CardHeader>
-            <CardTitle className="flex items-center text-xl font-black text-white italic tracking-tight uppercase">
-              <MapPin className="h-6 w-6 mr-3 text-blue-400" />
-              {t('dashboard.customer.nearby_mech')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isLoadingMechanics ? (
-              <div className="space-y-4 py-2">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center justify-between p-4 border border-white/5 rounded-2xl">
-                    <div className="flex items-center space-x-4">
-                      <Skeleton className="h-12 w-12 rounded-xl bg-white/10" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-32 bg-white/10" />
-                        <Skeleton className="h-3 w-48 bg-white/5" />
-                      </div>
-                    </div>
-                    <Skeleton className="h-9 w-20 rounded-xl bg-white/10" />
-                  </div>
-                ))}
+        {/* Map Section */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <Card className="rounded-2xl overflow-hidden border-white/5">
+            <CardHeader className="pb-2 pt-3 px-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-blue-400" />
+                  {t('dashboard.customer.nearby_mech')}
+                </CardTitle>
+                <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-400 border-green-500/20">
+                  {nearbyMechanics.length} online
+                </Badge>
               </div>
-            ) : nearbyMechanics && nearbyMechanics.length > 0 ? (
-              nearbyMechanics.slice(0, 5).map((mechanic) => (
-                <div key={mechanic.id} className="flex items-center justify-between p-4 border border-white/5 rounded-2xl hover:bg-white/5 transition-colors">
-                  <div className="flex items-center space-x-4">
-                    <div className="text-3xl bg-white/5 p-2 rounded-xl">{mechanic.avatar || '👨‍🔧'}</div>
-                    <div>
-                      <h3 className="font-semibold text-white">{mechanic.name}</h3>
-                      <p className="text-sm text-gray-400">{mechanic.speciality?.join(', ')}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <div className="flex items-center">
-                          <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                          <span className="text-sm ml-1 text-gray-300">{mechanic.rating?.toFixed(1)}</span>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="h-[300px] md:h-[350px] relative">
+                <MapContainer
+                  center={[userLocation.lat, userLocation.lng]}
+                  zoom={14}
+                  style={{ height: '100%', width: '100%' }}
+                  zoomControl={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <MapUpdater center={[userLocation.lat, userLocation.lng]} />
+                  
+                  {/* User location marker */}
+                  <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
+                    <Popup className="custom-popup">
+                      <div className="text-center p-1">
+                        <strong>Lokasi Anda</strong>
+                      </div>
+                    </Popup>
+                  </Marker>
+
+                  {/* Nearby mechanics */}
+                  {nearbyMechanics.map((mech) => (
+                    <Marker
+                      key={mech.id}
+                      position={[mech.lat, mech.lng]}
+                      icon={mech.isWorkshop ? workshopIcon : mechanicIcon}
+                    >
+                      <Popup className="custom-popup">
+                        <div className="p-2 min-w-[180px]">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl">{mech.avatar || '🔧'}</span>
+                            <div>
+                              <p className="font-bold text-sm">{mech.name}</p>
+                              <div className="flex items-center gap-1">
+                                <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                                <span className="text-xs">{mech.rating}</span>
+                                {mech.distance && (
+                                  <span className="text-xs text-gray-500">• {mech.distance.toFixed(1)}km</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-xs text-gray-500 mb-2">{mech.speciality?.join(', ')}</p>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-green-600">Rp {mech.pricePerHour?.toLocaleString()}/jam</span>
+                            {mech.etaMinutes && (
+                              <span className="text-xs text-blue-600">~{mech.etaMinutes}m</span>
+                            )}
+                          </div>
+                          <Button
+                            size="sm"
+                            className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg h-7"
+                            onClick={() => navigate(`/customer/booking?mechanicId=${mech.id}`)}
+                          >
+                            Pilih Mekanik
+                          </Button>
                         </div>
-                        {mechanic.isOnline && (
-                          <Badge variant="outline" className="text-[10px] h-4 bg-green-500/10 text-green-400 border-green-500/20 uppercase font-black">{t('dashboard.mechanic.online')}</Badge>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </MapContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Quick Service Buttons */}
+        <div>
+          <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 px-1">Layanan Populer</h3>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { icon: '🆘', label: 'Darak/SOS', svcId: 'svc-darurat', color: 'from-red-600 to-red-500' },
+              { icon: '🔧', label: 'Ganti Oli', svcId: 'svc-1', color: 'from-blue-600 to-blue-500' },
+              { icon: '🛞', label: 'Ban Kempes', svcId: 'svc-3', color: 'from-green-600 to-green-500' },
+              { icon: '⚡', label: 'Aki Soak', svcId: 'svc-7', color: 'from-yellow-600 to-yellow-500' },
+              { icon: '🛑', label: 'Rem', svcId: 'svc-6', color: 'from-purple-600 to-purple-500' },
+              { icon: '❄️', label: 'AC', svcId: 'svc-8', color: 'from-cyan-600 to-cyan-500' },
+              { icon: '🔊', label: 'Tune Up', svcId: 'svc-4', color: 'from-orange-600 to-orange-500' },
+              { icon: '📋', label: 'Servis', svcId: 'svc-2', color: 'from-pink-600 to-pink-500' },
+            ].map((item) => (
+              <motion.button
+                key={item.svcId}
+                whileTap={{ scale: 0.95 }}
+                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all"
+                onClick={() => navigate(`/customer/booking?serviceId=${item.svcId}`)}
+              >
+                <span className="text-2xl">{item.icon}</span>
+                <span className="text-[10px] font-bold text-gray-300">{item.label}</span>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        {/* Nearby Mechanics List */}
+        <div>
+          <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 px-1">
+            {t('dashboard.customer.nearby_mech')} ({nearbyMechanics.length})
+          </h3>
+          <div className="space-y-2">
+            {mechanicsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <LoaderCircle className="h-6 w-6 text-blue-500 animate-spin" />
+              </div>
+            ) : nearbyMechanics.length === 0 ? (
+              <p className="text-center text-gray-500 text-sm py-8">{t('dashboard.customer.no_nearby')}</p>
+            ) : (
+              nearbyMechanics.slice(0, 5).map((mech) => (
+                <motion.div
+                  key={mech.id}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-pointer"
+                  onClick={() => navigate(`/customer/booking?mechanicId=${mech.id}`)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="text-2xl">{mech.avatar || '🔧'}</div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">{mech.name}</span>
+                        {mech.isWorkshop && (
+                          <Badge className="bg-blue-500/20 text-blue-400 text-[8px] border-blue-500/20">BENGKEL</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500">{mech.speciality?.join(', ')}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex items-center">
+                          <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                          <span className="text-xs ml-0.5">{mech.rating}</span>
+                        </div>
+                        {mech.distance !== undefined && (
+                          <span className="text-[10px] text-gray-500">{mech.distance.toFixed(1)} km</span>
+                        )}
+                        {mech.etaMinutes && (
+                          <span className="text-[10px] text-green-400">~{mech.etaMinutes} mnt</span>
                         )}
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-blue-400">Rp {mechanic.pricePerHour?.toLocaleString()}/jam</p>
-                    <Button
-                      size="sm"
-                      className="mt-2 bg-white/10 hover:bg-white/20 text-white border border-white/10 rounded-xl"
-                      onClick={() => navigate(`/customer/booking?mechanicId=${mechanic.id}`)}
-                    >
+                    <p className="text-xs font-bold text-blue-400">Rp {mech.pricePerHour?.toLocaleString()}</p>
+                    <Button size="sm" className="mt-1 bg-blue-600 hover:bg-blue-500 text-white text-[10px] rounded-lg h-6 px-3">
                       {t('dashboard.customer.btn_select')}
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               ))
-            ) : (
-              <p className="text-center text-gray-500 py-4">{t('dashboard.customer.no_nearby')}</p>
             )}
-          </CardContent>
-        </Card>
-        </motion.div>
-
-        {/* Recent Services Timeline */}
-        <motion.div variants={itemVariants} className="pb-20">
-          <div className="flex items-center space-x-3 mb-8 px-2">
-            <History className="h-7 w-7 text-green-400" />
-            <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">{t('dashboard.customer.history')}</h2>
           </div>
+        </div>
 
-          {isLoadingBookings ? (
-            <div className="flex items-center justify-center py-20">
-              <LoaderCircle className="h-10 w-10 animate-spin text-blue-500" />
-            </div>
-          ) : recentBookings.length > 0 ? (
-            <ServiceHistoryTimeline
-              bookings={recentBookings}
-              onOpenReview={handleOpenReview}
-              t={t}
-            />
+        {/* Service History */}
+        <div>
+          <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 px-1">{t('dashboard.customer.history')}</h3>
+          {completedBookings.length === 0 ? (
+            <p className="text-center text-gray-600 text-sm py-6">{t('dashboard.customer.no_history')}</p>
           ) : (
-            <Card className="glass-card p-12 text-center">
-              <History className="h-12 w-12 text-gray-600 mx-auto mb-4 opacity-20" />
-              <p className="text-gray-500 font-medium italic">{t('dashboard.customer.no_history')}</p>
-            </Card>
+            <div className="space-y-2">
+              {completedBookings.slice(0, 5).map((booking) => (
+                <div key={booking.id} className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <div>
+                      <p className="text-sm font-medium">{booking.problem}</p>
+                      <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
-        </motion.div>
-      </motion.div>
+        </div>
+
+        {/* CTA */}
+        {!activeBooking && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="pt-2 pb-8"
+          >
+            <Button
+              className="w-full bg-blue-600 hover:bg-blue-500 h-14 rounded-2xl text-lg font-black shadow-xl shadow-blue-500/20"
+              onClick={() => navigate('/customer/booking')}
+            >
+              <Wrench className="h-5 w-5 mr-2" />
+              {t('dashboard.customer.btn_call')}
+            </Button>
+          </motion.div>
+        )}
+      </div>
 
       {/* Review Dialog */}
-      <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-        <DialogContent className="bg-[#1a1a1a] border-white/10 text-white backdrop-blur-[160px]">
+      <Dialog open={!!reviewDialog} onOpenChange={() => setReviewDialog(null)}>
+        <DialogContent className="bg-[#1a1a1a] border-white/10 text-white rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-black italic tracking-tighter text-blue-400 flex items-center uppercase">
-              <Star className="mr-2 h-6 w-6 fill-blue-400" />
-              {t('dashboard.customer.review_title')}
-            </DialogTitle>
-            <DialogDescription className="text-gray-400">
-              {t('dashboard.customer.review_desc')}
-            </DialogDescription>
+            <DialogTitle>{t('dashboard.customer.review_title')}</DialogTitle>
+            <DialogDescription className="text-gray-400">{t('dashboard.customer.review_desc')}</DialogDescription>
           </DialogHeader>
-
-          <div className="py-6 space-y-6">
-            <div className="flex justify-center space-x-2">
-              {[1, 2, 3, 4, 5].map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setRating(s)}
-                  className="transition-transform active:scale-90"
-                >
-                  <Star className={`h-10 w-10 ${s <= rating ? 'fill-yellow-500 text-yellow-500' : 'text-gray-700'}`} />
+          <div className="space-y-4">
+            <div className="flex justify-center gap-2">
+              {[1,2,3,4,5].map((star) => (
+                <button key={star} onClick={() => setReviewRating(star)} className="text-3xl transition-transform hover:scale-110">
+                  {star <= reviewRating ? '⭐' : '☆'}
                 </button>
               ))}
             </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-bold uppercase tracking-widest text-gray-500">{t('dashboard.customer.review_label')}</label>
-              <Textarea
-                placeholder={t('dashboard.customer.review_placeholder')}
-                className="bg-white/5 border-white/10 text-white min-h-[100px] rounded-2xl focus:ring-blue-500/50"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-            </div>
+            <Textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder={t('dashboard.customer.review_placeholder')}
+              className="bg-white/5 border-white/10 text-white"
+            />
           </div>
-
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setReviewDialogOpen(false)} className="text-gray-400 hover:text-white">
+            <Button variant="outline" className="border-white/10 text-white" onClick={() => setReviewDialog(null)}>
               {t('dashboard.customer.btn_cancel')}
             </Button>
             <Button
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl px-8"
-              onClick={handleSubmitReview}
-              disabled={submitReviewMutation.isPending}
+              className="bg-blue-600 hover:bg-blue-500"
+              onClick={() => reviewDialog && reviewMutation.mutate({
+                bookingId: reviewDialog.id,
+                mechanicId: reviewDialog.mechanicId,
+                rating: reviewRating,
+                comment: reviewComment,
+              })}
+              disabled={reviewMutation.isPending}
             >
-              {submitReviewMutation.isPending ? t('dashboard.customer.submitting') : t('dashboard.customer.btn_submit')}
+              {reviewMutation.isPending ? '...' : t('dashboard.customer.btn_submit')}
             </Button>
           </DialogFooter>
         </DialogContent>

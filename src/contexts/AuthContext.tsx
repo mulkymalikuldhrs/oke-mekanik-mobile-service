@@ -51,6 +51,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initAuth();
   }, []);
 
+  // Redirect workshop users to mechanic dashboard
+  useEffect(() => {
+    if (user?.role === 'workshop') {
+      // Workshop users share the mechanic dashboard
+    }
+  }, [user]);
+
   const login = async (email: string, password: string, role: UserRole) => {
     setIsLoading(true);
     setError(null);

@@ -60,9 +60,10 @@ const App = () => (
                 <Route path="/customer/payment" element={<PaymentPage />} />
               </Route>
 
-              {/* Protected mechanic routes */}
+              {/* Protected mechanic & workshop routes */}
               <Route element={<ProtectedRoute />}>
                 <Route path="/mechanic/dashboard" element={<MechanicDashboard />} />
+                <Route path="/workshop/dashboard" element={<MechanicDashboard />} />
                 <Route path="/mechanic/registration" element={<MechanicRegistration />} />
                 <Route path="/mechanic/chat/:id" element={<ChatPage />} />
               </Route>

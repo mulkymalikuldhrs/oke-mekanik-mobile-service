@@ -1,4 +1,4 @@
-export type UserRole = 'customer' | 'mechanic' | 'admin';
+export type UserRole = 'customer' | 'mechanic' | 'workshop' | 'admin';
 
 export interface User {
   id: string;
@@ -14,6 +14,7 @@ export interface User {
 export interface Mechanic {
   id: string;
   user_id?: string;
+  workshop_id?: string;
   name: string;
   speciality: string[];
   rating: number;
@@ -23,8 +24,28 @@ export interface Mechanic {
   lng: number;
   avatar?: string;
   phone?: string;
-  years_of_experience?: number;
+  yearsOfExperience?: number;
   bio?: string;
+  vehicleType?: string;
+  vehiclePlate?: string;
+  isWorkshop?: boolean;
+  distance?: number;
+  etaMinutes?: number;
+}
+
+export interface Workshop {
+  id: string;
+  user_id: string;
+  name: string;
+  address?: string;
+  lat?: number;
+  lng?: number;
+  phone?: string;
+  speciality?: string[];
+  rating: number;
+  isOnline: boolean;
+  operatingHours?: string;
+  description?: string;
 }
 
 export type BookingStatus =
@@ -58,13 +79,33 @@ export interface Booking {
     lat: number;
     lng: number;
   } | null;
+  mechanic?: {
+    id: string;
+    name: string;
+    phone: string;
+    rating: number;
+    speciality: string[];
+    avatar?: string;
+    pricePerHour: number;
+  } | null;
+  service?: {
+    id: string;
+    name: string;
+    basePrice: number;
+    category: string;
+    icon: string;
+  } | null;
+  customer?: {
+    id: string;
+    name: string;
+    phone: string;
+  } | null;
   createdAt: string;
   updatedAt?: string;
-  scheduledAt?: string;
-  eta?: string;
   estimatedCost: number;
   finalCost?: number;
   isEmergency?: boolean;
+  etaMinutes?: number;
 }
 
 export interface Message {
@@ -90,6 +131,8 @@ export interface Service {
   name: string;
   description: string;
   basePrice: number;
-  duration?: number;
-  category?: string;
+  category: string;
+  icon: string;
+  estimatedDuration: number;
+  isEmergencyAvailable: boolean;
 }

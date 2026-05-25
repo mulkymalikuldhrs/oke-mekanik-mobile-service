@@ -36,6 +36,10 @@ const Index = () => {
         navigate('/customer/dashboard');
       } else if (user.role === 'mechanic') {
         navigate('/mechanic/dashboard');
+      } else if (user.role === 'workshop') {
+        navigate('/workshop/dashboard');
+      } else if (user.role === 'admin') {
+        navigate('/admin/dashboard');
       }
     }
   }, [user, navigate]);

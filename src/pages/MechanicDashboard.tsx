@@ -1,40 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Wrench, Clock, MapPin, Phone, MessageSquare, CheckCircle, XCircle, Star, LogOut, LoaderCircle, AlertTriangle, TrendingUp, Navigation, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LineChart, Line } from 'recharts';
+import { Wrench, Clock, MapPin, Phone, MessageSquare, CheckCircle, XCircle, Star, LogOut, LoaderCircle, AlertTriangle, TrendingUp, Navigation, Zap, Power, PowerOff, Users, Car } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useNavigate } from 'react-router-dom';
 import LanguageToggle from '@/components/LanguageToggle';
 import { useAuth } from '@/contexts/AuthContext';
 import { mechanicApi, bookingApi, reviewApi } from '@/lib/api';
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100
-    }
-  }
-};
+import { toast } from 'sonner';
+import { io } from 'socket.io-client';
 
 const MechanicDashboard = () => {
   const { t } = useLanguage();
@@ -42,486 +20,377 @@ const MechanicDashboard = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isOnline, setIsOnline] = useState(true);
+  const [incomingOrder, setIncomingOrder] = useState<any>(null);
 
-  const { data: mechanicData, isLoading, error } = useQuery({
-    queryKey: ['mechanicDashboard'],
+  // Get mechanic profile
+  const { data: mechanicData, isLoading } = useQuery({
+    queryKey: ['mechanicDashboard', user?.id],
     queryFn: () => mechanicApi.getById(user?.id || ''),
     enabled: !!user?.id,
   });
 
-  const { data: bookings } = useQuery({
+  // Get mechanic bookings
+  const { data: bookings = [] } = useQuery({
     queryKey: ['mechanicBookings', user?.id],
     queryFn: () => bookingApi.getByMechanic(user?.id || ''),
     enabled: !!user?.id,
+    refetchInterval: 10000, // Poll every 10s for new orders
   });
 
-  const { data: reviews } = useQuery({
+  // Get reviews
+  const { data: reviews = [] } = useQuery({
     queryKey: ['mechanicReviews', mechanicData?.id],
     queryFn: () => reviewApi.getByMechanicId(mechanicData?.id || ''),
     enabled: !!mechanicData?.id,
   });
 
+  // Get pending bookings (new orders)
+  const { data: pendingBookings = [] } = useQuery({
+    queryKey: ['pendingBookings'],
+    queryFn: mechanicApi.getPendingBookings,
+    enabled: isOnline && !!user?.id,
+    refetchInterval: 5000, // Check every 5s
+  });
+
+  // Active booking
+  const activeBooking = bookings.find(b => ['accepted', 'otw', 'arrived', 'working'].includes(b.status));
+  const pendingBooking = bookings.find(b => b.status === 'pending');
+
+  // Stats
+  const completedCount = bookings.filter(b => b.status === 'completed').length;
+  const totalEarnings = bookings.filter(b => b.status === 'completed').reduce((sum, b) => sum + (b.finalCost || b.estimatedCost || 0), 0);
+
+  // Status mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) => 
       bookingApi.updateStatus(id, status as any),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['mechanicBookings'] });
+      queryClient.invalidateQueries({ queryKey: ['pendingBookings'] });
     },
   });
 
-  const updateLocationMutation = useMutation({
-    mutationFn: ({ id, lat, lng }: { id: string; lat: number; lng: number }) =>
-      mechanicApi.updateLocation(id, lat, lng),
+  // Online/offline mutation
+  const toggleOnlineMutation = useMutation({
+    mutationFn: ({ id, online }: { id: string; online: boolean }) =>
+      mechanicApi.updateStatus(id, online),
+    onSuccess: (_, variables) => {
+      setIsOnline(variables.online);
+      toast.success(variables.online ? 'Anda sekarang ONLINE' : 'Anda sekarang OFFLINE');
+    },
   });
 
-  // Track and update location if online or active
+  // Location tracking
   useEffect(() => {
-    if (!user?.id || !isOnline) return;
+    if (!user?.id || !isOnline || !mechanicData?.id) return;
 
     const updateLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
-          updateLocationMutation.mutate({
-            id: user.id,
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
+          mechanicApi.updateLocation(mechanicData.id, position.coords.latitude, position.coords.longitude);
         });
       }
     };
 
     updateLocation();
-    const interval = setInterval(updateLocation, 30000); // Every 30 seconds
+    const interval = setInterval(updateLocation, 30000); // Update every 30s
     return () => clearInterval(interval);
-  }, [user?.id, isOnline]);
+  }, [user?.id, isOnline, mechanicData?.id]);
 
-  const pendingOrders = bookings?.filter(b => b.status === 'pending') || [];
-  const currentJob = bookings?.find(b => 
-    ['accepted', 'otw', 'arrived', 'working'].includes(b.status)
-  );
+  // Socket for real-time new orders
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3001';
+    const socket = io(apiUrl);
+
+    socket.on('new_booking', (booking) => {
+      if (isOnline) {
+        setIncomingOrder(booking);
+        toast.info('Pesanan baru masuk!', { duration: 10000 });
+      }
+    });
+
+    socket.on('sos_booking', (booking) => {
+      setIncomingOrder({ ...booking, isSOS: true });
+      toast.error('🆘 PANGGILAN DARURAT MASUK!', { duration: 15000 });
+    });
+
+    return () => { socket.disconnect(); };
+  }, [isOnline]);
+
+  const handleAcceptOrder = (bookingId: string) => {
+    updateStatusMutation.mutate({ id: bookingId, status: 'accepted' }, {
+      onSuccess: () => {
+        toast.success('Pesanan diterima!');
+        setIncomingOrder(null);
+      }
+    });
+  };
+
+  const handleRejectOrder = () => {
+    setIncomingOrder(null);
+    toast.info('Pesanan ditolak');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] text-white p-4 space-y-6">
-        <div className="flex justify-between items-center mb-8">
-          <Skeleton className="h-10 w-40 bg-white/5" />
-          <div className="flex space-x-2">
-            <Skeleton className="h-10 w-20 bg-white/5" />
-            <Skeleton className="h-10 w-10 rounded-full bg-white/5" />
-          </div>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 w-full bg-white/5 rounded-2xl" />)}
-        </div>
-        <Skeleton className="h-64 w-full bg-white/5 rounded-2xl" />
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+        <LoaderCircle className="h-8 w-8 text-orange-500 animate-spin" />
       </div>
     );
   }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <div className="text-center">
-          <AlertTriangle className="h-12 w-12 mx-auto text-red-500" />
-          <h2 className="mt-4 text-xl font-semibold text-white">{t('error.load_failed')}</h2>
-          <p className="text-gray-400">{t('error.data_error')}</p>
-          <Button className="mt-4" onClick={() => window.location.reload()}>{t('common.retry')}</Button>
-        </div>
-      </div>
-    );
-  }
-
-  const handleAcceptOrder = (orderId: string) => {
-    updateStatusMutation.mutate({ id: orderId, status: 'accepted' });
-  };
-
-  const handleRejectOrder = (orderId: string) => {
-    updateStatusMutation.mutate({ id: orderId, status: 'cancelled' });
-  };
-
-  const handleCompleteJob = (orderId: string) => {
-    updateStatusMutation.mutate({ id: orderId, status: 'completed' });
-  };
-
-  const completedJobs = bookings?.filter(b => b.status === 'completed') || [];
-  const completedJobsCount = completedJobs.length;
-
-  // Dynamic Analytics data from real bookings
-  const getChartData = () => {
-    const days = [
-      t('days.sen'),
-      t('days.sel'),
-      t('days.rab'),
-      t('days.kam'),
-      t('days.jum'),
-      t('days.sab'),
-      t('days.min')
-    ];
-    const weeklyData = days.map(day => ({ name: day, value: 0 }));
-
-    if (!completedJobs || completedJobs.length === 0) return weeklyData;
-
-    completedJobs.forEach(job => {
-      if (!job.createdAt) return;
-      const jobDate = new Date(job.createdAt);
-      const dayIndex = jobDate.getDay(); // 0 is Sunday, 1 is Monday...
-      const mappedIndex = dayIndex === 0 ? 6 : dayIndex - 1; // Map to Sen=0...Min=6
-      weeklyData[mappedIndex].value += (job.estimatedCost || 0);
-    });
-
-    return weeklyData;
-  };
-
-  const chartData = getChartData();
-  const totalEarnings = completedJobs.reduce((acc, job) => acc + (job.estimatedCost || 0), 0);
-
-  // Dynamic Rating Trends from real reviews
-  const getRatingTrends = () => {
-    if (!reviews || reviews.length === 0) {
-      return [];
-    }
-
-    // Simplified: group reviews by month
-    const months = [
-      t('months.jan'), t('months.feb'), t('months.mar'), t('months.apr'),
-      t('months.mei'), t('months.jun'), t('months.jul'), t('months.agu'),
-      t('months.sep'), t('months.okt'), t('months.nov'), t('months.des')
-    ];
-    const monthlyRating: Record<number, { sum: number, count: number }> = {};
-
-    reviews.forEach(r => {
-      const date = new Date(r.createdAt);
-      const month = date.getMonth();
-      if (!monthlyRating[month]) monthlyRating[month] = { sum: 0, count: 0 };
-      monthlyRating[month].sum += r.rating;
-      monthlyRating[month].count += 1;
-    });
-
-    return Object.entries(monthlyRating)
-      .map(([month, data]) => ({
-        name: months[parseInt(month)],
-        rating: parseFloat((data.sum / data.count).toFixed(1))
-      }))
-      .sort((a, b) => months.indexOf(a.name) - months.indexOf(b.name));
-  };
-
-  const ratingTrends = getRatingTrends();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white selection:bg-orange-500">
-      {/* Background Glow */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-orange-600/20 blur-[160px] rounded-full animate-pulse" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[160px] rounded-full animate-pulse delay-1000" />
-        <div className="absolute top-[30%] right-[10%] w-[30%] h-[30%] bg-orange-600/10 blur-[160px] rounded-full" />
-      </div>
-
-      <header className="bg-black/40 backdrop-blur-[160px] border-b border-white/10 sticky top-0 z-50">
-        <div className="flex justify-between items-center p-4 md:px-8">
-          <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-tr from-orange-600 to-orange-400 p-2.5 rounded-2xl shadow-lg shadow-orange-500/30">
-              <Wrench className="h-6 w-6 text-white" />
+    <div className="min-h-screen bg-[#050505] text-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-xl border-b border-white/5">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-gradient-to-br from-orange-600 to-orange-400 p-2 rounded-xl">
+              <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-white italic tracking-tighter uppercase">OKE MEKANIK</h1>
-              <p className="text-xs font-bold text-orange-400 uppercase tracking-widest">{t('role.mechanic.title')}</p>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+                {mechanicData?.name || 'Mekanik'}
+              </p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="hidden md:flex items-center space-x-3 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 backdrop-blur-[160px]">
-              <span className={`text-xs font-black uppercase tracking-widest ${isOnline ? 'text-green-400' : 'text-gray-500'}`}>
-                {isOnline ? t('dashboard.mechanic.online') : t('dashboard.mechanic.offline')}
-              </span>
-              <Switch checked={isOnline} onCheckedChange={setIsOnline} className="data-[state=checked]:bg-green-500" />
-            </div>
+          <div className="flex items-center gap-2">
             <LanguageToggle />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-red-500/10 hover:text-red-500 text-gray-400 transition-colors"
-              onClick={logout}
-            >
-              <LogOut className="h-5 w-5" />
+            <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </header>
 
-      <motion.main
-        className="container mx-auto px-4 py-8 relative z-10"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {/* Intelligence Status */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <div className="glass-card p-4 rounded-2xl flex items-center justify-between border-orange-500/20">
-            <div className="flex items-center space-x-3">
-              <Sparkles className="h-5 w-5 text-orange-400 animate-pulse" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-100/50">Mission Control: <span className="text-orange-400">READY</span></span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-              <span className="text-[8px] font-black uppercase text-green-400 tracking-widest">v5.8.1 ULTIMATE+</span>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <motion.div variants={itemVariants}>
-          <Card className="glass-card hover:border-orange-500/30 transition-all duration-500 group h-full backdrop-blur-[160px]">
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-black text-orange-400 group-hover:scale-110 transition-transform">{pendingOrders.length}</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">{t('dashboard.mechanic.orders_in')}</p>
-            </CardContent>
-          </Card>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-          <Card className="glass-card hover:border-blue-500/30 transition-all duration-500 group h-full backdrop-blur-[160px]">
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-black text-blue-400 group-hover:scale-110 transition-transform">{currentJob ? '1' : '0'}</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">{t('dashboard.mechanic.active_job')}</p>
-            </CardContent>
-          </Card>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-          <Card className="glass-card hover:border-green-500/30 transition-all duration-500 group h-full backdrop-blur-[160px]">
-            <CardContent className="p-4 text-center">
-              <p className="text-3xl font-black text-green-400 group-hover:scale-110 transition-transform">{completedJobsCount}</p>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">{t('dashboard.mechanic.completed')}</p>
-            </CardContent>
-          </Card>
-          </motion.div>
-          <motion.div variants={itemVariants}>
-          <Card className="glass-card hover:border-yellow-500/30 transition-all duration-500 group h-full backdrop-blur-[160px]">
-            <CardContent className="p-4 text-center">
-              <div className="flex justify-center items-center group-hover:scale-110 transition-transform">
-                <p className="text-3xl font-black text-yellow-400 mr-1">{mechanicData?.rating?.toFixed(1) || '4.9'}</p>
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-              </div>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mt-1">{t('dashboard.mechanic.rating')}</p>
-            </CardContent>
-          </Card>
-          </motion.div>
-        </div>
-
-        {/* Current Job */}
-        {currentJob && (
-          <motion.div variants={itemVariants}>
-          <Card className="mb-8 bg-orange-500/10 backdrop-blur-[160px] border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.15)] relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/5 to-transparent -translate-x-full group-hover:animate-shimmer pointer-events-none" />
-            <CardHeader>
-              <CardTitle className="flex items-center text-white uppercase font-black italic tracking-tight">
-                <Wrench className="h-5 w-5 mr-2 text-orange-400" />
-                {t('dashboard.mechanic.current_job')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-start">
+      <div className="container mx-auto px-4 py-4 space-y-4">
+        {/* Online/Offline Toggle */}
+        <Card className={`rounded-2xl overflow-hidden border ${isOnline ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${isOnline ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+                  {isOnline ? <Power className="h-5 w-5 text-green-400" /> : <PowerOff className="h-5 w-5 text-red-400" />}
+                </div>
                 <div>
-                  <p className="font-semibold text-white">{currentJob.vehicle?.brand} {currentJob.vehicle?.model}</p>
-                  <p className="text-gray-400">{currentJob.problem}</p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    <MapPin className="h-4 w-4 inline mr-1" />
-                    {currentJob.location?.address}
-                  </p>
+                  <p className="font-black text-sm">{isOnline ? 'ONLINE' : 'OFFLINE'}</p>
+                  <p className="text-xs text-gray-500">{isOnline ? 'Anda terlihat oleh pelanggan' : 'Tidak menerima pesanan'}</p>
                 </div>
-                <Badge className={
-                  currentJob.status === 'working' ? 'bg-orange-500' :
-                  currentJob.status === 'otw' ? 'bg-blue-500' : 'bg-gray-500'
-                }>
-                  {currentJob.status.toUpperCase()}
-                </Badge>
               </div>
-              <div className="flex space-x-2 mt-4">
-                <Button size="sm" variant="outline" className="border-white/10 text-white hover:bg-white/10" onClick={() => navigate(`/mechanic/chat/${currentJob.id}`)}>
-                  <MessageSquare className="h-4 w-4 mr-1" />
-                  {t('dashboard.mechanic.btn_chat')}
-                </Button>
-                <Button size="sm" variant="outline" className="border-white/10 text-white hover:bg-white/10">
-                  <Phone className="h-4 w-4 mr-1" />
-                  {t('dashboard.mechanic.btn_phone')}
-                </Button>
-                {currentJob.status === 'accepted' && (
-                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'otw' })}>
-                    <Navigation className="h-4 w-4 mr-1" />
-                    {t('dashboard.mechanic.btn_otw')}
-                  </Button>
-                )}
-                {currentJob.status === 'otw' && (
-                  <Button size="sm" className="bg-yellow-600 hover:bg-yellow-700 text-white" onClick={() => updateStatusMutation.mutate({ id: currentJob.id, status: 'working' })}>
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    {t('dashboard.mechanic.btn_arrived')}
-                  </Button>
-                )}
-                {currentJob.status === 'working' && (
-                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleCompleteJob(currentJob.id)}>
-                    <CheckCircle className="h-4 w-4 mr-1" />
-                    {t('dashboard.mechanic.btn_done')}
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-          </motion.div>
-        )}
-
-        {/* Analytics & Reviews */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-          {/* Earnings Chart */}
-          <motion.div className="lg:col-span-2" variants={itemVariants}>
-          <Card className="glass-card relative overflow-hidden hover:border-orange-500/50 transition-all duration-500 backdrop-blur-[160px]">
-            <div className="absolute top-0 right-0 p-4">
-              <TrendingUp className="h-6 w-6 text-orange-500 opacity-50" />
+              <Switch
+                checked={isOnline}
+                onCheckedChange={(checked) => {
+                  if (mechanicData?.id) toggleOnlineMutation.mutate({ id: mechanicData.id, online: checked });
+                }}
+                className="data-[state=checked]:bg-green-500"
+              />
             </div>
-            <CardHeader>
-              <CardTitle className="text-xl font-black text-white italic tracking-tight uppercase">{t('dashboard.mechanic.analytics')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[250px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: '#94a3b8', fontSize: 12 }}
-                    />
-                    <YAxis
-                      hide
-                    />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #ffffff20', borderRadius: '12px' }}
-                      itemStyle={{ color: '#fb923c' }}
-                    />
-                    <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 5 ? '#f97316' : '#f9731640'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-4 flex justify-between items-end">
-                <div>
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{t('dashboard.mechanic.earnings_label')}</p>
-                  <p className="text-2xl font-black text-white">Rp {totalEarnings.toLocaleString()}</p>
-                </div>
-                <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                  {t('dashboard.mechanic.target_hit')}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-          </motion.div>
-
-          {/* Performance Trends */}
-          <motion.div variants={itemVariants}>
-          <Card className="glass-card overflow-hidden hover:border-yellow-500/50 transition-all duration-500 h-full backdrop-blur-[160px]">
-            <CardHeader>
-              <CardTitle className="text-xl font-black text-white italic tracking-tight uppercase">{t('dashboard.mechanic.performance')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[150px] w-full mb-6">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={ratingTrends}>
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #ffffff20', borderRadius: '12px' }}
-                      itemStyle={{ color: '#fbbf24' }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="rating"
-                      stroke="#fbbf24"
-                      strokeWidth={3}
-                      dot={{ fill: '#fbbf24', r: 4 }}
-                      activeDot={{ r: 6, stroke: '#ffffff', strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border-b border-white/5 pb-2">{t('dashboard.mechanic.recent_reviews')}</p>
-              {reviews && reviews.length > 0 ? (
-                reviews.slice(0, 3).map((review) => (
-                  <div key={review.id} className="border-b border-white/5 pb-4 last:border-0 last:pb-0">
-                    <div className="flex justify-between items-start mb-1">
-                      <div className="flex items-center">
-                        <div className="flex mr-2">
-                          {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`h-3 w-3 ${i < review.rating ? 'fill-yellow-500 text-yellow-500' : 'text-gray-600'}`} />
-                          ))}
-                        </div>
-                      </div>
-                      <span className="text-[10px] text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
-                    </div>
-                    <p className="text-sm text-gray-300 line-clamp-2 italic">"{review.comment}"</p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-500 text-center py-4 text-xs italic">{t('dashboard.mechanic.no_reviews')}</p>
-              )}
-              </div>
-            </CardContent>
-          </Card>
-          </motion.div>
-        </div>
-
-        {/* Pending Orders */}
-        <motion.div variants={itemVariants}>
-        <Card className="glass-card relative overflow-hidden hover:border-blue-500/50 transition-all duration-500 backdrop-blur-[160px]">
-          <div className="absolute top-0 left-0 w-1 h-full bg-orange-500/50" />
-          <CardHeader>
-            <CardTitle className="flex items-center text-xl font-black text-white italic tracking-tight uppercase">
-              <Clock className="h-6 w-6 mr-3 text-blue-400" />
-              {t('dashboard.mechanic.orders_in_title')} ({pendingOrders.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {pendingOrders.length > 0 ? (
-              pendingOrders.map((order) => (
-                <div key={order.id} className="border border-white/5 rounded-2xl p-4 hover:bg-white/5 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-semibold text-white">{order.vehicle?.brand} {order.vehicle?.model}</p>
-                      <p className="text-gray-400">{order.problem}</p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        <MapPin className="h-4 w-4 inline mr-1" />
-                        {order.location?.address}
-                      </p>
-                    </div>
-                    <div className="flex space-x-2 ml-4">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="text-red-400 border-red-500/30 hover:bg-red-500/10"
-                        onClick={() => handleRejectOrder(order.id)}
-                      >
-                        <XCircle className="h-4 w-4 mr-1" />
-                        {t('dashboard.mechanic.btn_reject')}
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                        onClick={() => handleAcceptOrder(order.id)}
-                      >
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        {t('dashboard.mechanic.btn_accept')}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-4">{t('dashboard.mechanic.no_orders')}</p>
-            )}
           </CardContent>
         </Card>
-        </motion.div>
-      </motion.main>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-3 gap-2">
+          <Card className="bg-white/5 border-white/5 rounded-xl">
+            <CardContent className="p-3 text-center">
+              <p className="text-xl font-black text-green-400">{completedCount}</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase">Selesai</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/5 border-white/5 rounded-xl">
+            <CardContent className="p-3 text-center">
+              <p className="text-xl font-black text-blue-400">Rp {(totalEarnings/1000).toFixed(0)}K</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase">Pendapatan</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/5 border-white/5 rounded-xl">
+            <CardContent className="p-3 text-center">
+              <p className="text-xl font-black text-yellow-400 flex items-center justify-center">
+                <Star className="h-4 w-4 mr-1 fill-current" />{mechanicData?.rating || '4.5'}
+              </p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase">Rating</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Incoming Order Alert */}
+        <AnimatePresence>
+          {(incomingOrder || pendingBooking) && isOnline && (
+            <motion.div
+              initial={{ opacity: 0, y: -20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -20 }}
+            >
+              <Card className={`rounded-2xl overflow-hidden border ${incomingOrder?.isSOS || incomingOrder?.isEmergency ? 'border-red-500/50 bg-red-500/5' : 'border-orange-500/30 bg-orange-500/5'}`}>
+                <CardHeader className="pb-2 pt-3 px-4">
+                  <div className="flex items-center gap-2">
+                    {(incomingOrder?.isSOS || incomingOrder?.isEmergency) && (
+                      <AlertTriangle className="h-5 w-5 text-red-400 animate-pulse" />
+                    )}
+                    <CardTitle className="text-sm font-black uppercase">
+                      {(incomingOrder?.isSOS || incomingOrder?.isEmergency) ? '🆘 PANGGILAN DARURAT!' : '📋 PESANAN MASUK'}
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="px-4 pb-4 space-y-3">
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center gap-2">
+                      <Car className="h-4 w-4 text-gray-400" />
+                      <span>{incomingOrder?.vehicle?.brand || incomingOrder?.vehicleBrand || '-'} {incomingOrder?.vehicle?.model || incomingOrder?.vehicleModel || ''}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-gray-400" />
+                      <span className="truncate">{incomingOrder?.location?.address || incomingOrder?.locationAddress || '-'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Wrench className="h-4 w-4 text-gray-400" />
+                      <span>{incomingOrder?.problem || '-'}</span>
+                    </div>
+                    {incomingOrder?.distance && (
+                      <div className="flex items-center gap-2 text-green-400">
+                        <Navigation className="h-4 w-4" />
+                        <span>{incomingOrder.distance.toFixed(1)} km • ~{incomingOrder.etaMinutes} mnt</span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-blue-400 font-bold">
+                      <span>Rp {(incomingOrder?.estimatedCost || 0)?.toLocaleString()}</span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      className="flex-1 bg-red-600 hover:bg-red-500 rounded-xl font-bold"
+                      onClick={handleRejectOrder}
+                    >
+                      <XCircle className="h-4 w-4 mr-1" /> Tolak
+                    </Button>
+                    <Button
+                      className="flex-1 bg-green-600 hover:bg-green-500 rounded-xl font-bold"
+                      onClick={() => handleAcceptOrder(incomingOrder?.id || pendingBooking?.id || '')}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-1" /> Terima
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Active Job */}
+        {activeBooking && (
+          <Card className="rounded-2xl border-blue-500/20 bg-blue-500/5">
+            <CardHeader className="pb-2 pt-3 px-4">
+              <CardTitle className="text-sm font-black flex items-center gap-2">
+                <Wrench className="h-4 w-4 text-blue-400" /> PEKERJAAN AKTIF
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-4 space-y-3">
+              <div className="text-sm space-y-1">
+                <p><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></p>
+                <p><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</p>
+                <p><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
+                <p><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</p>
+                <p><span className="text-gray-500">Lokasi:</span> {activeBooking.location?.address}</p>
+              </div>
+              
+              {/* Status Action Buttons */}
+              <div className="flex flex-col gap-2">
+                {activeBooking.status === 'accepted' && (
+                  <Button className="w-full bg-orange-600 hover:bg-orange-500 rounded-xl font-bold" onClick={() => updateStatusMutation.mutate({ id: activeBooking.id, status: 'otw' })}>
+                    <Navigation className="h-4 w-4 mr-2" /> BERANGKAT (OTW)
+                  </Button>
+                )}
+                {activeBooking.status === 'otw' && (
+                  <Button className="w-full bg-blue-600 hover:bg-blue-500 rounded-xl font-bold" onClick={() => updateStatusMutation.mutate({ id: activeBooking.id, status: 'arrived' })}>
+                    <MapPin className="h-4 w-4 mr-2" /> TIBA DI LOKASI
+                  </Button>
+                )}
+                {activeBooking.status === 'arrived' && (
+                  <Button className="w-full bg-yellow-600 hover:bg-yellow-500 rounded-xl font-bold" onClick={() => updateStatusMutation.mutate({ id: activeBooking.id, status: 'working' })}>
+                    <Wrench className="h-4 w-4 mr-2" /> MULAI KERJA
+                  </Button>
+                )}
+                {activeBooking.status === 'working' && (
+                  <Button className="w-full bg-green-600 hover:bg-green-500 rounded-xl font-bold" onClick={() => updateStatusMutation.mutate({ id: activeBooking.id, status: 'completed' })}>
+                    <CheckCircle className="h-4 w-4 mr-2" /> SELESAI
+                  </Button>
+                )}
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1 border-white/10 text-white rounded-xl" onClick={() => navigate(`/mechanic/chat/${activeBooking.id}`)}>
+                  <MessageSquare className="h-4 w-4 mr-1" /> Chat
+                </Button>
+                <Button variant="outline" className="flex-1 border-white/10 text-white rounded-xl" onClick={() => navigate(`/customer/tracking/${activeBooking.id}`)}>
+                  <MapPin className="h-4 w-4 mr-1" /> Lacak
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Recent Reviews */}
+        {reviews.length > 0 && (
+          <div>
+            <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 px-1">Ulasan Terbaru</h3>
+            <div className="space-y-2">
+              {reviews.slice(0, 3).map((rev: any) => (
+                <Card key={rev.id} className="bg-white/5 border-white/5 rounded-xl">
+                  <CardContent className="p-3">
+                    <div className="flex items-center gap-1 mb-1">
+                      {Array.from({ length: rev.rating }).map((_, i) => (
+                        <Star key={i} className="h-3 w-3 text-yellow-500 fill-current" />
+                      ))}
+                    </div>
+                    <p className="text-xs text-gray-300">{rev.comment}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Incoming Order Full-screen Dialog */}
+      <AnimatePresence>
+        {incomingOrder?.isSOS && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-[100] bg-red-900/80 backdrop-blur-lg flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              className="bg-[#1a1a1a] rounded-3xl p-6 max-w-sm w-full border-2 border-red-500/50"
+            >
+              <div className="text-center mb-4">
+                <AlertTriangle className="h-12 w-12 text-red-400 mx-auto animate-pulse" />
+                <h2 className="text-2xl font-black text-red-400 mt-2">🆘 SOS DARURAT!</h2>
+                <p className="text-sm text-gray-400 mt-1">Pelanggan butuh bantuan segera!</p>
+              </div>
+              <div className="space-y-2 text-sm mb-4">
+                <p><strong>Lokasi:</strong> {incomingOrder?.location?.address || 'GPS Location'}</p>
+                <p><strong>Masalah:</strong> {incomingOrder?.problem || 'Kendaraan mogok'}</p>
+                {incomingOrder?.distance && <p><strong>Jarak:</strong> {incomingOrder.distance.toFixed(1)} km</p>}
+              </div>
+              <div className="flex gap-2">
+                <Button className="flex-1 bg-gray-700 hover:bg-gray-600 rounded-xl" onClick={handleRejectOrder}>
+                  <XCircle className="h-4 w-4 mr-1" /> Tolak
+                </Button>
+                <Button className="flex-1 bg-red-600 hover:bg-red-500 rounded-xl font-bold" onClick={() => handleAcceptOrder(incomingOrder?.id)}>
+                  <Zap className="h-4 w-4 mr-1" /> TERIMA!
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

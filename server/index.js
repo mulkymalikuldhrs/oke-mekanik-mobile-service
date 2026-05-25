@@ -29,7 +29,7 @@ const app = express();
 app.use(helmet());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 200,
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: { message: 'Terlalu banyak permintaan dari IP ini, silakan coba lagi nanti.' }
@@ -40,7 +40,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST']
+    methods: ['GET', 'POST', 'PATCH']
   }
 });
 
@@ -52,7 +52,7 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 }
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Request Trace ID & Socket Attach
 app.use((req, res, next) => {
@@ -71,21 +71,52 @@ app.use((req, res, next) => {
   next();
 });
 
-// Socket.io Logic
+// Socket.io Logic with Room Management
+const connectedUsers = new Map();
+
 io.on('connection', (socket) => {
+  console.log(`[SOCKET] Client connected: ${socket.id}`);
+
   socket.on('join_booking', (bookingId) => {
     socket.join(bookingId);
+    console.log(`[SOCKET] ${socket.id} joined booking room: ${bookingId}`);
+  });
+
+  socket.on('leave_booking', (bookingId) => {
+    socket.leave(bookingId);
   });
 
   socket.on('update_location', (data) => {
     io.to(data.bookingId).emit('location_updated', {
       lat: data.lat,
-      lng: data.lng
+      lng: data.lng,
+      timestamp: Date.now()
     });
   });
 
   socket.on('send_message', (data) => {
     io.to(data.bookingId).emit('new_message', data);
+  });
+
+  socket.on('mechanic_online', (data) => {
+    connectedUsers.set(data.mechanicId, socket.id);
+    io.emit('mechanic_status_changed', { mechanicId: data.mechanicId, isOnline: true });
+  });
+
+  socket.on('mechanic_offline', (data) => {
+    connectedUsers.delete(data.mechanicId);
+    io.emit('mechanic_status_changed', { mechanicId: data.mechanicId, isOnline: false });
+  });
+
+  socket.on('disconnect', () => {
+    // Clean up disconnected users
+    for (const [key, value] of connectedUsers.entries()) {
+      if (value === socket.id) {
+        connectedUsers.delete(key);
+        break;
+      }
+    }
+    console.log(`[SOCKET] Client disconnected: ${socket.id}`);
   });
 });
 
@@ -101,19 +132,43 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Health Check
+// Health Check with system stats
 app.get('/api/health', (req, res) => {
-  try {
-    db.prepare('SELECT 1').get();
-    res.json({ status: 'ok', database: 'connected', timestamp: new Date().toISOString(), version: 'v5.8.1-ultimate' });
-  } catch (error) {
-    res.status(500).json({ status: 'error', database: 'disconnected', message: error.message });
-  }
+  const onlineMechanics = db.prepare('SELECT count(*) as count FROM mechanics WHERE is_online = 1').get().count;
+  const activeBookings = db.prepare("SELECT count(*) as count FROM bookings WHERE status NOT IN ('completed', 'cancelled')").get().count;
+  const totalUsers = db.prepare('SELECT count(*) as count FROM users').get().count;
+  
+  res.json({
+    status: 'ok',
+    service: 'Oke Mekanik API',
+    version: '6.1.0',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    stats: {
+      onlineMechanics,
+      activeBookings,
+      totalUsers,
+      connectedSockets: io.sockets.sockets.size
+    }
+  });
 });
 
-// Error Handling
+// Error Handler
 app.use(errorHandler);
 
 httpServer.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`
+  ╔══════════════════════════════════════════════════╗
+  ║                                                  ║
+  ║   🔧 OKE MEKANIK - Backend Server v6.1.0        ║
+  ║   "Uber untuk Mekanik/Bengkel"                   ║
+  ║                                                  ║
+  ║   Server: http://localhost:${PORT}                 ║
+  ║   API:    http://localhost:${PORT}/api/health      ║
+  ║   Socket: Enabled                                ║
+  ║                                                  ║
+  ╚══════════════════════════════════════════════════╝
+  `);
 });
+
+export { io, connectedUsers };
