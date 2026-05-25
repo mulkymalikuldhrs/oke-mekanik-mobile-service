@@ -160,7 +160,7 @@ httpServer.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════════════╗
   ║                                                  ║
-  ║   🔧 OKE MEKANIK - Backend Server v6.1.0        ║
+  ║   🔧 OKE MEKANIK - Backend Server v6.2.0        ║
   ║   "Uber untuk Mekanik/Bengkel"                   ║
   ║                                                  ║
   ║   Server: http://localhost:${PORT}                 ║

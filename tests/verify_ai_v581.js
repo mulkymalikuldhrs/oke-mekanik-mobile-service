@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 async function verifyAI() {
-  console.log('--- Verifying AI Diagnostic Engine v5.8.1 ULTIMATE+ ---');
+  console.log('--- Verifying AI Diagnostic Engine v5.8.2 ULTIMATE+ ---');
 
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -29,7 +29,7 @@ async function verifyAI() {
       const data = await response.json();
 
       console.log(`Case: "${tc.problem}"`);
-      if (data.suggestion === tc.expected && data.version === 'v5.8.1-ultimate') {
+      if (data.suggestion === tc.expected && data.version === 'v5.8.2-ultimate') {
         console.log(`✅ PASSED (Got: ${data.suggestion}, Urgency: ${data.urgency_level}, Confidence: ${data.confidence}%)`);
       } else {
         console.log(`❌ FAILED (Got: ${data.suggestion}, Version: ${data.version})`);
@@ -42,7 +42,7 @@ async function verifyAI() {
     }
   }
 
-  console.log('--- AI v5.8.1 Verification Complete: ALL SYSTEMS NOMINAL ---');
+  console.log('--- AI v5.8.2 Verification Complete: ALL SYSTEMS NOMINAL ---');
 }
 
 verifyAI();
