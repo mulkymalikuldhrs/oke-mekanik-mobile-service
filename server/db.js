@@ -124,6 +124,9 @@ const seedData = async () => {
     insertUser.run('mech-6-user', 'Dedi Kurniawan', 'dedi@example.com', hashedPass, 'mechanic', '081333444555');
     insertUser.run('mech-7-user', 'Sari Putri', 'sari@example.com', hashedPass, 'mechanic', '081777888999');
 
+    // Seed Admin User
+    insertUser.run('admin-1', 'Admin OkeMekanik', 'admin@okemekanik.com', hashedPass, 'admin', '081000000000');
+
     // Seed Mechanics (Jakarta locations)
     const insertMechanic = db.prepare('INSERT INTO mechanics (id, user_id, name, speciality, rating, price_per_hour, is_online, lat, lng, avatar, years_of_experience, phone, bio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     insertMechanic.run('mech-1', 'mech-1-user', 'Jane Mechanic', 'Ganti Oli, Ban', 4.8, 75000, 1, -6.2200, 106.8300, '👩‍🔧', 5, '08123456789', 'Berpengalaman menangani berbagai jenis kendaraan roda dua dan roda empat.');

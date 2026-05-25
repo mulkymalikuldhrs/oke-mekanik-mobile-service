@@ -1,4 +1,5 @@
 import express from 'express';
+import crypto from 'crypto';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
@@ -17,6 +18,7 @@ import serviceRoutes from './routes/serviceRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 // Middleware Imports
 import { errorHandler } from './middleware/errorMiddleware.js';
@@ -52,18 +54,19 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 app.use(cors());
 app.use(express.json());
 
-// Attach Socket.io to Request
+// Request Trace ID & Socket Attach
 app.use((req, res, next) => {
+  req.id = crypto.randomUUID();
   req.io = io;
   next();
 });
 
-// Logging Middleware
+// Advanced Observability Middleware
 app.use((req, res, next) => {
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} ${res.statusCode} - ${duration}ms`);
+    console.log(`[TRACE:${req.id}] ${new Date().toISOString()} | ${req.method} ${req.originalUrl} | STATUS:${res.statusCode} | ${duration}ms`);
   });
   next();
 });
@@ -96,6 +99,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {

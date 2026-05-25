@@ -17,6 +17,7 @@ import ChatPage from "./pages/ChatPage";
 import PaymentPage from "./pages/PaymentPage";
 import NotFound from "./pages/NotFound";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,11 @@ const App = () => (
                 <Route path="/mechanic/dashboard" element={<MechanicDashboard />} />
                 <Route path="/mechanic/registration" element={<MechanicRegistration />} />
                 <Route path="/mechanic/chat/:id" element={<ChatPage />} />
+              </Route>
+
+              {/* Protected admin routes */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
               </Route>
 
               {/* 404 */}

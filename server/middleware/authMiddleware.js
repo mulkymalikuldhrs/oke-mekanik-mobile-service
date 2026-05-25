@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
 
-export const verifyToken = (req, res, next) => {
+export const authenticate = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
 
   if (!token) {
@@ -16,4 +16,28 @@ export const verifyToken = (req, res, next) => {
     req.userRole = decoded.role;
     next();
   });
+};
+
+// Alias for backward compatibility
+export const verifyToken = authenticate;
+
+export const requireAdmin = (req, res, next) => {
+  if (req.userRole !== 'admin') {
+    return res.status(403).json({ message: 'Akses ditolak. Hanya admin yang diizinkan.' });
+  }
+  next();
+};
+
+export const requireCustomer = (req, res, next) => {
+  if (req.userRole !== 'customer' && req.userRole !== 'admin') {
+    return res.status(403).json({ message: 'Akses ditolak.' });
+  }
+  next();
+};
+
+export const requireMechanic = (req, res, next) => {
+  if (req.userRole !== 'mechanic' && req.userRole !== 'admin') {
+    return res.status(403).json({ message: 'Akses ditolak.' });
+  }
+  next();
 };
