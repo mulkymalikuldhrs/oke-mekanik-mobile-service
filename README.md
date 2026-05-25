@@ -35,7 +35,8 @@
 <br/>
 
 <!-- Shields.io Badges -->
-[![Version](https://img.shields.io/badge/Version-5.8.1-0A84FF?style=for-the-badge&logo=semanticrelease&logoColor=white)](https://github.com/mulkymalikuldhrs/oke-mekanik)
+[![Version](https://img.shields.io/badge/Version-6.1.0-0A84FF?style=for-the-badge&logo=semanticrelease&logoColor=white)](https://github.com/mulkymalikuldhrs/oke-mekanik)
+[![Production Ready](https://img.shields.io/badge/Production-Ready-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](https://github.com/mulkymalikuldhrs/oke-mekanik)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Express](https://img.shields.io/badge/Express-5.2.1-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
@@ -70,21 +71,26 @@
 
 ## 🚗 About Oke Mekanik
 
-**Oke Mekanik** is a full-stack SaaS platform that connects vehicle owners with professional mechanics — delivered directly to your location. Inspired by the Gojek/Grab service delivery model, we bring the workshop to you. Powered by an **AI Diagnostic Engine v5.8.1**, real-time GPS tracking, and a glassmorphism UI, this is vehicle repair reimagined for the modern era. No more waiting at the garage — the mechanic comes to you.
+**Oke Mekanik** is a full-stack SaaS platform that connects vehicle owners with professional mechanics — delivered directly to your location. Inspired by the Gojek/Grab/Maxim service delivery model, we bring the workshop to you. Powered by **real JWT authentication**, **real-time GPS tracking via Socket.io**, **Haversine distance-based auto-dispatch**, and a glassmorphism UI, this is vehicle repair reimagined for the modern era. No more waiting at the garage — the mechanic comes to you.
+
+> **PRODUCTION READY** — This is a fully functional SaaS with real authentication (JWT + bcrypt), real SQLite database (not in-memory), real geomap (Leaflet + OpenStreetMap), real-time tracking (Socket.io), role-based access control, and zero dummy/simulation data.
 
 ## ✨ Feature Highlights
 
 | Feature | Description | Status |
 |:--------|:------------|:------:|
-| 🤖 AI Diagnostic Engine | Advanced pattern-matching vehicle diagnosis (v5.8.1) | ✅ |
-| 📍 Real-time GPS Tracking | Live mechanic location via Socket.io & Leaflet Maps | ✅ |
-| ⚡ Instant Booking | Emergency repairs or scheduled maintenance at your fingertips | ✅ |
+| 🔐 Real Authentication | JWT + bcrypt with sign up, login, token refresh, role-based access | ✅ |
+| 👥 Dual Registration | Register as Customer, Mechanic, Workshop, or Admin | ✅ |
+| 📍 Real-time GPS Tracking | Live mechanic location via Socket.io & Leaflet/OpenStreetMap | ✅ |
+| ⚡ Instant Booking | Emergency (SOS) or scheduled with auto-dispatch (Haversine) | ✅ |
+| 🤖 AI Diagnostic Engine | Keyword-based vehicle diagnosis with urgency assessment | ✅ |
+| 🛡️ Role-Based Access | Customer/Mechanic/Workshop/Admin route & API guards | ✅ |
 | ✅ Verified Mechanics | Community-rated & vetted professionals only | ✅ |
-| 💬 In-app Chat | Seamless real-time communication between customer & mechanic | ✅ |
+| 💬 In-app Chat | Real-time Socket.io messaging between customer & mechanic | ✅ |
 | 💳 Secure Payments | Transparent pricing with digital payment records | ✅ |
 | 🌐 Multi-language | Full localization in Bahasa Indonesia & English | ✅ |
-| 📱 PWA Ready | Install as native app with offline service worker support | ✅ |
 | 🎨 Glassmorphism UI | Modern frosted-glass design with Framer Motion animations | ✅ |
+| 🗺️ Workshop Partners | Bengkel can register and manage affiliated mechanics | ✅ |
 
 ## 🚀 Quick Start
 
@@ -177,21 +183,26 @@ npm run dev
 
 ## 🚗 Tentang Oke Mekanik
 
-**Oke Mekanik** adalah platform SaaS full-stack yang menghubungkan pemilik kendaraan dengan mekanik profesional — langsung ke lokasi Anda. Terinspirasi dari model layanan Gojek/Grab, kami membawa bengkel ke tempat Anda. Ditenagai oleh **AI Diagnostic Engine v5.8.1**, pelacakan GPS real-time, dan antarmuka glassmorphism, ini adalah servis kendaraan yang diperbarui untuk era modern. Tidak perlu lagi menunggu di bengkel — mekanik datang ke Anda.
+**Oke Mekanik** adalah platform SaaS full-stack yang menghubungkan pemilik kendaraan dengan mekanik profesional — langsung ke lokasi Anda. Terinspirasi dari model layanan Gojek/Grab/Maxim, kami membawa bengkel ke tempat Anda. Ditenagai oleh **autentikasi JWT nyata**, **pelacakan GPS real-time via Socket.io**, **auto-dispatch berbasis jarak Haversine**, dan antarmuka glassmorphism, ini adalah servis kendaraan yang diperbarui untuk era modern.
+
+> **PRODUCTION READY** — Ini adalah SaaS yang berfungsi penuh dengan autentikasi nyata (JWT + bcrypt), database SQLite nyata (bukan in-memory), geomap nyata (Leaflet + OpenStreetMap), pelacakan real-time (Socket.io), kontrol akses berbasis peran, dan tanpa data dummy/simulasi.
 
 ## ✨ Fitur Unggulan
 
 | Fitur | Deskripsi | Status |
 |:------|:----------|:------:|
-| 🤖 AI Diagnostic Engine | Diagnosa kendaraan otomatis dengan pencocokan pola canggih (v5.8.1) | ✅ |
-| 📍 Pelacakan GPS Real-time | Lokasi mekanik langsung via Socket.io & Leaflet Maps | ✅ |
-| ⚡ Booking Instan | Perbaikan darurat atau perawatan rutin di ujung jari Anda | ✅ |
+| 🔐 Autentikasi Nyata | JWT + bcrypt dengan sign up, login, token refresh, akses berbasis peran | ✅ |
+| 👥 Registrasi Ganda | Daftar sebagai Pelanggan, Mekanik, Bengkel, atau Admin | ✅ |
+| 📍 Pelacakan GPS Real-time | Lokasi mekanik langsung via Socket.io & Leaflet/OpenStreetMap | ✅ |
+| ⚡ Booking Instan | Darurat (SOS) atau terjadwal dengan auto-dispatch (Haversine) | ✅ |
+| 🤖 AI Diagnostic Engine | Diagnosa kendaraan berbasis kata kunci dengan penilaian urgensi | ✅ |
+| 🛡️ Akses Berbasis Peran | Customer/Mekanik/Bengkel/Admin route & API guards | ✅ |
 | ✅ Mekanik Terverifikasi | Hanya profesional yang telah diverifikasi & dinilai komunitas | ✅ |
-| 💬 Chat Dalam Aplikasi | Komunikasi real-time tanpa hambatan antara pelanggan & mekanik | ✅ |
+| 💬 Chat Dalam Aplikasi | Pesan real-time via Socket.io antara pelanggan & mekanik | ✅ |
 | 💳 Pembayaran Aman | Harga transparan dengan catatan pembayaran digital | ✅ |
 | 🌐 Multi-bahasa | Lokalisasi lengkap dalam Bahasa Indonesia & English | ✅ |
-| 📱 Siap PWA | Instal sebagai aplikasi native dengan dukungan service worker offline | ✅ |
 | 🎨 UI Glassmorphism | Desain kaca buram modern dengan animasi Framer Motion | ✅ |
+| 🗺️ Mitra Bengkel | Bengkel bisa mendaftar dan mengelola mekanik afiliasi | ✅ |
 
 ## 🚀 Panduan Mulai
 
@@ -284,21 +295,26 @@ npm run dev
 
 ## 🚗 关于 Oke Mekanik
 
-**Oke Mekanik** 是一个全栈 SaaS 平台，将车主与专业维修技师直接连接——送技上门。灵感源自 Gojek/Grab 的服务交付模式，我们将维修车间搬到您的家门口。搭载 **AI 诊断引擎 v5.8.1**、实时 GPS 追踪和毛玻璃 UI，这是为现代时代重新定义的车辆维修体验。再也不用在修车厂排队等候——技师主动来找您。
+**Oke Mekanik** 是一个全栈 SaaS 平台，将车主与专业维修技师直接连接——送技上门。灵感源自 Gojek/Grab/Maxim 的服务交付模式，我们将维修车间搬到您的家门口。搭载 **真实 JWT 认证**、**实时 GPS 追踪 (Socket.io)**、**Haversine 距离自动派单** 和毛玻璃 UI，这是为现代时代重新定义的车辆维修体验。
+
+> **生产就绪** — 这是一个功能完整的 SaaS，具有真实认证 (JWT + bcrypt)、真实 SQLite 数据库（非内存）、真实地图 (Leaflet + OpenStreetMap)、实时追踪 (Socket.io)、基于角色的访问控制，零模拟/虚拟数据。
 
 ## ✨ 核心功能
 
 | 功能 | 描述 | 状态 |
 |:-----|:-----|:----:|
-| 🤖 AI 诊断引擎 | 先进模式匹配车辆自动诊断 (v5.8.1) | ✅ |
-| 📍 实时 GPS 追踪 | 通过 Socket.io 和 Leaflet 地图实时追踪技师位置 | ✅ |
-| ⚡ 即时预约 | 随时预约紧急维修或定期保养 | ✅ |
+| 🔐 真实认证 | JWT + bcrypt，支持注册、登录、令牌刷新、基于角色的访问 | ✅ |
+| 👥 双重注册 | 注册为客户、技师、车间或管理员 | ✅ |
+| 📍 实时 GPS 追踪 | 通过 Socket.io 和 Leaflet/OpenStreetMap 实时追踪技师位置 | ✅ |
+| ⚡ 即时预约 | 紧急 (SOS) 或预约，自动派单 (Haversine) | ✅ |
+| 🤖 AI 诊断引擎 | 基于关键词的车辆诊断与紧急程度评估 | ✅ |
+| 🛡️ 基于角色的访问 | 客户/技师/车间/管理员路由与 API 守卫 | ✅ |
 | ✅ 认证技师 | 仅限经过社区评分与审核的专业技师 | ✅ |
-| 💬 应用内聊天 | 客户与技师之间的无缝实时通信 | ✅ |
+| 💬 应用内聊天 | Socket.io 实时消息，客户与技师直接沟通 | ✅ |
 | 💳 安全支付 | 透明定价与数字支付记录 | ✅ |
 | 🌐 多语言 | 完整支持印尼语和英语本地化 | ✅ |
-| 📱 PWA 就绪 | 支持离线 Service Worker，可安装为原生应用 | ✅ |
 | 🎨 毛玻璃 UI | 现代磨砂玻璃设计搭配 Framer Motion 动画 | ✅ |
+| 🗺️ 合作车间 | 车间可注册并管理附属技师 | ✅ |
 
 ## 🚀 快速开始
 
