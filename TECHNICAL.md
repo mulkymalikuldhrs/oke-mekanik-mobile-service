@@ -1,4 +1,4 @@
-# 🛠️ Oke Mekanik - Technical Architecture (v5.8.1 ULTIMATE+)
+# 🛠️ Oke Mekanik - Technical Architecture (v6.2.0 ULTIMATE+)
 
 This document defines the technical standards and architectural patterns for the **Masterpiece v28.1** ecosystem.
 
@@ -18,8 +18,8 @@ We use SQLite for its reliability, performance, and "local-first" persistence ca
 - **Schema Management**: Managed via `server/db.js`. Includes automated seeding for development environments.
 - **Indexes**: Optimized for performance with specific indexes on `users(email)`, `bookings(user_id)`, and `reviews(mechanic_id)`.
 
-## 3. AI Diagnostic Engine v5.8.1
-The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context.
+## 3. AI Diagnostic Engine v5.8.2 ULTIMATE+
+The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context, now with futuristic EV support.
 
 ### Confidence Scoring Algorithm
 Confidence is calculated using a base weight sum for keywords, followed by an exponential bonus for multiple symptom matches:
@@ -28,12 +28,15 @@ let score = baseWeightSum;
 if (matches > 1) {
   score += Math.pow(matches, 2);
 }
-// Add technical term boosts (+30 points for v5.8.1)
-if (technicalTermsFound) score += 30;
+// Add technical term boosts (+30 points for v5.8.2, +45 for v5.8.2 EV)
+if (technicalTermsFound) {
+  score += (svcId === 'svc-9' ? 45 : 30);
+}
 ```
 This ensures that specific, complex descriptions result in higher confidence than vague ones.
 
 ### Technical Keyword Mapping
+- **`svc-9` (EV/Hybrid)**: `baterai hv`, `inverter`, `motor listrik`, `regenerative braking`, `hybrid mode`.
 - **`svc-1` (Oil Change)**: `oli meler`, `oli rembes`, `oil seal`, `karter`.
 - **`svc-4` (Tune Up)**: `brebet`, `pincang`, `ngelitik`, `ngeden`, `asap putih/hitam`, `ngobos`, `injector`, `bore up`, `overhaul`, `turun mesin`.
 - **`svc-5` (Electrical)**: `limp mode`, `check engine`, `korslet`, `ecu`, `sekring putus`, `short circuit`, `grounding`.
@@ -61,7 +64,7 @@ The `public/sw.js` implements a specialized caching strategy:
 
 ## 6. Quality & Verification
 All changes must pass:
-1. **AI Verification**: `node tests/verify_ai_v581.js` (Engine v5.8.1)
+1. **AI Verification**: `node tests/verify_ai_v581.js` (Engine v5.8.2)
 2. **Visual Fidelity**: Playwright E2E screenshots.
 3. **Build Integrity**: `tsc && vite build`
 4. **Zero-Mock Enforcement**: No `db.json` files allowed.
