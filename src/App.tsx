@@ -36,6 +36,24 @@ const ProtectedRoute = () => {
   return user ? <Outlet /> : <Navigate to="/login" />;
 };
 
+// Role-based route guard
+const RoleRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+  
+  if (!user) return <Navigate to="/login" />;
+  if (!allowedRoles.includes(user.role)) return <Navigate to="/" />;
+  
+  return <Outlet />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
@@ -52,7 +70,7 @@ const App = () => (
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
               {/* Protected customer routes */}
-              <Route element={<ProtectedRoute />}>
+              <Route element={<RoleRoute allowedRoles={['customer', 'admin']} />}>
                 <Route path="/customer/dashboard" element={<CustomerDashboard />} />
                 <Route path="/customer/booking" element={<BookingPage />} />
                 <Route path="/customer/tracking/:id" element={<TrackingPage />} />
@@ -61,7 +79,7 @@ const App = () => (
               </Route>
 
               {/* Protected mechanic & workshop routes */}
-              <Route element={<ProtectedRoute />}>
+              <Route element={<RoleRoute allowedRoles={['mechanic', 'workshop', 'admin']} />}>
                 <Route path="/mechanic/dashboard" element={<MechanicDashboard />} />
                 <Route path="/workshop/dashboard" element={<MechanicDashboard />} />
                 <Route path="/mechanic/registration" element={<MechanicRegistration />} />
@@ -69,7 +87,7 @@ const App = () => (
               </Route>
 
               {/* Protected admin routes */}
-              <Route element={<ProtectedRoute />}>
+              <Route element={<RoleRoute allowedRoles={['admin']} />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
               </Route>
 

@@ -221,7 +221,7 @@ const TrackingPage = () => {
                   </h3>
                   <div className="flex justify-between items-center">
                     <p className="text-[10px] text-gray-400 font-medium italic">
-                      {t('tracking.eta')} <span className="text-orange-400 font-bold">~{Math.floor(Math.random() * 10) + 5} {t('tracking.eta').includes('tiba') ? 'Menit' : 'Min'}</span>
+                      {t('tracking.eta')} <span className="text-orange-400 font-bold">~{booking.etaMinutes || booking.eta_minutes || 15} {t('tracking.eta').includes('tiba') ? 'Menit' : 'Min'}</span>
                     </p>
                     <div className="flex items-center space-x-1.5">
                        <div className="flex items-center space-x-1 px-1.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/30">

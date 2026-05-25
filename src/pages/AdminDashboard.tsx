@@ -31,45 +31,76 @@ const AdminDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      // Load stats from admin endpoint
-      const statsRes = await fetchWithAuth('/admin/stats').catch(() => ({
-        totalUsers: 8, totalMechanics: 7, totalBookings: 7, totalRevenue: 1300000,
-        activeBookings: 0, completedBookings: 7, avgRating: 4.7, onlineMechanics: 7,
-      }));
-      setStats(statsRes as any);
+      // Load real stats from admin endpoint
+      const statsRes = await fetchWithAuth('/admin/stats');
+      const data = statsRes as any;
+      setStats({
+        totalUsers: data.totalUsers || 0,
+        totalMechanics: data.totalMechanics || 0,
+        totalBookings: data.totalBookings || 0,
+        totalRevenue: data.totalRevenue || 0,
+        activeBookings: data.activeBookings || 0,
+        completedBookings: data.completedBookings || 0,
+        avgRating: data.avgRating || 0,
+        onlineMechanics: data.onlineMechanics || 0,
+      });
 
-      // Mock chart data for now (will be replaced with real API data)
-      setBookingsByStatus([
-        { name: 'Completed', value: 7, color: '#10B981' },
-        { name: 'In Progress', value: 2, color: '#2E9EF7' },
-        { name: 'Pending', value: 1, color: '#F59E0B' },
-        { name: 'Cancelled', value: 0, color: '#EF4444' },
-      ]);
+      // Real bookings by status from admin API
+      if (data.bookingsByStatus && data.bookingsByStatus.length > 0) {
+        const statusColors: Record<string, string> = {
+          completed: '#10B981', pending: '#F59E0B', accepted: '#2E9EF7',
+          otw: '#FF6B35', arrived: '#8B5CF6', working: '#F59E0B', cancelled: '#EF4444',
+        };
+        const statusLabels: Record<string, string> = {
+          completed: 'Selesai', pending: 'Menunggu', accepted: 'Diterima',
+          otw: 'Dalam Perjalanan', arrived: 'Tiba', working: 'Bekerja', cancelled: 'Dibatalkan',
+        };
+        setBookingsByStatus(data.bookingsByStatus.map((b: any) => ({
+          name: statusLabels[b.status] || b.status,
+          value: b.count,
+          color: statusColors[b.status] || '#6B7280',
+        })));
+      } else {
+        setBookingsByStatus([{ name: 'No Data', value: 0, color: '#6B7280' }]);
+      }
 
-      setRevenueByDay([
-        { day: 'Sen', revenue: 150000, bookings: 1 },
-        { day: 'Sel', revenue: 250000, bookings: 1 },
-        { day: 'Rab', revenue: 180000, bookings: 1 },
-        { day: 'Kam', revenue: 120000, bookings: 1 },
-        { day: 'Jum', revenue: 300000, bookings: 1 },
-        { day: 'Sab', revenue: 100000, bookings: 1 },
-        { day: 'Min', revenue: 200000, bookings: 1 },
-      ]);
+      // Real service popularity from admin API
+      if (data.servicePopularity && data.servicePopularity.length > 0) {
+        setServicePopularity(data.servicePopularity.map((s: any) => ({
+          name: s.name,
+          bookings: s.bookings,
+          revenue: s.revenue,
+        })));
+      }
 
-      setServicePopularity([
-        { name: 'Ganti Oli', bookings: 12, revenue: 600000 },
-        { name: 'Servis Rutin', bookings: 8, revenue: 1200000 },
-        { name: 'Ganti Ban', bookings: 6, revenue: 600000 },
-        { name: 'Tune Up', bookings: 5, revenue: 1000000 },
-        { name: 'Cek Kelistrikan', bookings: 4, revenue: 300000 },
-        { name: 'Ganti Kampas Rem', bookings: 3, revenue: 360000 },
-        { name: 'Cek Aki', bookings: 2, revenue: 60000 },
-        { name: 'Isi Freon AC', bookings: 2, revenue: 300000 },
-      ]);
-
+      // Revenue by day - computed from real bookings
       const bookingsRes = await fetchWithAuth('/bookings?all=true').catch(() => []);
-      setRecentBookings((Array.isArray(bookingsRes) ? bookingsRes : []).slice(0, 10));
+      const allBookings = Array.isArray(bookingsRes) ? bookingsRes : [];
+      setRecentBookings(allBookings.slice(0, 10));
 
+      // Compute revenue by day from real data
+      const dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+      const revenueMap: Record<string, { revenue: number; bookings: number }> = {};
+      allBookings
+        .filter((b: any) => b.status === 'completed' && b.estimatedCost)
+        .forEach((b: any) => {
+          const date = new Date(b.createdAt || b.created_at);
+          const dayName = dayNames[date.getDay()];
+          if (!revenueMap[dayName]) revenueMap[dayName] = { revenue: 0, bookings: 0 };
+          revenueMap[dayName].revenue += b.estimatedCost || 0;
+          revenueMap[dayName].bookings += 1;
+        });
+      if (Object.keys(revenueMap).length > 0) {
+        setRevenueByDay(dayNames.map(day => ({
+          day,
+          revenue: revenueMap[day]?.revenue || 0,
+          bookings: revenueMap[day]?.bookings || 0,
+        })).filter(d => revenueMap[d.day]));
+      } else {
+        setRevenueByDay([]);
+      }
+
+      // Load mechanics list
       const mechRes = await fetchWithAuth('/mechanics').catch(() => []);
       setMechanics(Array.isArray(mechRes) ? mechRes : []);
     } catch (err) {
@@ -81,7 +112,7 @@ const AdminDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
-    localStorage.removeItem('user');
+    localStorage.removeItem('auth_user');
     navigate('/');
   };
 

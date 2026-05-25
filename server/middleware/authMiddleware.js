@@ -36,7 +36,7 @@ export const requireCustomer = (req, res, next) => {
 };
 
 export const requireMechanic = (req, res, next) => {
-  if (req.userRole !== 'mechanic' && req.userRole !== 'admin') {
+  if (req.userRole !== 'mechanic' && req.userRole !== 'workshop' && req.userRole !== 'admin') {
     return res.status(403).json({ message: 'Akses ditolak.' });
   }
   next();

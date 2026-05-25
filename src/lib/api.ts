@@ -3,6 +3,43 @@ import { Booking, Mechanic, Message, User, UserRole, Service } from '@/types';
 // Environment-based API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
+// Token refresh logic
+let isRefreshing = false;
+let refreshPromise: Promise<string | null> | null = null;
+
+async function refreshAuthToken(): Promise<string | null> {
+  if (isRefreshing && refreshPromise) {
+    return refreshPromise;
+  }
+  isRefreshing = true;
+  refreshPromise = (async () => {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return null;
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) return null;
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+        return data.token;
+      }
+      return null;
+    } catch {
+      return null;
+    } finally {
+      isRefreshing = false;
+      refreshPromise = null;
+    }
+  })();
+  return refreshPromise;
+}
+
 // Generic fetch wrapper with error handling
 async function fetchApi<T>(
   endpoint: string,
@@ -22,6 +59,25 @@ async function fetchApi<T>(
     const error = await response.json().catch(() => ({ message: null }));
 
     if (response.status === 401) {
+      // Try to refresh token once
+      const newToken = await refreshAuthToken();
+      if (newToken && options.headers && 'Authorization' in (options.headers as Record<string, string>)) {
+        // Retry the request with new token
+        const retryResponse = await fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+            Authorization: `Bearer ${newToken}`,
+          },
+        });
+        if (retryResponse.ok) {
+          return retryResponse.json();
+        }
+      }
+      // Clear invalid session
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('auth_user');
+      window.location.href = '/login';
       throw new Error('Sesi Anda telah berakhir. Silakan login kembali.');
     } else if (response.status === 403) {
       throw new Error('Anda tidak memiliki akses untuk melakukan tindakan ini.');

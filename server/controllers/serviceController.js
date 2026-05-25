@@ -6,6 +6,10 @@ export const getAllServices = (req, res) => {
     id: s.id,
     name: s.name,
     description: s.description,
-    basePrice: s.base_price
+    basePrice: s.base_price,
+    category: s.category,
+    icon: s.icon,
+    estimatedDuration: s.estimated_duration,
+    isEmergencyAvailable: !!s.is_emergency_available
   })));
 };
