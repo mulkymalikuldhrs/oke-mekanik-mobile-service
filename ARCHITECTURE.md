@@ -1,6 +1,6 @@
 # Arsitektur Oke Mekanik
 
-> Dokumentasi arsitektur sistem untuk Oke Mekanik Mobile Service v5.8.1
+> Dokumentasi arsitektur sistem untuk Oke Mekanik Mobile Service v6.2.0
 
 ---
 
@@ -10,7 +10,7 @@ Oke Mekanik menggunakan arsitektur monolitik full-stack dengan pemisahan logis a
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     OKE MEKANIK v5.8.1                      │
+│                     OKE MEKANIK v6.2.0                      │
 │                                                             │
 │  ┌─────────────────────┐     ┌─────────────────────────┐   │
 │  │   FRONTEND           │     │   BACKEND                │   │
@@ -27,7 +27,7 @@ Oke Mekanik menggunakan arsitektur monolitik full-stack dengan pemisahan logis a
 │              Real-time Location & Chat                      │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │  AI DIAGNOSTIC ENGINE v5.8.1                        │   │
+│  │  AI DIAGNOSTIC ENGINE v5.8.2                        │   │
 │  │  Pattern Matching → Symptom Analysis → Recommendations│   │
 │  └─────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘

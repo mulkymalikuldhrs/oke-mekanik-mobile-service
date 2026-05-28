@@ -84,7 +84,7 @@ const CustomerDashboard = () => {
   });
 
   // Fetch user bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['userBookings', user?.id],
     queryFn: () => bookingApi.getByUser(user?.id || ''),
     enabled: !!user?.id,
@@ -97,7 +97,7 @@ const CustomerDashboard = () => {
   const completedBookings = bookings.filter(b => b.status === 'completed');
 
   // Services
-  const { data: services = [] } = useQuery({
+  const { data: services = [], isError: servicesError } = useQuery({
     queryKey: ['services'],
     queryFn: serviceApi.getAll,
   });
@@ -132,6 +132,19 @@ const CustomerDashboard = () => {
   const emergencyServices = services.filter(s => s.isEmergencyAvailable);
   const regularServices = services.filter(s => !s.isEmergencyAvailable);
 
+  if (bookingsError || servicesError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-4 text-center">
+        <AlertTriangle className="h-12 w-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-bold mb-2">{t('error.load_failed')}</h2>
+        <p className="text-gray-500 mb-6">{t('error.data_error')}</p>
+        <Button onClick={() => queryClient.invalidateQueries()}>
+          {t('common.retry')}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
@@ -142,9 +155,9 @@ const CustomerDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.1</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {user?.name || t('role.customer.title')}
+                v5.8.2 ULTIMATE+ • {user?.name || t('role.customer.title')}
               </p>
             </div>
           </div>
@@ -225,7 +238,7 @@ const CustomerDashboard = () => {
 
         {/* Map Section */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <Card className="rounded-2xl overflow-hidden border-white/5">
+          <Card className="glass-card rounded-2xl overflow-hidden">
             <CardHeader className="pb-2 pt-3 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
@@ -319,6 +332,8 @@ const CustomerDashboard = () => {
               { icon: '❄️', label: 'AC', svcId: 'svc-8', color: 'from-cyan-600 to-cyan-500' },
               { icon: '🔊', label: 'Tune Up', svcId: 'svc-4', color: 'from-orange-600 to-orange-500' },
               { icon: '📋', label: 'Servis', svcId: 'svc-2', color: 'from-pink-600 to-pink-500' },
+              { icon: '🔋', label: 'EV/Hybrid', svcId: 'svc-9', color: 'from-emerald-600 to-emerald-500' },
+              { icon: '⚙️', label: 'Overhaul', svcId: 'svc-13', color: 'from-gray-600 to-gray-500' },
             ].map((item) => (
               <motion.button
                 key={item.svcId}
@@ -405,8 +420,16 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 px-2 text-[10px] text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}
