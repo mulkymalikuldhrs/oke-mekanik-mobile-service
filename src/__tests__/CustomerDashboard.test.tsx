@@ -55,13 +55,19 @@ describe('CustomerDashboard', () => {
           json: async () => ([{ id: '1', status: 'otw', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', createdAt: new Date().toISOString() }]),
         });
       }
-      if (url.includes('/mechanics')) {
+      if (url.includes('/mechanics/nearby')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
+          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2, lng: 106.8 }]),
         });
       }
-      return Promise.reject(new Error('Unknown URL'));
+      if (url.includes('/services')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
+        });
+      }
+      return Promise.reject(new Error('Unknown URL: ' + url));
     });
 
     render(
@@ -73,7 +79,7 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard.customer.heading_to_loc')).toBeInTheDocument();
+      expect(screen.getByText('dashboard.customer.active_service')).toBeInTheDocument();
     });
   });
 

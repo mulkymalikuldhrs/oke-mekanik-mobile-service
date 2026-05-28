@@ -99,7 +99,7 @@ const Index = () => {
           </h1>
           <div className="flex items-center space-x-2">
             <span className="hidden md:inline-block px-2 py-0.5 rounded bg-blue-600/20 border border-blue-500/30 text-[10px] font-black text-blue-400 tracking-widest uppercase">
-              v5.8.1 ULTIMATE+
+              v5.8.2 ULTIMATE+
             </span>
             <div className={`flex items-center space-x-1.5 px-2 py-0.5 rounded-full border ${
               systemStatus === 'online' ? 'bg-green-500/10 border-green-500/30' :
