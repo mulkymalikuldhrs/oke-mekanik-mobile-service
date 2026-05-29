@@ -7,6 +7,15 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [6.2.0] - 2026-05-25
+
+### Ditambahkan
+- AI Diagnostic Engine v5.8.2 ULTIMATE+ dengan dukungan EV/Hybrid (svc-9).
+- Layanan `svc-13` ditambahkan untuk "Overhaul / Turun Mesin".
+- Peningkatan UI Glassmorphism pada BookingPage dan CustomerDashboard sesuai standar Masterpiece v28.1.
+- Observabilitas backend yang ditingkatkan dengan Request Trace ID pada log rute.
+- Audit kepatuhan Zero-Mock Policy untuk memastikan semua data berasal dari SQLite.
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
