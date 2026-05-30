@@ -7,10 +7,19 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
-## [5.8.1] - 2026-01-15
+## [6.2.0] - 2026-05-25
 
 ### Ditambahkan
-- AI Diagnostic Engine v5.8.1 dengan pencocokan pola canggih
+- AI Diagnostic Engine v5.8.2 ULTIMATE+ dengan dukungan EV/Hybrid (svc-9).
+- Layanan `svc-13` ditambahkan untuk "Overhaul / Turun Mesin".
+- Peningkatan UI Glassmorphism pada BookingPage dan CustomerDashboard sesuai standar Masterpiece v28.1.
+- Observabilitas backend yang ditingkatkan dengan Request Trace ID pada log rute.
+- Audit kepatuhan Zero-Mock Policy untuk memastikan semua data berasal dari SQLite.
+
+## [5.8.2] - 2026-01-15
+
+### Ditambahkan
+- AI Diagnostic Engine v5.8.2 dengan pencocokan pola canggih
 - Pelacakan GPS real-time via Socket.io & Leaflet Maps
 - Sistem booking instan untuk perbaikan darurat dan perawatan rutin
 - Chat dalam aplikasi dengan komunikasi real-time
@@ -94,7 +103,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
-[5.8.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.1
+[5.8.2]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.2
 [5.7.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.7.0
 [5.6.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.6.0
 [5.5.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.5.0

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'oke-mekanik-v28.1-ultimate-v5.8.1';
+const CACHE_NAME = 'oke-mekanik-v28.1-ultimate-v5.8.2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
