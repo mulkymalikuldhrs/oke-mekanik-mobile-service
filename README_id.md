@@ -6,7 +6,7 @@
 
 <h3><em>Mekanik Panggilan — Servis Kendaraan Profesional Langsung ke Lokasi Anda</em></h3>
 
-[![Versi](https://img.shields.io/badge/Versi-5.8.1-0A84FF?style=for-the-badge)](https://github.com/mulkymalikuldhrs/oke-mekanik)
+[![Versi](https://img.shields.io/badge/Versi-5.8.2-0A84FF?style=for-the-badge)](https://github.com/mulkymalikuldhrs/oke-mekanik)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Express](https://img.shields.io/badge/Express-5.2.1-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
@@ -20,7 +20,7 @@
 
 ## 🚗 Tentang Oke Mekanik
 
-**Oke Mekanik** adalah platform SaaS full-stack yang menghubungkan pemilik kendaraan dengan mekanik profesional — langsung ke lokasi Anda. Terinspirasi dari model layanan Gojek/Grab, kami membawa bengkel ke tempat Anda. Ditenagai oleh **AI Diagnostic Engine v5.8.1**, pelacakan GPS real-time, dan antarmuka glassmorphism, ini adalah servis kendaraan yang diperbarui untuk era modern. Tidak perlu lagi menunggu di bengkel — mekanik datang ke Anda.
+**Oke Mekanik** adalah platform SaaS full-stack yang menghubungkan pemilik kendaraan dengan mekanik profesional — langsung ke lokasi Anda. Terinspirasi dari model layanan Gojek/Grab, kami membawa bengkel ke tempat Anda. Ditenagai oleh **AI Diagnostic Engine v5.8.2**, pelacakan GPS real-time, dan antarmuka glassmorphism, ini adalah servis kendaraan yang diperbarui untuk era modern. Tidak perlu lagi menunggu di bengkel — mekanik datang ke Anda.
 
 Platform ini dirancang untuk memberikan pengalaman servis kendaraan yang mulus dan transparan. Dengan teknologi pencocokan pola AI yang canggih, pelanggan dapat mendiagnosis masalah kendaraan mereka sebelum mekanik tiba, memungkinkan persiapan yang lebih baik dan waktu penyelesaian yang lebih cepat. Sistem pelacakan GPS real-time memastikan Anda selalu tahu di mana mekanik Anda berada, sementara fitur chat dalam aplikasi memungkinkan komunikasi langsung tanpa hambatan.
 
@@ -30,7 +30,7 @@ Platform ini dirancang untuk memberikan pengalaman servis kendaraan yang mulus d
 
 | Fitur | Deskripsi | Status |
 |:------|:----------|:------:|
-| 🤖 AI Diagnostic Engine | Diagnosa kendaraan otomatis dengan pencocokan pola canggih (v5.8.1) | ✅ |
+| 🤖 AI Diagnostic Engine | Diagnosa kendaraan otomatis dengan pencocokan pola canggih (v5.8.2) | ✅ |
 | 📍 Pelacakan GPS Real-time | Lokasi mekanik langsung via Socket.io & Leaflet Maps | ✅ |
 | ⚡ Booking Instan | Perbaikan darurat atau perawatan rutin di ujung jari Anda | ✅ |
 | ✅ Mekanik Terverifikasi | Hanya profesional yang telah diverifikasi & dinilai komunitas | ✅ |
