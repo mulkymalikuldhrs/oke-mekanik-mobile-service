@@ -154,7 +154,10 @@ const MechanicDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.1</h1>
+                <Badge className="bg-orange-500/10 text-orange-400 border-orange-500/20 text-[8px] h-4">v5.8.2 ULTIMATE+</Badge>
+              </div>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                 {mechanicData?.name || 'Mekanik'}
               </p>
