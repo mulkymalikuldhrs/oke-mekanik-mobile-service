@@ -24,6 +24,8 @@ dist-ssr
 *.sw?
 server/*.db
 server/*.db-journal
+server/*.db-shm
+server/*.db-wal
 /verification/
 /screenshots/
 test-results/
