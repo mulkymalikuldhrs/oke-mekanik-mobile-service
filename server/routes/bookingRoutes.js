@@ -16,10 +16,16 @@ const router = express.Router();
 router.post('/auto-dispatch', verifyToken, requireCustomer, createAutoDispatchBooking);
 
 // SOS Emergency booking (customers only)
-router.post('/sos', verifyToken, requireCustomer, createSOSBooking);
+router.post('/sos', verifyToken, requireCustomer, (req, res, next) => {
+  console.log(`[TRACE:${req.id}] SOS Emergency Booking created by ${req.user.id}`);
+  createSOSBooking(req, res, next);
+});
 
 // Regular booking with selected mechanic (customers only)
-router.post('/', verifyToken, requireCustomer, createBooking);
+router.post('/', verifyToken, requireCustomer, (req, res, next) => {
+  console.log(`[TRACE:${req.id}] Booking created by ${req.user.id} for mechanic ${req.body.mechanicId}`);
+  createBooking(req, res, next);
+});
 
 // Get bookings (filtered by user role in controller)
 router.get('/', verifyToken, getBookings);

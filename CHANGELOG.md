@@ -7,6 +7,20 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [6.2.0] - 2026-05-31
+
+### Ditambahkan
+- AI Diagnostic Engine v5.8.2 ULTIMATE+ dengan dukungan EV/Hybrid dan Overhaul.
+- Sistem penandaan (traceability) permintaan global via `req.id` dan logging backend yang diperkeras.
+- Layanan baru: `svc-9` (Cek Sistem EV/Hybrid) dan `svc-13` (Overhaul / Turun Mesin).
+- UI Dashboard yang diperbarui dengan indikator versi v5.8.2 dan tombol Quick Service untuk layanan masa depan.
+
+### Diubah
+- Peningkatan akurasi AI dengan Technical Boosts (+45 poin) untuk istilah teknis mendalam.
+- Sinkronisasi versi backend ke v6.2.0 untuk keselarasan ekosistem.
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan

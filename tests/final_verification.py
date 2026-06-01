@@ -43,34 +43,50 @@ async def run_verification():
             print(f"Login Error: {e}")
             await page.screenshot(path="error_login.png")
 
-        # 3. Booking & AI Diagnostic
+        # 3. Booking & AI Diagnostic (4-Step Wizard)
         try:
             print("Navigating to Booking Page...")
-            # Button on dashboard might be 'PANGGIL SEKARANG'
             await page.click("button:has-text('PANGGIL SEKARANG')")
             await page.wait_for_url("**/customer/booking**")
 
-            print("Testing AI Diagnostic Flow...")
-            await page.fill("input[placeholder='Masukkan alamat lengkap']", "Jl. Sudirman No. 1, Jakarta")
-
-            # Select Brand
-            await page.select_option("select#brand", label="Toyota")
-            await page.fill("input[placeholder='Avanza, Vario, dll']", "Fortuner")
-
-            # AI Problem Description
-            # The placeholder is: 'Tuliskan gejala atau masalah kendaraan Anda (contoh: mesin mati mendadak, aki soak, rem bunyi...)'
+            # Step 1: Select Service / AI
+            print("Step 1: Testing AI Diagnostic...")
             await page.fill("textarea", "mesin saya ngobos dan keluar asap putih dari knalpot")
+            await page.click("button:has-text('AI')") # Clicking the AI button (BrainCircuit/Sparkles icon button)
 
-            print("Clicking AI Diagnostic Button...")
-            await page.click("button:has-text('AI DIAGNOSTIC')")
+            await page.wait_for_selector("text=AI:", timeout=10000)
+            print("AI suggestion received.")
 
-            # Wait for AI result card or success message
-            print("Waiting for AI analysis...")
-            # The success message is 'Analisa AI Selesai'
-            await page.wait_for_selector("text=Analisa AI Selesai", timeout=20000)
+            await page.click("button:has-text('Lanjutkan')")
 
-            await page.screenshot(path="verification_ai_result.png")
-            print("AI Diagnostic verified.")
+            # Step 2: Location & Vehicle
+            print("Step 2: Filling Location & Vehicle...")
+            await page.fill("input[placeholder='Jl. Sudirman No. 1, Jakarta']", "Jl. Thamrin No. 10, Jakarta")
+
+            # Select Brand (it's a native select in the code)
+            await page.select_option("select", label="Toyota")
+            await page.fill("input[placeholder='Avanza, Vario...']", "Fortuner")
+            await page.fill("input[placeholder='2020']", "2022")
+            await page.fill("input[placeholder='B 1234 XY']", "B 9999 OK")
+
+            await page.click("button:has-text('Cari Mekanik')")
+
+            # Step 3: Choose Mechanic
+            print("Step 3: Choosing Mechanic (Auto-Assign)...")
+            await page.click("text=Auto-Assign")
+            await page.click("button:has-text('Pesan Sekarang (Auto)')")
+
+            # Step 4: Confirmation
+            print("Step 4: Confirming Order...")
+            await page.wait_for_selector("text=Konfirmasi Pesanan")
+            await page.screenshot(path="verification_confirmation.png")
+
+            await page.click("button:has-text('KONFIRMASI PESANAN')")
+
+            # Final: Tracking
+            await page.wait_for_url("**/customer/tracking/**", timeout=15000)
+            print("Booking flow verified successfully.")
+            await page.screenshot(path="verification_tracking.png")
 
         except Exception as e:
             print(f"Booking/AI Error: {e}")
