@@ -24,6 +24,7 @@ async def run_verification():
         # 2. Login Page
         try:
             print("Navigating to Login Page...")
+            # Using the localized 'Masuk' button
             await page.click("text=Masuk")
             await page.wait_for_url("**/login")
 
@@ -32,7 +33,6 @@ async def run_verification():
             await page.fill("input[placeholder='******']", "password123")
 
             await page.screenshot(path="verification_login.png")
-            # Using the exact button text from translation: 'MASUK SEKARANG'
             await page.click("button:has-text('MASUK SEKARANG')")
 
             # Wait for Dashboard
@@ -46,31 +46,35 @@ async def run_verification():
         # 3. Booking & AI Diagnostic
         try:
             print("Navigating to Booking Page...")
-            # Button on dashboard might be 'PANGGIL SEKARANG'
             await page.click("button:has-text('PANGGIL SEKARANG')")
             await page.wait_for_url("**/customer/booking**")
 
-            print("Testing AI Diagnostic Flow...")
-            await page.fill("input[placeholder='Masukkan alamat lengkap']", "Jl. Sudirman No. 1, Jakarta")
-
-            # Select Brand
-            await page.select_option("select#brand", label="Toyota")
-            await page.fill("input[placeholder='Avanza, Vario, dll']", "Fortuner")
-
-            # AI Problem Description
-            # The placeholder is: 'Tuliskan gejala atau masalah kendaraan Anda (contoh: mesin mati mendadak, aki soak, rem bunyi...)'
-            await page.fill("textarea", "mesin saya ngobos dan keluar asap putih dari knalpot")
+            print("Testing AI Diagnostic Flow (Step 1)...")
+            # Problem textarea is available in Step 1
+            problem_placeholder = "Contoh: mesin brebet, rem berdecit, aki soak..."
+            await page.fill(f"textarea[placeholder='{problem_placeholder}']", "mesin saya ngobos dan keluar asap putih dari knalpot")
 
             print("Clicking AI Diagnostic Button...")
-            await page.click("button:has-text('AI DIAGNOSTIC')")
+            # It's a button with a Sparkles icon, likely the only small button next to textarea
+            await page.click("button:has(svg.lucide-sparkles)")
 
-            # Wait for AI result card or success message
+            # Wait for AI result card
             print("Waiting for AI analysis...")
-            # The success message is 'Analisa AI Selesai'
-            await page.wait_for_selector("text=Analisa AI Selesai", timeout=20000)
-
+            await page.wait_for_selector("text=AI: Tune Up", timeout=20000)
             await page.screenshot(path="verification_ai_result.png")
             print("AI Diagnostic verified.")
+
+            # Continue to Step 2
+            await page.click("button:has-text('Lanjutkan')")
+
+            print("Entering Location (Step 2)...")
+            # Now address input should be visible
+            address_placeholder = "Masukkan alamat lengkap"
+            await page.wait_for_selector(f"input[placeholder='{address_placeholder}']")
+            await page.fill(f"input[placeholder='{address_placeholder}']", "Jl. Sudirman No. 1, Jakarta")
+
+            await page.screenshot(path="verification_step2.png")
+            print("Step 2 verified.")
 
         except Exception as e:
             print(f"Booking/AI Error: {e}")
