@@ -18,8 +18,8 @@ We use SQLite for its reliability, performance, and "local-first" persistence ca
 - **Schema Management**: Managed via `server/db.js`. Includes automated seeding for development environments.
 - **Indexes**: Optimized for performance with specific indexes on `users(email)`, `bookings(user_id)`, and `reviews(mechanic_id)`.
 
-## 3. AI Diagnostic Engine v5.8.1
-The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context.
+## 3. AI Diagnostic Engine v5.8.2 ULTIMATE+
+The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context, now with futuristic EV support.
 
 ### Confidence Scoring Algorithm
 Confidence is calculated using a base weight sum for keywords, followed by an exponential bonus for multiple symptom matches:
@@ -28,12 +28,15 @@ let score = baseWeightSum;
 if (matches > 1) {
   score += Math.pow(matches, 2);
 }
-// Add technical term boosts (+30 points for v5.8.1)
-if (technicalTermsFound) score += 30;
+// Add technical term boosts (+30 points for v5.8.1, +45 for v5.8.2 EV)
+if (technicalTermsFound) {
+  score += (svcId === 'svc-9' ? 45 : 30);
+}
 ```
 This ensures that specific, complex descriptions result in higher confidence than vague ones.
 
 ### Technical Keyword Mapping
+- **`svc-9` (EV/Hybrid)**: `baterai hv`, `inverter`, `motor listrik`, `regenerative braking`, `hybrid mode`.
 - **`svc-1` (Oil Change)**: `oli meler`, `oli rembes`, `oil seal`, `karter`.
 - **`svc-4` (Tune Up)**: `brebet`, `pincang`, `ngelitik`, `ngeden`, `asap putih/hitam`, `ngobos`, `injector`, `bore up`, `overhaul`, `turun mesin`.
 - **`svc-5` (Electrical)**: `limp mode`, `check engine`, `korslet`, `ecu`, `sekring putus`, `short circuit`, `grounding`.

@@ -7,6 +7,16 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [6.2.0] - 2026-06-04
+
+### Ditambahkan
+- AI Diagnostic Engine v5.8.2 ULTIMATE+ dengan dukungan EV/Hybrid (svc-9) dan Overhaul (svc-13).
+- Layanan `svc-13` ditambahkan untuk "Overhaul / Turun Mesin" di Database dan AI Model.
+- Konsolidasi ekosistem Masterpiece v28.1 dengan branding v6.2.0 dan v5.8.2 ULTIMATE+ di semua dashboard.
+- Peningkatan UI Glassmorphism dengan tombol 'Quick Service' interaktif untuk EV dan Overhaul.
+- Observabilitas backend yang ditingkatkan dengan Request Trace ID pada log rute.
+- Audit kepatuhan Zero-Mock Policy yang ketat dan verifikasi otomatis AI v5.8.2.
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
