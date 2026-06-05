@@ -61,8 +61,8 @@ const LoginPage = () => {
                 <Sparkles className="h-4 w-4 text-blue-200 absolute -top-1 -right-1 animate-bounce" />
               </motion.div>
             </div>
-            <CardTitle className="text-3xl font-black text-white italic tracking-tight">OKE MEKANIK</CardTitle>
-            <CardDescription className="text-gray-400 font-medium">{t('login.title')}</CardDescription>
+            <CardTitle className="text-3xl font-black text-white italic tracking-tight">OKE MEKANIK v28.1</CardTitle>
+            <CardDescription className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">v5.8.2 ULTIMATE+ • {t('login.title')}</CardDescription>
           </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-5 pt-4">

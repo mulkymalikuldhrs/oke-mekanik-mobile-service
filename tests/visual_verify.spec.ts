@@ -39,31 +39,41 @@ test.describe('Oke Mekanik Full-Stack E2E', () => {
 
     await page.goto('http://localhost:8080/customer/booking');
 
-    // Step 1: Location & Problem
-    await page.waitForSelector('input[id="address"]');
-    await page.fill('input[id="address"]', 'Jl. Sudirman No. 1, Jakarta');
-    await page.selectOption('select[id="brand"]', 'Toyota');
-    await page.fill('input[id="model"]', 'Avanza');
-    await page.fill('input[id="year"]', '2020');
-    await page.fill('input[id="licensePlate"]', 'B 1234 OK');
+    // Step 1: Pilih Layanan
+    await page.waitForSelector('h2:has-text("Pilih Layanan")');
 
-    // AI Diagnostic
-    await page.fill('textarea[placeholder*="gejala"]', 'mesin mobil saya brebet dan mogok di jalan');
-    await page.click('button:has-text("AI DIAGNOSTIC")');
+    // AI Diagnostic - The textarea is inside a card
+    await page.fill('textarea', 'mesin mobil saya brebet dan mogok di jalan');
+    // Button with sparkles icon
+    await page.locator('button:has(.lucide-sparkles), button:has-text("AI")').first().click();
 
     // Wait for AI result
     await page.waitForTimeout(3000);
 
-    await page.click('button:has-text("Lanjutkan ke Pemilihan Mekanik")');
+    await page.click('button:has-text("Lanjutkan")');
 
-    // Step 2: Mechanic Selection
-    await page.waitForSelector('h3:has-text("Jane Mechanic")');
-    await page.click('h3:has-text("Jane Mechanic")');
-    await page.click('button:has-text("Lanjutkan ke Konfirmasi")');
+    // Step 2: Location & Vehicle
+    await page.waitForSelector('h2:has-text("Lokasi & Kendaraan")');
+    await page.fill('input[placeholder*="Sudirman"]', 'Jl. Sudirman No. 1, Jakarta');
 
-    // Step 3: Confirmation
-    await page.waitForSelector('h3:has-text("Detail Booking")');
-    await page.click('button:has-text("Konfirmasi Booking")');
+    // Select brand
+    await page.selectOption('select', 'Toyota');
+
+    // Model, Year, License Plate
+    await page.locator('input[placeholder*="Avanza"]').fill('Avanza');
+    await page.locator('input[placeholder="2020"]').fill('2020');
+    await page.locator('input[placeholder="B 1234 XY"]').fill('B 1234 OK');
+
+    await page.click('button:has-text("Cari Mekanik")');
+
+    // Step 3: Choose Mechanic
+    await page.waitForSelector('h2:has-text("Pilih Mekanik")');
+    await page.click('text=Jane Mechanic');
+    await page.click('button:has-text("Lanjutkan")');
+
+    // Step 4: Confirmation
+    await page.waitForSelector('h2:has-text("Konfirmasi Pesanan")');
+    await page.click('button:has-text("KONFIRMASI PESANAN")');
 
     // Wait for redirect to tracking
     await page.waitForURL(/\/customer\/tracking/);

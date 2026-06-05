@@ -189,8 +189,10 @@ const BookingPage = () => {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-sm font-black">PESAN MEKANIK</h1>
-            <p className="text-[10px] text-gray-500">Step {step}/4</p>
+            <h1 className="text-sm font-black tracking-tight">PESAN MEKANIK v28.1</h1>
+            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
+              v5.8.2 ULTIMATE+ • Step {step}/4
+            </p>
           </div>
           {/* Progress dots */}
           <div className="flex gap-1">
