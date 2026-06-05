@@ -39,7 +39,7 @@ app.use('/api/', limiter);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
+    origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
     methods: ['GET', 'POST', 'PATCH']
   }
 });
@@ -51,7 +51,10 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
   process.exit(1);
 }
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+  credentials: true
+}));
 app.use(express.json({ limit: '10mb' }));
 
 // Request Trace ID & Socket Attach

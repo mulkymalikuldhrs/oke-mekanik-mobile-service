@@ -12,6 +12,25 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production
+.env.production.local
+.env*.local
+
+# Next.js
+.next/
+
+# Vercel
+.vercel/
+
+# Replit
+.replit
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

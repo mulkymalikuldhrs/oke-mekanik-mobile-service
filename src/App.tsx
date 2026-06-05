@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { LanguageProvider } from "@/hooks/useLanguage";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -21,16 +22,19 @@ import AdminDashboard from "./pages/AdminDashboard";
 
 const queryClient = new QueryClient();
 
+// Loading spinner component for route guards
+const RouteLoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]" role="status" aria-label="Loading">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+  </div>
+);
+
 // Protected route component using real auth
 const ProtectedRoute = () => {
   const { user, isLoading } = useAuth();
   
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <RouteLoadingSpinner />;
   }
   
   return user ? <Outlet /> : <Navigate to="/login" />;
@@ -41,11 +45,7 @@ const RoleRoute = ({ allowedRoles }: { allowedRoles: string[] }) => {
   const { user, isLoading } = useAuth();
   
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
+    return <RouteLoadingSpinner />;
   }
   
   if (!user) return <Navigate to="/login" />;
@@ -71,24 +71,24 @@ const App = () => (
 
               {/* Protected customer routes */}
               <Route element={<RoleRoute allowedRoles={['customer', 'admin']} />}>
-                <Route path="/customer/dashboard" element={<CustomerDashboard />} />
-                <Route path="/customer/booking" element={<BookingPage />} />
-                <Route path="/customer/tracking/:id" element={<TrackingPage />} />
-                <Route path="/customer/chat/:id" element={<ChatPage />} />
-                <Route path="/customer/payment" element={<PaymentPage />} />
+                <Route path="/customer/dashboard" element={<ErrorBoundary><CustomerDashboard /></ErrorBoundary>} />
+                <Route path="/customer/booking" element={<ErrorBoundary><BookingPage /></ErrorBoundary>} />
+                <Route path="/customer/tracking/:id" element={<ErrorBoundary><TrackingPage /></ErrorBoundary>} />
+                <Route path="/customer/chat/:id" element={<ErrorBoundary><ChatPage /></ErrorBoundary>} />
+                <Route path="/customer/payment" element={<ErrorBoundary><PaymentPage /></ErrorBoundary>} />
               </Route>
 
               {/* Protected mechanic & workshop routes */}
               <Route element={<RoleRoute allowedRoles={['mechanic', 'workshop', 'admin']} />}>
-                <Route path="/mechanic/dashboard" element={<MechanicDashboard />} />
-                <Route path="/workshop/dashboard" element={<MechanicDashboard />} />
-                <Route path="/mechanic/registration" element={<MechanicRegistration />} />
-                <Route path="/mechanic/chat/:id" element={<ChatPage />} />
+                <Route path="/mechanic/dashboard" element={<ErrorBoundary><MechanicDashboard /></ErrorBoundary>} />
+                <Route path="/workshop/dashboard" element={<ErrorBoundary><MechanicDashboard /></ErrorBoundary>} />
+                <Route path="/mechanic/registration" element={<ErrorBoundary><MechanicRegistration /></ErrorBoundary>} />
+                <Route path="/mechanic/chat/:id" element={<ErrorBoundary><ChatPage /></ErrorBoundary>} />
               </Route>
 
               {/* Protected admin routes */}
               <Route element={<RoleRoute allowedRoles={['admin']} />}>
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/dashboard" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
               </Route>
 
               {/* 404 */}

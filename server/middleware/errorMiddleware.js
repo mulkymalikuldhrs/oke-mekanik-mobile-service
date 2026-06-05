@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import type { Request, Response, NextFunction } from 'express';
 
-export const errorHandler = (err, req, res, next) => {
+export const errorHandler = (err: Error & { status?: number; statusCode?: number; code?: string }, req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof z.ZodError) {
     return res.status(400).json({
       message: 'Validasi gagal',

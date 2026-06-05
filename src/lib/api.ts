@@ -196,7 +196,7 @@ export const mechanicApi = {
     });
   },
 
-  getPendingBookings: async (): Promise<any[]> => {
+  getPendingBookings: async (): Promise<Booking[]> => {
     return fetchWithAuth('/mechanics/pending-bookings');
   },
 };
@@ -356,7 +356,7 @@ export const reviewApi = {
     mechanicId: string;
     rating: number;
     comment: string;
-  }): Promise<any> => {
+  }): Promise<{ id: string; bookingId: string; userId: string; mechanicId: string; rating: number; comment: string; createdAt: string }> => {
     return fetchWithAuth('/reviews', {
       method: 'POST',
       body: JSON.stringify(reviewData),
