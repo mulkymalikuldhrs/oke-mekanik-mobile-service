@@ -6,9 +6,9 @@ We release patches for security vulnerabilities for the following versions:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.8.x   | :white_check_mark: |
-| 5.7.x   | :white_check_mark: |
-| < 5.7   | :x:                |
+| 7.0.x   | :white_check_mark: |
+| 6.x     | :white_check_mark: |
+| < 6.0   | :x:                |
 
 ## Reporting a Vulnerability
 

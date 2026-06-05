@@ -1,14 +1,16 @@
+import { v4 as uuidv4 } from 'uuid';
 import db from '../db.js';
 
 export const createPayment = (req, res) => {
-    const { bookingId, amount, paymentMethod, status } = req.body;
+    const { bookingId, amount, paymentMethod } = req.body;
     const booking = db.prepare('SELECT user_id FROM bookings WHERE id = ?').get(bookingId);
     if (!booking || booking.user_id !== req.userId) { return res.status(403).json({ message: 'Akses ditolak' }); }
 
-    const id = `PAY-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = `PAY-${uuidv4().slice(0, 8)}`;
+    // Payment always starts as 'pending' - status is never client-controlled
     db.prepare('INSERT INTO payments (id, booking_id, amount, payment_method, status) VALUES (?, ?, ?, ?, ?)')
-      .run(id, bookingId, amount, paymentMethod, status);
-    res.json({ id, status });
+      .run(id, bookingId, amount, paymentMethod, 'pending');
+    res.json({ id, status: 'pending' });
 };
 
 export const getPaymentByBookingId = (req, res) => {

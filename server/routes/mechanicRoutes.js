@@ -13,11 +13,13 @@ import { verifyToken, requireMechanic } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// Public endpoints (for customer browsing)
+// Public endpoints (for customer browsing - read-only)
 router.get('/', getAllMechanics);
 router.get('/nearby', getNearbyMechanics);
-router.post('/auto-dispatch', autoDispatch);
 router.get('/:id', getMechanicById);
+
+// Auto-dispatch requires authentication to prevent abuse
+router.post('/auto-dispatch', verifyToken, autoDispatch);
 
 // Mechanic/Workshop-only endpoints
 router.get('/pending-bookings', verifyToken, requireMechanic, getPendingBookings);

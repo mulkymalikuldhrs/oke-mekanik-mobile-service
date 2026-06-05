@@ -148,6 +148,9 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_booking_id ON messages(booking_id);
   CREATE INDEX IF NOT EXISTS idx_reviews_mechanic_id ON reviews(mechanic_id);
   CREATE INDEX IF NOT EXISTS idx_workshops_online ON workshops(is_online);
+
+  -- Prevent duplicate reviews per booking
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_booking_id ON reviews(booking_id);
 `);
 
 // Seed initial data if empty
@@ -157,6 +160,7 @@ const seedData = async () => {
     console.log('[OkeMekanik] Seeding initial data...');
 
     const salt = await bcrypt.genSalt(10);
+    // WARNING: This is a demo seed password. Change in production!
     const hashedPass = await bcrypt.hash('password123', salt);
 
     // Seed Users

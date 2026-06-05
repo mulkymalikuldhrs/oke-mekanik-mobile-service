@@ -2,22 +2,27 @@ import { z } from 'zod';
 import type { Request, Response, NextFunction } from 'express';
 
 export const errorHandler = (err: Error & { status?: number; statusCode?: number; code?: string }, req: Request, res: Response, _next: NextFunction) => {
+  // ZodError: expose only field-level info, never internal schema paths or structures
   if (err instanceof z.ZodError) {
     return res.status(400).json({
       message: 'Validasi gagal',
-      errors: err.errors,
+      errors: err.errors.map(e => ({
+        field: e.path.join('.'),
+        message: e.message,
+      })),
       code: 'VALIDATION_ERROR'
     });
   }
 
-  const isDev = process.env.NODE_ENV === 'development';
   const statusCode = err.status || err.statusCode || 500;
 
+  // Always log full error server-side
   console.error(`[Error] ${new Date().toISOString()} - ${req.method} ${req.url}: ${err.message}`);
-  if (isDev && err.stack) {
+  if (err.stack) {
     console.error(err.stack);
   }
 
+  // Never expose internal error details to clients
   let message = 'Terjadi kesalahan internal pada server';
   if (statusCode === 400) message = 'Permintaan tidak valid';
   else if (statusCode === 401) message = 'Sesi berakhir, silakan masuk kembali';
@@ -25,10 +30,9 @@ export const errorHandler = (err: Error & { status?: number; statusCode?: number
   else if (statusCode === 404) message = 'Sumber daya tidak ditemukan';
 
   res.status(statusCode).json({
-    message: isDev ? err.message : message,
-    code: err.code || 'INTERNAL_SERVER_ERROR',
+    message,
+    code: statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : (err.code || 'ERROR'),
     timestamp: new Date().toISOString(),
     path: req.url,
-    error: isDev ? err.stack : undefined
   });
 };

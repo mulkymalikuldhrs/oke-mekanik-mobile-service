@@ -41,8 +41,24 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Database files (SQLite)
 server/*.db
 server/*.db-journal
+server/*.db-wal
+server/*.db-shm
+
+# Test & verification
 /verification/
 /screenshots/
 test-results/
+coverage/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+
+# Security: never commit secrets
+*.pem
+*.crt
+*.key

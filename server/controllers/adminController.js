@@ -8,7 +8,7 @@ export const getStats = (req, res) => {
     const totalBookings = db.prepare('SELECT count(*) as count FROM bookings').get().count;
     const activeBookings = db.prepare("SELECT count(*) as count FROM bookings WHERE status NOT IN ('completed', 'cancelled')").get().count;
     const completedBookings = db.prepare("SELECT count(*) as count FROM bookings WHERE status = 'completed'").get().count;
-    const totalRevenue = db.prepare('SELECT COALESCE(SUM(estimated_cost), 0) as total FROM bookings WHERE status = \'completed\'').get().total;
+    const totalRevenue = db.prepare("SELECT COALESCE(SUM(estimated_cost), 0) as total FROM bookings WHERE status = 'completed'").get().total;
     const avgRating = db.prepare('SELECT COALESCE(AVG(rating), 0) as avg FROM reviews').get().avg;
     const totalReviews = db.prepare('SELECT count(*) as count FROM reviews').get().count;
     const totalPayments = db.prepare('SELECT count(*) as count FROM payments').get().count;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 import db from '../db.js';
 
 const bookingSchema = z.object({
@@ -86,7 +87,7 @@ function formatBooking(b) {
 export const createBooking = (req, res, next) => {
   try {
     const { mechanicId, serviceId, vehicle, problem, location, isEmergency } = bookingSchema.parse(req.body);
-    const id = `BOOK-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = `BOOK-${uuidv4().slice(0, 8)}`;
 
     const service = db.prepare('SELECT base_price, name FROM services WHERE id = ?').get(serviceId);
     const mechanic = db.prepare('SELECT price_per_hour, lat, lng FROM mechanics WHERE id = ?').get(mechanicId);
@@ -159,7 +160,7 @@ export const createAutoDispatchBooking = (req, res, next) => {
     const bestMechanic = sorted[0];
     
     // Create the booking
-    const id = `BOOK-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = `BOOK-${uuidv4().slice(0, 8)}`;
     const service = db.prepare('SELECT base_price, name FROM services WHERE id = ?').get(serviceId);
     
     const basePrice = service?.base_price || 50000;
@@ -223,7 +224,18 @@ export const getBookings = (req, res) => {
 };
 
 export const getActiveBookings = (req, res) => {
-    const bookings = db.prepare("SELECT * FROM bookings WHERE status NOT IN ('completed', 'cancelled') ORDER BY created_at DESC").all();
+    // Only admins can see all active bookings; others see their own
+    if (req.userRole === 'admin') {
+      const bookings = db.prepare("SELECT * FROM bookings WHERE status NOT IN ('completed', 'cancelled') ORDER BY created_at DESC").all();
+      return res.json(bookings.map(formatBooking));
+    }
+    if (req.userRole === 'mechanic' || req.userRole === 'workshop') {
+      const mech = db.prepare('SELECT id FROM mechanics WHERE user_id = ?').get(req.userId);
+      const bookings = mech ? db.prepare("SELECT * FROM bookings WHERE mechanic_id = ? AND status NOT IN ('completed', 'cancelled') ORDER BY created_at DESC").all(mech.id) : [];
+      return res.json(bookings.map(formatBooking));
+    }
+    // Customer
+    const bookings = db.prepare("SELECT * FROM bookings WHERE user_id = ? AND status NOT IN ('completed', 'cancelled') ORDER BY created_at DESC").all(req.userId);
     res.json(bookings.map(formatBooking));
 };
 
@@ -277,6 +289,17 @@ export const updateBookingStatus = (req, res) => {
       currentStatus: bookingOrig.status,
       requestedStatus: status
     });
+  }
+
+  // Role-based status transition authorization
+  // Only mechanics/workshops/admin can accept/progress bookings
+  const mechanicOnlyTransitions = ['accepted', 'otw', 'arrived', 'working', 'completed'];
+  if (mechanicOnlyTransitions.includes(status) && !isAssignedMechanic && !isAdmin) {
+    return res.status(403).json({ message: 'Hanya mekanik yang ditugaskan dapat mengubah status booking ini' });
+  }
+  // Only the booking owner (customer) or admin can cancel
+  if (status === 'cancelled' && !isOwner && !isAssignedMechanic && !isAdmin) {
+    return res.status(403).json({ message: 'Akses ditolak' });
   }
 
   const now = new Date().toISOString();
@@ -337,7 +360,7 @@ export const createSOSBooking = (req, res, next) => {
     }
 
     const bestMechanic = sorted[0];
-    const id = `SOS-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = `SOS-${uuidv4().slice(0, 8)}`;
     const estimatedCost = 150000 + Math.round(bestMechanic.distance * 3000);
     const etaMinutes = Math.max(3, Math.round(bestMechanic.distance / 40 * 60)); // Faster for SOS
 

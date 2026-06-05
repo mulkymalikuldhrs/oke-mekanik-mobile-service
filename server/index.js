@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import jwt from 'jsonwebtoken';
 import db from './db.js';
 import { JWT_SECRET } from './config.js';
 
@@ -77,12 +78,33 @@ app.use((req, res, next) => {
 // Socket.io Logic with Room Management
 const connectedUsers = new Map();
 
+// Socket.io authentication middleware
+io.use((socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      socket.userId = decoded.id;
+      socket.userRole = decoded.role;
+    } catch {
+      // Allow unauthenticated connections for public features
+      // but they won't be able to join booking rooms
+    }
+  }
+  next();
+});
+
 io.on('connection', (socket) => {
   console.log(`[SOCKET] Client connected: ${socket.id}`);
 
   socket.on('join_booking', (bookingId) => {
+    // Only authenticated users can join booking rooms
+    if (!socket.userId) {
+      socket.emit('error', { message: 'Autentikasi diperlukan untuk bergabung dengan booking' });
+      return;
+    }
     socket.join(bookingId);
-    console.log(`[SOCKET] ${socket.id} joined booking room: ${bookingId}`);
+    console.log(`[SOCKET] ${socket.id} (user: ${socket.userId}) joined booking room: ${bookingId}`);
   });
 
   socket.on('leave_booking', (bookingId) => {
@@ -90,6 +112,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('update_location', (data) => {
+    // Only mechanics can update location
+    if (!socket.userId || (socket.userRole !== 'mechanic' && socket.userRole !== 'workshop' && socket.userRole !== 'admin')) {
+      return;
+    }
     io.to(data.bookingId).emit('location_updated', {
       lat: data.lat,
       lng: data.lng,
@@ -98,6 +124,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('send_message', (data) => {
+    // Only authenticated users can send messages via socket
+    if (!socket.userId) {
+      return;
+    }
     io.to(data.bookingId).emit('new_message', data);
   });
 
@@ -144,7 +174,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Oke Mekanik API',
-    version: '6.1.0',
+    version: '7.0.0',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     stats: {
@@ -163,7 +193,7 @@ httpServer.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════════════╗
   ║                                                  ║
-  ║   🔧 OKE MEKANIK - Backend Server v6.1.0        ║
+  ║   🔧 OKE MEKANIK - Backend Server v7.0.0        ║
   ║   "Uber untuk Mekanik/Bengkel"                   ║
   ║                                                  ║
   ║   Server: http://localhost:${PORT}                 ║

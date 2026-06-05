@@ -102,6 +102,6 @@ export const diagnoseProblem = (req, res) => {
     confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
-    version: 'v5.8.1-ultimate'
+    version: 'v7.0.0'
   });
 };
