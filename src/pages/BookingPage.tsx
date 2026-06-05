@@ -189,8 +189,8 @@ const BookingPage = () => {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-sm font-black">PESAN MEKANIK</h1>
-            <p className="text-[10px] text-gray-500">Step {step}/4</p>
+            <h1 className="text-sm font-black">PESAN MEKANIK v28.1</h1>
+            <p className="text-[10px] text-gray-500">v5.8.2 ULTIMATE+ • Step {step}/4</p>
           </div>
           {/* Progress dots */}
           <div className="flex gap-1">
@@ -256,7 +256,7 @@ const BookingPage = () => {
               </div>
 
               {/* AI Diagnostic */}
-              <Card className="bg-white/5 border-white/5 rounded-xl">
+              <Card className="glass-card rounded-xl">
                 <CardContent className="p-3">
                   <p className="text-xs text-gray-400 mb-2">Tidak yakin masalahnya? AI bisa bantu diagnosa:</p>
                   <div className="flex gap-2">
@@ -320,7 +320,7 @@ const BookingPage = () => {
                   <Input
                     value={location.address}
                     onChange={(e) => setLocation(prev => ({ ...prev, address: e.target.value }))}
-                    placeholder="Jl. Sudirman No. 1, Jakarta"
+                    placeholder={t('booking.step1.address_placeholder')}
                     className="flex-1 bg-white/5 border-white/10 text-white"
                   />
                   <Button variant="outline" className="border-white/10 text-white" onClick={handleGetLocation}>
@@ -471,7 +471,7 @@ const BookingPage = () => {
                 <p className="text-sm text-gray-500">Pastikan semua data sudah benar</p>
               </div>
 
-              <Card className="bg-white/5 border-white/5 rounded-xl">
+              <Card className="glass-card rounded-xl">
                 <CardContent className="p-4 space-y-3">
                   {isEmergency && (
                     <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-2 flex items-center gap-2">

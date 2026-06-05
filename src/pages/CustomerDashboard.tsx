@@ -142,9 +142,9 @@ const CustomerDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.1</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {user?.name || t('role.customer.title')}
+                v5.8.2 ULTIMATE+ • {user?.name || t('role.customer.title')}
               </p>
             </div>
           </div>
@@ -225,7 +225,7 @@ const CustomerDashboard = () => {
 
         {/* Map Section */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <Card className="rounded-2xl overflow-hidden border-white/5">
+          <Card className="glass-card rounded-2xl overflow-hidden">
             <CardHeader className="pb-2 pt-3 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
@@ -319,6 +319,8 @@ const CustomerDashboard = () => {
               { icon: '❄️', label: 'AC', svcId: 'svc-8', color: 'from-cyan-600 to-cyan-500' },
               { icon: '🔊', label: 'Tune Up', svcId: 'svc-4', color: 'from-orange-600 to-orange-500' },
               { icon: '📋', label: 'Servis', svcId: 'svc-2', color: 'from-pink-600 to-pink-500' },
+              { icon: '⚙️', label: 'Overhaul', svcId: 'svc-9', color: 'from-gray-600 to-gray-500' },
+              { icon: '🔋', label: 'EV/Hybrid', svcId: 'svc-13', color: 'from-emerald-600 to-emerald-500' },
             ].map((item) => (
               <motion.button
                 key={item.svcId}
@@ -407,6 +409,14 @@ const CustomerDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-[10px] h-6 text-blue-400 hover:text-blue-300 p-0"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}

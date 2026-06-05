@@ -13,13 +13,22 @@ import { verifyToken, requireCustomer, requireMechanic } from '../middleware/aut
 const router = express.Router();
 
 // Auto-dispatch: system finds nearest mechanic (customers only)
-router.post('/auto-dispatch', verifyToken, requireCustomer, createAutoDispatchBooking);
+router.post('/auto-dispatch', verifyToken, requireCustomer, (req, res, next) => {
+  console.log(`[BOOKING:${req.id}] Auto-dispatch request from ${req.userId}`);
+  createAutoDispatchBooking(req, res, next);
+});
 
 // SOS Emergency booking (customers only)
-router.post('/sos', verifyToken, requireCustomer, createSOSBooking);
+router.post('/sos', verifyToken, requireCustomer, (req, res, next) => {
+  console.log(`[SOS:${req.id}] SOS Emergency request from ${req.userId}`);
+  createSOSBooking(req, res, next);
+});
 
 // Regular booking with selected mechanic (customers only)
-router.post('/', verifyToken, requireCustomer, createBooking);
+router.post('/', verifyToken, requireCustomer, (req, res, next) => {
+  console.log(`[BOOKING:${req.id}] Manual booking request from ${req.userId} for mechanic ${req.body?.mechanicId}`);
+  createBooking(req, res, next);
+});
 
 // Get bookings (filtered by user role in controller)
 router.get('/', verifyToken, getBookings);

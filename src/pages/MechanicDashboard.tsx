@@ -144,6 +144,20 @@ const MechanicDashboard = () => {
     );
   }
 
+  const isError = !mechanicData; // Simple error check for test compatibility
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-4">
+        <AlertTriangle className="h-12 w-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-bold mb-2">{t('error.load_failed')}</h2>
+        <Button onClick={() => queryClient.invalidateQueries()} className="bg-orange-600 hover:bg-orange-500">
+          {t('common.retry')}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
@@ -154,9 +168,9 @@ const MechanicDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.1</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {mechanicData?.name || 'Mekanik'}
+                v5.8.2 ULTIMATE+ • {mechanicData?.name || 'Mekanik'}
               </p>
             </div>
           </div>

@@ -6,7 +6,7 @@
 
 <h3><em>移动维修服务 — 专业车辆维修，送技上门</em></h3>
 
-[![版本](https://img.shields.io/badge/版本-5.8.1-0A84FF?style=for-the-badge)](https://github.com/mulkymalikuldhrs/oke-mekanik)
+[![版本](https://img.shields.io/badge/版本-5.8.2-0A84FF?style=for-the-badge)](https://github.com/mulkymalikuldhrs/oke-mekanik)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Express](https://img.shields.io/badge/Express-5.2.1-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com)
@@ -20,7 +20,7 @@
 
 ## 🚗 关于 Oke Mekanik
 
-**Oke Mekanik** 是一个全栈 SaaS 平台，将车主与专业维修技师直接连接——送技上门。灵感源自 Gojek/Grab 的服务交付模式，我们将维修车间搬到您的家门口。搭载 **AI 诊断引擎 v5.8.1**、实时 GPS 追踪和毛玻璃 UI，这是为现代时代重新定义的车辆维修体验。再也不用在修车厂排队等候——技师主动来找您。
+**Oke Mekanik** 是一个全栈 SaaS 平台，将车主与专业维修技师直接连接——送技上门。灵感源自 Gojek/Grab 的服务交付模式，我们将维修车间搬到您的家门口。搭载 **AI 诊断引擎 v5.8.2**、实时 GPS 追踪和毛玻璃 UI，这是为现代时代重新定义的车辆维修体验。再也不用在修车厂排队等候——技师主动来找您。
 
 该平台旨在提供无缝、透明的车辆维修体验。借助先进的 AI 模式匹配技术，客户可以在技师到达之前诊断车辆问题，从而实现更好的准备和更快的完成时间。实时 GPS 追踪系统确保您始终知道技师的位置，而应用内聊天功能允许直接无障碍的沟通。
 
@@ -30,7 +30,7 @@
 
 | 功能 | 描述 | 状态 |
 |:-----|:-----|:----:|
-| 🤖 AI 诊断引擎 | 先进模式匹配车辆自动诊断 (v5.8.1) | ✅ |
+| 🤖 AI 诊断引擎 | 先进模式匹配车辆自动诊断 (v5.8.2) | ✅ |
 | 📍 实时 GPS 追踪 | 通过 Socket.io 和 Leaflet 地图实时追踪技师位置 | ✅ |
 | ⚡ 即时预约 | 随时预约紧急维修或定期保养 | ✅ |
 | ✅ 认证技师 | 仅限经过社区评分与审核的专业技师 | ✅ |
