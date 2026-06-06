@@ -165,6 +165,41 @@ npm run dev
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## 📁 Project Structure
+
+```
+oke-mekanik/
+├── public/              # Static assets (favicon, manifest, sw.js)
+├── server/              # Express.js backend
+│   ├── config.js        # App configuration (JWT_SECRET, etc.)
+│   ├── db.js            # SQLite database setup
+│   ├── index.js         # Server entry point + Socket.io
+│   ├── controllers/     # Route handlers
+│   ├── middleware/       # Auth, error handling
+│   └── routes/          # API route definitions
+├── src/                 # React frontend
+│   ├── components/ui/   # shadcn/ui components
+│   ├── contexts/        # React context providers
+│   ├── hooks/           # Custom React hooks
+│   ├── lib/             # Utilities (api client, utils)
+│   ├── pages/           # Route pages
+│   └── types/           # TypeScript type definitions
+├── .env.example         # Environment variables template
+├── Dockerfile           # Container build config
+├── vite.config.ts       # Vite build configuration
+└── package.json         # Dependencies & scripts
+```
+
+## 📊 Project Status
+
+| Metric | Status |
+|:-------|:-------|
+| Version | 7.0.0 |
+| Production Ready | Yes |
+| CI/CD | GitHub Actions |
+| Test Coverage | Unit + Integration |
+| Security Audit | Helmet, Rate Limiting, JWT Auth |
+
 ## 📬 Contact
 
 | Channel | Info |
