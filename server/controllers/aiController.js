@@ -49,6 +49,20 @@ const AI_MODEL = [
     urgency: 'HIGH'
   },
   {
+    id: 'svc-9',
+    name: 'Overhaul / Turun Mesin',
+    keywords: { 'turun mesin': 25, overhaul: 25, 'skir klep': 20, 'piston pecah': 20, 'stang seher': 20, 'kruk as': 15, 'mesin mati total': 15, 'oli campur air': 25, 'overheat parah': 20, 'metal jalan': 15, 'metal duduk': 15, 'ganti paking': 10, 'head silinder': 15 },
+    causes: ['Mesin mengalami overheat parah hingga melengkung', 'Kebocoran paking head sehingga oli bercampur air', 'Kerusakan komponen internal (piston, stang seher)', 'Usia pakai mesin yang sudah sangat tinggi'],
+    urgency: 'CRITICAL'
+  },
+  {
+    id: 'svc-13',
+    name: 'Cek Sistem EV/Hybrid',
+    keywords: { 'baterai hv': 25, 'hv battery': 25, inverter: 25, 'hybrid system': 25, 'ev error': 20, 'baterai drop': 15, 'regenerative braking': 15, 'motor listrik': 20, 'charging error': 20, 'baterai panas': 15, 'modul ev': 15, 'lithium': 10 },
+    causes: ['Penurunan sel baterai High Voltage', 'Malfungsi pada inverter atau converter DC-DC', 'Masalah pada sistem pendingin baterai HV', 'Sensor pada sistem hybrid mengalami error'],
+    urgency: 'HIGH'
+  },
+  {
     id: 'svc-2',
     name: 'Servis Rutin',
     keywords: { rutin: 12, servis: 12, service: 12, berkala: 11, checkup: 10, 'ganti sparepart': 9, 'maintenance': 11, 'tahunan': 7, 'bulanan': 6, 'perawatan': 9, 'km': 8, 'kilometer': 8, 'inspeksi': 10, 'gluduk': 14, 'kaki-kaki': 13, 'shockbreaker': 12, 'tierod': 11, 'balljoint': 11, 'bunyi mendengung': 12, 'setir goyang': 10, 'bunyi kaki-kaki': 15, 'setir narik': 12 },
@@ -81,12 +95,14 @@ export const diagnoseProblem = (req, res) => {
       'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer'],
+      'svc-9': ['turun mesin', 'overhaul', 'skir klep', 'piston pecah', 'oli campur air'],
+      'svc-13': ['baterai hv', 'hv battery', 'inverter', 'motor listrik', 'hybrid system']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {
       if (terms.some(term => p.includes(term)) && service.id === svcId) {
-        score += 30;
+        score += 45; // v7.0.0 ULTIMATE+ Boost
       }
     }
 
