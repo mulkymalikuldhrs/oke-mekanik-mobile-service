@@ -7,6 +7,27 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.0] - 2026-06-06
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.0 ULTIMATE+ dengan technical boost +45 poin
+- Dukungan penuh untuk kendaraan masa depan: Layanan EV/Hybrid (svc-13)
+- Layanan perbaikan besar: Overhaul / Turun Mesin (svc-9) terintegrasi penuh
+- Seed data mekanik spesialis EV (Elon Mekanik)
+- Trace ID global pada setiap request API untuk observabilitas produksi
+- Tombol Quick Service untuk akses instan layanan populer di dashboard
+- Branding ecosystem 'Masterpiece v28.1' di seluruh interface
+
+### Diubah
+- Peningkatan akurasi diagnosa AI untuk terminologi otomotif teknis
+- Pembaruan footer copyright ke tahun 2026
+
+### Diperbaiki
+- Sinkronisasi rute backend dan model AI untuk layanan Overhaul
+- Optimalisasi seeding database untuk integritas data yang lebih baik
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan

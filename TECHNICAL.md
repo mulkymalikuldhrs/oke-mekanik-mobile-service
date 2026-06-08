@@ -1,4 +1,4 @@
-# 🛠️ Oke Mekanik - Technical Architecture (v5.8.1 ULTIMATE+)
+# 🛠️ Oke Mekanik - Technical Architecture (v7.0.0 ULTIMATE+)
 
 This document defines the technical standards and architectural patterns for the **Masterpiece v28.1** ecosystem.
 
@@ -18,7 +18,7 @@ We use SQLite for its reliability, performance, and "local-first" persistence ca
 - **Schema Management**: Managed via `server/db.js`. Includes automated seeding for development environments.
 - **Indexes**: Optimized for performance with specific indexes on `users(email)`, `bookings(user_id)`, and `reviews(mechanic_id)`.
 
-## 3. AI Diagnostic Engine v5.8.1
+## 3. AI Diagnostic Engine v7.0.0
 The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context.
 
 ### Confidence Scoring Algorithm
@@ -28,8 +28,8 @@ let score = baseWeightSum;
 if (matches > 1) {
   score += Math.pow(matches, 2);
 }
-// Add technical term boosts (+30 points for v5.8.1)
-if (technicalTermsFound) score += 30;
+// Add technical term boosts (+45 points for v7.0.0)
+if (technicalTermsFound) score += 45;
 ```
 This ensures that specific, complex descriptions result in higher confidence than vague ones.
 
@@ -38,6 +38,7 @@ This ensures that specific, complex descriptions result in higher confidence tha
 - **`svc-4` (Tune Up)**: `brebet`, `pincang`, `ngelitik`, `ngeden`, `asap putih/hitam`, `ngobos`, `injector`, `bore up`, `overhaul`, `turun mesin`.
 - **`svc-5` (Electrical)**: `limp mode`, `check engine`, `korslet`, `ecu`, `sekring putus`, `short circuit`, `grounding`.
 - **`svc-2` (Routine/Suspension)**: `gluduk`, `kaki-kaki`, `setir narik`, `v-belt`, `cv joint`, `bushing arm`.
+- **`svc-13` (EV/Hybrid)**: `baterai hv`, `inverter`, `motor listrik`, `lithium`, `hybrid system`.
 
 ## 4. Frontend Standards (Masterpiece v28.1)
 ### Glassmorphism UI
