@@ -42,10 +42,24 @@ const AI_MODEL = [
     urgency: 'HIGH'
   },
   {
+    id: 'svc-9',
+    name: 'Overhaul / Turun Mesin',
+    keywords: { 'turun mesin': 20, overhaul: 20, 'skir klep': 18, 'korter': 17, 'piston pecah': 19, 'stang seher': 18, 'ngebul parah': 16, 'ngobos': 18, 'mesin mati total': 15, 'oli campur air': 19, 'vampir oli': 17 },
+    causes: ['Kerusakan internal mesin yang parah', 'Mesin pernah mengalami overheat ekstrem', 'Pelumasan gagal total', 'Usia pakai mesin sudah sangat tinggi'],
+    urgency: 'CRITICAL'
+  },
+  {
+    id: 'svc-13',
+    name: 'Cek Sistem EV/Hybrid',
+    keywords: { 'ev': 20, 'hybrid': 20, 'baterai hv': 22, 'inverter': 21, 'motor listrik': 19, 'regenerative braking': 18, 'charging': 17, 'kabel orange': 20, 'high voltage': 22, 'li-ion': 18 },
+    causes: ['Penurunan kesehatan baterai (SOH)', 'Kegagalan modul inverter', 'Masalah pada sistem pendingin baterai', 'Koneksi tegangan tinggi longgar'],
+    urgency: 'HIGH'
+  },
+  {
     id: 'svc-4',
     name: 'Tune Up',
-    keywords: { mesin: 10, overheat: 12, asap: 10, brebet: 15, berebet: 15, pincang: 15, mati: 6, ngadat: 12, bensin: 6, boros: 11, 'mogok': 12, 'tarikan berat': 11, 'injeksi': 11, 'karburator': 11, 'piston': 10, 'klep': 10, 'radiator': 11, 'kopling': 10, 'transmisi': 9, 'throttle body': 11, 'carbon clean': 10, 'water pump': 11, 'head gasket': 11, 'fan belt': 9, 'ngelitik': 15, 'detonasi': 11, 'asap putih': 13, 'asap hitam': 13, 'nyendal': 12, 'nyentak': 12, 'suara tek tek': 11, 'boros bensin': 14, 'ngeden': 13, 'pagi-pagi susah nyala': 14, 'tunggakan gas': 11, 'ngebul': 14, 'ngobos': 15, 'turun mesin': 20, 'overhaul': 20, 'bore up': 15, 'injector': 12 },
-    causes: ['Throttle body kotor berkerak', 'Busi sudah lemah atau kotor', 'Saringan bahan bakar tersumbat', 'Kompresi mesin rendah (ngobos)', 'Sistem pendingin (radiator) tidak optimal'],
+    keywords: { mesin: 10, overheat: 12, asap: 10, brebet: 15, berebet: 15, pincang: 15, mati: 6, ngadat: 12, bensin: 6, boros: 11, 'mogok': 12, 'tarikan berat': 11, 'injeksi': 11, 'karburator': 11, 'piston': 10, 'klep': 10, 'radiator': 11, 'kopling': 10, 'transmisi': 9, 'throttle body': 11, 'carbon clean': 10, 'water pump': 11, 'head gasket': 11, 'fan belt': 9, 'ngelitik': 15, 'detonasi': 11, 'asap putih': 13, 'asap hitam': 13, 'nyendal': 12, 'nyentak': 12, 'suara tek tek': 11, 'boros bensin': 14, 'ngeden': 13, 'pagi-pagi susah nyala': 14, 'tunggakan gas': 11, 'ngebul': 14, 'injector': 12 },
+    causes: ['Throttle body kotor berkerak', 'Busi sudah lemah atau kotor', 'Saringan bahan bakar tersumbat', 'Kompresi mesin rendah', 'Sistem pendingin (radiator) tidak optimal'],
     urgency: 'HIGH'
   },
   {
@@ -78,15 +92,17 @@ export const diagnoseProblem = (req, res) => {
     }
     const technicalBoosts = {
       'svc-1': ['oli meler', 'oli rembes', 'oil seal', 'karter', 'oil filter macet'],
-      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
+      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'injector', 'carbon clean'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer'],
+      'svc-9': ['turun mesin', 'overhaul', 'skir klep', 'korter', 'piston pecah', 'oli campur air'],
+      'svc-13': ['baterai hv', 'inverter', 'hybrid error', 'ev system', 'high voltage battery']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {
       if (terms.some(term => p.includes(term)) && service.id === svcId) {
-        score += 30;
+        score += 45; // Increased boost for v7.0.0
       }
     }
 
@@ -99,7 +115,7 @@ export const diagnoseProblem = (req, res) => {
   res.json({
     suggestion: bestMatch.name,
     serviceId: bestMatch.id,
-    confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
+    confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 150) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
     version: 'v7.0.0'

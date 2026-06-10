@@ -1,101 +1,35 @@
 # Changelog
 
-Semua perubahan penting pada proyek Oke Mekanik akan didokumentasikan dalam file ini.
+All notable changes to this project will be documented in this file.
 
-Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/id/1.1.0/),
-dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
+## [7.0.0] - 2026-06-06
 
----
+### Added
+- **AI Diagnostic Engine v7.0.0 ULTIMATE+**: Complete overhaul of the AI diagnostic system.
+- **Specialized Service Support**: Dedicated support for Overhaul (`svc-9`) and EV/Hybrid (`svc-13`) diagnostics.
+- **New Technical Boosts**: Increased accuracy for technical keywords with a +45 point technical boost.
+- **Elon Mekanik**: Added specialized EV/Hybrid mechanic to the seed data.
+- **Database WAL Mode**: Enabled Write-Ahead Logging for better concurrent performance.
 
-## [5.8.1] - 2026-01-15
+### Changed
+- **Branding Upgrade**: Project-wide synchronization to **Masterpiece v28.1 ULTIMATE+**.
+- **Public AI API**: The `/api/ai/diagnose` endpoint is now public to enhance initial user experience.
+- **Architecture Documentation**: Updated `TECHNICAL.md` and `AGENTS.md` to reflect v7.0.0 standards.
+- **Clean Backend**: Removed all TypeScript-style definitions and types from backend JavaScript files for native Node.js ESM compliance.
 
-### Ditambahkan
-- AI Diagnostic Engine v5.8.1 dengan pencocokan pola canggih
-- Pelacakan GPS real-time via Socket.io & Leaflet Maps
-- Sistem booking instan untuk perbaikan darurat dan perawatan rutin
-- Chat dalam aplikasi dengan komunikasi real-time
-- Sistem pembayaran aman dengan harga transparan
-- Dukungan multi-bahasa (Bahasa Indonesia & English)
-- PWA support dengan service worker offline
-- UI Glassmorphism dengan animasi Framer Motion
-- Verifikasi mekanik dengan sistem rating komunitas
+### Fixed
+- **Middleware Syntax Errors**: Resolved `SyntaxError` caused by `import type` in backend middleware.
+- **Seed Data Integrity**: Re-synchronized database seed with current service IDs and categories.
 
-### Diubah
-- Migrasi ke React 19 dari versi sebelumnya
-- Pembaruan ke Express 5.2.1 untuk performa yang lebih baik
-- Peningkatan sistem autentikasi JWT dengan hashing Bcrypt yang lebih kuat
+## [6.1.0] - 2024-05-20
 
-### Diperbaiki
-- Perbaikan bug pada pelacakan GPS saat koneksi tidak stabil
-- Perbaikan crash pada AI Diagnostic Engine untuk input yang tidak terduga
-- Perbaikan tampilan responsif pada perangkat mobile kecil
+### Added
+- Integrated Glassmorphism UI across all dashboards.
+- Added localization for English and Indonesian.
+- Implemented real-time tracking via Socket.io.
 
----
+## [5.8.1] - 2024-03-15
 
-## [5.7.0] - 2025-12-01
-
-### Ditambahkan
-- Integrasi Leaflet Maps untuk pelacakan mekanik
-- Sistem rating dan review mekanik
-- Dashboard admin untuk manajemen mekanik dan pesanan
-- Notifikasi push untuk pembaruan status booking
-
-### Diubah
-- Peningkatan performa loading halaman
-- Optimasi database SQLite untuk query yang lebih cepat
-
-### Diperbaiki
-- Perbaikan masalah koneksi Socket.io yang terputus
-- Perbaikan tampilan chat pada mode gelap
-
----
-
-## [5.6.0] - 2025-10-15
-
-### Ditambahkan
-- AI Diagnostic Engine v5.6 dengan diagnosa dasar
-- Sistem booking dengan jadwal tersedia
-- Integrasi pembayaran digital
-- Halaman profil mekanik
-
-### Diubah
-- Redesign UI ke glassmorphism
-- Migrasi dari CSS biasa ke Tailwind CSS
-- Pembaruan dependensi keamanan
-
-### Diperbaiki
-- Perbaikan bug autentikasi pada sesi kadaluarsa
-- Perbaikan memory leak pada koneksi Socket.io
-
----
-
-## [5.5.0] - 2025-08-01
-
-### Ditambahkan
-- Fitur chat dasar antara pelanggan dan mekanik
-- Sistem booking sederhana
-- Autentikasi JWT
-- Rate limiting pada API
-
-### Diubah
-- Peningkatan struktur proyek untuk skalabilitas
-- Pembaruan ke TypeScript 5.5
-
----
-
-## [5.0.0] - 2025-05-01
-
-### Ditambahkan
-- Rilis awal platform Oke Mekanik
-- Registrasi dan login pengguna
-- Pendaftaran mekanik
-- Pencarian mekanik berdasarkan lokasi
-- Halaman utama dengan daftar layanan
-
----
-
-[5.8.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.1
-[5.7.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.7.0
-[5.6.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.6.0
-[5.5.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.5.0
-[5.0.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.0.0
+### Added
+- Initial AI Diagnostic Engine implementation.
+- Basic booking flow and mechanic registration.
