@@ -1,71 +1,34 @@
 ## Description
-
-<!-- Provide a clear and concise description of your changes -->
+Brief description of the changes in this PR.
 
 ## Type of Change
-
-<!-- Mark the relevant option with an `x` -->
-
-- [ ] 🆕 **New Feature** (`feat/`) — New functionality added
-- [ ] 🐛 **Bug Fix** (`fix/`) — Fix for a bug or issue
-- [ ] 📚 **Documentation** (`docs/`) — Documentation changes only
-- [ ] ♻️ **Refactor** (`refactor/`) — Code refactoring without feature changes
-- [ ] 🌍 **Translation / i18n** (`i18n/`) — Localization or translation updates
-- [ ] 🎨 **UI / Style** — UI changes following Glassmorphism design language
-- [ ] ⚡ **Performance** (`perf/`) — Performance improvements
-- [ ] ✅ **Test** (`test/`) — Adding or updating tests
-- [ ] 🔧 **Build / CI** (`build/`, `ci/`) — Build or CI configuration changes
-- [ ] 🧹 **Chore** (`chore/`) — Maintenance tasks
+- [ ] Bug fix (non-breaking change that fixes an issue)
+- [ ] New feature (non-breaking change that adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Documentation update
+- [ ] Refactoring (no functional changes)
+- [ ] Test addition/update
 
 ## Related Issues
-
-<!-- Link any related issues: Fixes #123, Closes #456 -->
+Fixes #(issue number)
 
 ## Changes Made
-
-<!-- List the key changes in this PR -->
-
--
-
--
-
--
+- Change 1
+- Change 2
+- Change 3
 
 ## Testing
+- [ ] I have tested my changes locally
+- [ ] I have added tests for new functionality
+- [ ] All existing tests pass
 
-<!-- Describe how you tested your changes -->
-
-- [ ] Unit tests pass (`npm test`)
-- [ ] E2E tests pass (Playwright)
-- [ ] Tested manually in development environment
-- [ ] No mock functions used (Zero-Mock Policy)
+## Screenshots (if applicable)
+Add screenshots to help explain your changes.
 
 ## Checklist
-
-<!-- Mark completed items with an `x` -->
-
-- [ ] Code follows project conventions and style guidelines
-- [ ] Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/)
-- [ ] TypeScript types are correct and complete
-- [ ] No `console.log` or debug statements left in code
-- [ ] UI changes follow the **Glassmorphism** design language
-- [ ] API changes follow **RESTful** conventions
-- [ ] New API endpoints have proper validation (`zod` schemas)
-- [ ] New API endpoints have rate limiting configured
-- [ ] Documentation updated (if applicable)
-- [ ] No breaking changes (or breaking changes are documented)
-- [ ] Self-reviewed my own code
-
-## Screenshots / Demo
-
-<!-- If applicable, add screenshots or a demo of your changes -->
-
-## Additional Notes
-
-<!-- Any additional information reviewers should know -->
-
----
-
-> **Contact:** Mulky Malikul Dhaher — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
->
-> **Disclaimer:** This project is for Education Purpose only. Risiko apapun tidak kita tanggung. (We are not responsible for any risks or damages.)
+- [ ] My code follows the project's style guidelines
+- [ ] I have performed a self-review of my code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
