@@ -1,45 +1,22 @@
 ---
 name: Feature Request
-about: Suggest a new feature or enhancement
-title: '[FEATURE] '
-labels: enhancement, needs-triage
+about: Suggest a feature or enhancement
+title: 'feat: '
+labels: enhancement
 assignees: ''
 ---
 
 ## Problem Statement
-
-<!-- What problem does this feature solve? Is your feature request related to a problem? -->
+What problem does this feature solve? What are you trying to accomplish?
 
 ## Proposed Solution
-
-<!-- A clear and concise description of what you want to happen -->
+How would you like this feature to work?
 
 ## Alternatives Considered
-
-<!-- A clear and concise description of any alternative solutions or features you've considered -->
+What other approaches have you considered?
 
 ## Additional Context
+Any screenshots, examples from other projects, or links that help explain your idea.
 
-<!-- Add any other context, mockups, or screenshots about the feature request here -->
-
-## Implementation Ideas
-
-<!-- Optional: If you have ideas about how to implement this feature, describe them here -->
-
-### Affected Areas
-
-<!-- Which parts of the codebase would be affected? -->
-
-- [ ] Frontend (`src/pages/`, `src/components/`)
-- [ ] Backend API (`server/controllers/`, `server/routes/`)
-- [ ] Database schema
-- [ ] Real-time / WebSocket (`socket.io`)
-- [ ] AI Diagnostic Engine
-- [ ] PWA / Service Worker
-- [ ] Translations / i18n
-
----
-
-> **Contact:** Mulky Malikul Dhaher — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
->
-> **Disclaimer:** This project is for Education Purpose only. Risiko apapun tidak kita tanggung. (We are not responsible for any risks or damages.)
+## Would you be willing to implement this?
+[ ] Yes, I'd like to submit a PR for this feature
