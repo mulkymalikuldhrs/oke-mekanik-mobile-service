@@ -7,6 +7,15 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.0] - 2026-06-06
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.0 ULTIMATE+ dengan dukungan EV/Hybrid dan Overhaul
+- Sinkronisasi branding ekosistem Masterpiece v28.1
+- Peningkatan akurasi diagnosa dengan Technical Scoring Boost (+45)
+- Dukungan layanan khusus kendaraan masa depan (EV/Hybrid)
+- Pembaruan tahun hak cipta dan metadata proyek ke 2026
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
@@ -94,6 +103,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+[7.0.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v7.0.0
 [5.8.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.1
 [5.7.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.7.0
 [5.6.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.6.0

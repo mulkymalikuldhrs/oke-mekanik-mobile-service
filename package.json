@@ -16,7 +16,22 @@
     "url": "https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service/issues"
   },
   "homepage": "https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service#readme",
-  "keywords": ["mekanik", "mechanic", "vehicle-service", "saas", "real-time-tracking", "socket-io", "ai-diagnostic", "react", "express", "typescript", "tailwindcss", "shadcn-ui", "pwa", "glassmorphism"],
+  "keywords": [
+    "mekanik",
+    "mechanic",
+    "vehicle-service",
+    "saas",
+    "real-time-tracking",
+    "socket-io",
+    "ai-diagnostic",
+    "react",
+    "express",
+    "typescript",
+    "tailwindcss",
+    "shadcn-ui",
+    "pwa",
+    "glassmorphism"
+  ],
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"npm run backend\"",

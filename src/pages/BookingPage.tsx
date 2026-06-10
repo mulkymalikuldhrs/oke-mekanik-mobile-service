@@ -189,7 +189,7 @@ const BookingPage = () => {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-sm font-black">PESAN MEKANIK</h1>
+            <h1 className="text-sm font-black">OKE MEKANIK v28.1</h1>
             <p className="text-[10px] text-gray-500">Step {step}/4</p>
           </div>
           {/* Progress dots */}

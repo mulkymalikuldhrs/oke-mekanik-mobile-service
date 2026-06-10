@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 async function verifyAI() {
-  console.log('--- Verifying AI Diagnostic Engine v5.8.1 ULTIMATE+ ---');
+  console.log('--- Verifying AI Diagnostic Engine v7.0.0 ULTIMATE+ ---');
 
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -15,7 +15,10 @@ async function verifyAI() {
     { problem: 'mobil saya ngobos dan tarikan berat', expected: 'Tune Up' },
     { problem: 'ada oli meler di bawah mesin', expected: 'Ganti Oli' },
     { problem: 'klakson mati dan sekring putus', expected: 'Cek Kelistrikan' },
-    { problem: 'mobil turun mesin total', expected: 'Tune Up' },
+    { problem: 'mobil turun mesin total skir klep', expected: 'Overhaul / Turun Mesin' },
+    { problem: 'piston pecah dan overhaul mesin', expected: 'Overhaul / Turun Mesin' },
+    { problem: 'baterai hv saya drop dan inverter panas', expected: 'Cek Sistem EV/Hybrid' },
+    { problem: 'hybrid system failure ev mode tidak jalan', expected: 'Cek Sistem EV/Hybrid' },
     { problem: 'rack steer oblak dan gluduk', expected: 'Servis Rutin' }
   ];
 
@@ -29,7 +32,7 @@ async function verifyAI() {
       const data = await response.json();
 
       console.log(`Case: "${tc.problem}"`);
-      if (data.suggestion === tc.expected && data.version === 'v5.8.1-ultimate') {
+      if (data.suggestion === tc.expected && data.version === 'v7.0.0') {
         console.log(`✅ PASSED (Got: ${data.suggestion}, Urgency: ${data.urgency_level}, Confidence: ${data.confidence}%)`);
       } else {
         console.log(`❌ FAILED (Got: ${data.suggestion}, Version: ${data.version})`);
@@ -38,11 +41,12 @@ async function verifyAI() {
       }
     } catch (err) {
       console.error('Error during AI verification:', err.message);
+      console.log('Ensure the backend is running (npm run backend)');
       process.exit(1);
     }
   }
 
-  console.log('--- AI v5.8.1 Verification Complete: ALL SYSTEMS NOMINAL ---');
+  console.log('--- AI v7.0.0 Verification Complete: ALL SYSTEMS NOMINAL ---');
 }
 
 verifyAI();
