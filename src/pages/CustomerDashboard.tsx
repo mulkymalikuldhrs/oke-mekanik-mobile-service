@@ -162,7 +162,7 @@ const CustomerDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl"
+          className="relative overflow-hidden rounded-2xl glass-card"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 to-orange-600/30 animate-pulse" />
           <div className="relative p-4 flex items-center justify-between">
@@ -225,7 +225,7 @@ const CustomerDashboard = () => {
 
         {/* Map Section */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <Card className="rounded-2xl overflow-hidden border-white/5">
+          <Card className="rounded-2xl overflow-hidden border-white/5 glass-card">
             <CardHeader className="pb-2 pt-3 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
