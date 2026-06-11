@@ -98,6 +98,158 @@ oke-mekanik-mobile-service/
 └── public/               # Static assets
 ```
 
+## Visual Architecture
+
+### Service Booking Flow
+
+```mermaid
+flowchart LR
+    subgraph "Request"
+        A["Open App"] --> B["Describe Vehicle Issue"]
+        B --> C["Set Location"]
+        C --> D["Submit Request"]
+    end
+
+    subgraph "Match"
+        D --> E["Find Nearby Mechanics"]
+        E --> F["Mechanic Accepts"]
+        F --> G["ETA Calculated"]
+    end
+
+    subgraph "Track"
+        G --> H["Live GPS Tracking"]
+        H --> I["Mechanic En Route"]
+        I --> J["Mechanic Arrives"]
+    end
+
+    subgraph "Complete"
+        J --> K["Service Performed"]
+        K --> L["Payment Processed"]
+        L --> M["Rate & Review"]
+    end
+
+    style A fill:#0a1628,color:#3b82f6
+    style F fill:#143d5e,color:#f59e0b
+    style H fill:#0d2b4a,color:#3b82f6
+    style M fill:#22c55e,color:#fff
+```
+
+### AI Diagnostics Pipeline
+
+```mermaid
+flowchart TB
+    subgraph "User Input"
+        Start["Select Vehicle Make/Model"] --> Symptoms["Describe Symptoms"]
+        Symptoms --> Context["Add Context: Mileage, Year, Recent Work"]
+    end
+
+    subgraph "LLM Processing"
+        Context --> Prompt["Construct Diagnostic Prompt"]
+        Prompt --> LLM["LLM Analysis Engine"]
+        LLM --> Parse["Parse Response"]
+    end
+
+    subgraph "Preliminary Diagnosis"
+        Parse --> Causes["Possible Causes"]
+        Parse --> Severity["Severity Assessment"]
+        Parse --> Estimate["Estimated Repair Scope"]
+    end
+
+    subgraph "Disclaimer"
+        Causes --> Warning["Preliminary Only"]
+        Severity --> Warning
+        Estimate --> Warning
+        Warning --> Mechanic["Verify with Mechanic In-Person"]
+    end
+
+    style Start fill:#0a1628,color:#3b82f6
+    style LLM fill:#7c3aed,color:#fff
+    style Warning fill:#f59e0b,color:#000
+    style Mechanic fill:#22c55e,color:#fff
+```
+
+### Real-Time GPS Tracking
+
+```mermaid
+sequenceDiagram
+    participant C as Customer App
+    participant S as Socket.io Server
+    participant M as Mechanic App
+    participant L as Leaflet Map
+
+    M->>S: Update GPS coordinates
+    S->>C: Broadcast mechanic location
+    C->>L: Update marker on map
+    L-->>C: Render updated position
+
+    loop Every 2-3 seconds
+        M->>S: GPS ping
+        S->>C: Location update
+        C->>L: Smooth marker transition
+    end
+
+    M->>S: Status: Arrived
+    S->>C: Mechanic on-site notification
+    C->>L: Center map on destination
+```
+
+### Full Stack Architecture
+
+```mermaid
+graph TB
+    subgraph "Frontend - Vite React SPA"
+        UI["React 19 + TypeScript"]
+        Router["React Router DOM"]
+        Shadcn["shadcn/ui + Radix"]
+        FM["Framer Motion"]
+        Leaflet["React Leaflet Maps"]
+        PWA["PWA + Glassmorphism UI"]
+    end
+
+    subgraph "Real-Time Layer"
+        SIOClient["Socket.io Client"]
+        SIOServer["Socket.io Server"]
+    end
+
+    subgraph "Backend - Express 5"
+        API["REST API Routes"]
+        Auth["JWT Authentication"]
+        Booking["Booking Engine"]
+        Diag["AI Diagnostics"]
+    end
+
+    subgraph "Data Layer"
+        SQLite["SQLite - better-sqlite3"]
+        Users["Users Table"]
+        Services["Services Table"]
+    end
+
+    UI --> Router
+    UI --> Shadcn
+    UI --> FM
+    UI --> Leaflet
+    UI --> PWA
+    UI --> SIOClient
+    SIOClient --> SIOServer
+    SIOServer --> API
+    API --> Auth
+    API --> Booking
+    API --> Diag
+    API --> SQLite
+    SQLite --> Users
+    SQLite --> Services
+
+    style UI fill:#61DAFB,color:#000
+    style SIOServer fill:#010101,color:#fff
+    style API fill:#000,color:#fff
+    style SQLite fill:#003B57,color:#fff
+    style PWA fill:#5A0FC8,color:#fff
+```
+
+> **Published**: This package is published to npm as `oke-mekanik-mobile-service` v7.0.0. The AI diagnostics feature provides preliminary assessments only — always verify with an in-person mechanic inspection.
+
+---
+
 ## Contributing
 
 1. Fork the repository
