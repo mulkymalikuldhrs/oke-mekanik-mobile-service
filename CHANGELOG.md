@@ -7,6 +7,30 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-06-11
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.1 dengan dukungan Kendaraan Listrik (EV) & Hybrid.
+- Kategori layanan baru: Overhaul / Turun Mesin dan Cek Sistem EV/Hybrid.
+- Mekanik spesialis EV baru: Elon Mekanik.
+- Sinkronisasi branding ekosistem ke "Masterpiece v28.2 ULTIMATE+".
+- Peningkatan akurasi diagnosa dengan technical scoring boost +45.
+
+### Diubah
+- Pembaruan tahun hak cipta menjadi 2026.
+- Peningkatan versi sistem secara global ke v7.0.1.
+
+---
+
+## [7.0.0] - 2026-05-10
+
+### Ditambahkan
+- Konsolidasi arsitektur backend modular.
+- Sistem Trace ID global untuk observabilitas end-to-end.
+- Hardening kebijakan "Zero-Mock" untuk integrasi database riil.
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
