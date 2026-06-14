@@ -1,6 +1,6 @@
-# AGENTS.md - Masterpiece v28.1 ULTIMATE+
+# AGENTS.md - Masterpiece v28.2 ULTIMATE+
 
-This document provides instructions for AI agents working on the Masterpiece v28.1 ULTIMATE+ codebase.
+This document provides instructions for AI agents working on the Masterpiece v28.2 ULTIMATE+ codebase.
 
 ## Project Vision
 Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce a **Zero-Mock Policy**. All data must flow through the Express/SQLite backend.

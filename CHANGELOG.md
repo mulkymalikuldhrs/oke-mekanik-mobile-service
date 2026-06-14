@@ -7,6 +7,20 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-06-11
+
+### Ditambahkan
+- Upgrade ekosistem Masterpiece v28.2 ULTIMATE+
+- AI Diagnostic Engine v7.0.1 ULTIMATE+ dengan kategori Overhaul & EV/Hybrid
+- Implementasi penuh Zero-Mock Policy dengan data real dari SQLite (WAL mode)
+- Penambahan spesialisasi mekanik Kendaraan Listrik (Elon Mekanik)
+- Peningkatan akurasi diagnosa dengan technical scoring boost +45
+- Pembaruan branding dan copyright 2026 di seluruh platform
+- Migrasi ke Vite 8 dan React 19 production build
+- Global Request Trace ID untuk pemantauan end-to-end
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
@@ -27,7 +41,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Diperbaiki
 - Perbaikan bug pada pelacakan GPS saat koneksi tidak stabil
-- Perbaikan crash pada AI Diagnostic Engine untuk input yang tidak terduga
+- Perbaikan crash pada AI Diagnostic Engine untuk input yang tidak verifikator
 - Perbaikan tampilan responsif pada perangkat mobile kecil
 
 ---
@@ -94,6 +108,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+[7.0.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v7.0.1
 [5.8.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.1
 [5.7.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.7.0
 [5.6.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.6.0
