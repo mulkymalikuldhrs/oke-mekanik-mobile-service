@@ -154,9 +154,9 @@ const MechanicDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.2</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {mechanicData?.name || 'Mekanik'}
+                v7.0.1 • {mechanicData?.name || 'Mekanik'}
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ const MechanicDashboard = () => {
 
       <div className="container mx-auto px-4 py-4 space-y-4">
         {/* Online/Offline Toggle */}
-        <Card className={`rounded-2xl overflow-hidden border ${isOnline ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
+        <Card className={`rounded-2xl overflow-hidden border glass-card ${isOnline ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -196,7 +196,7 @@ const MechanicDashboard = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-2">
-          <Card className="bg-white/5 border-white/5 rounded-xl">
+          <Card className="bg-white/5 border-white/5 rounded-xl glass-card">
             <CardContent className="p-3 text-center">
               <p className="text-xl font-black text-green-400">{completedCount}</p>
               <p className="text-[10px] text-gray-500 font-bold uppercase">Selesai</p>
