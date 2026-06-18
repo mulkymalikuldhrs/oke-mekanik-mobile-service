@@ -9,6 +9,10 @@ import { reviewApi } from '@/lib/api';
 
 // Mock the API
 vi.mock('@/lib/api', () => ({
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn().mockResolvedValue({}),
+  },
   bookingApi: {
     getByUser: vi.fn().mockResolvedValue([
       {

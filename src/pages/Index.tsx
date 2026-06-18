@@ -95,11 +95,11 @@ const Index = () => {
             <Wrench className="h-6 w-6 text-white" />
           </div>
           <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-            OKE MEKANIK v28.1
+            OKE MEKANIK v28.2
           </h1>
           <div className="flex items-center space-x-2">
             <span className="hidden md:inline-block px-2 py-0.5 rounded bg-blue-600/20 border border-blue-500/30 text-[10px] font-black text-blue-400 tracking-widest uppercase">
-              v5.8.1 ULTIMATE+
+              v7.0.1 ULTIMATE+
             </span>
             <div className={`flex items-center space-x-1.5 px-2 py-0.5 rounded-full border ${
               systemStatus === 'online' ? 'bg-green-500/10 border-green-500/30' :
@@ -142,10 +142,10 @@ const Index = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-[160px] mb-6"
+            className="inline-flex items-center px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-[160px] mb-6 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
           >
             <ShieldCheck className="h-4 w-4 text-blue-400 mr-2" />
-            <span className="text-sm font-medium text-blue-100">{t('landing.badge')}</span>
+            <span className="text-sm font-black text-blue-100 tracking-tight uppercase">{t('landing.badge')}</span>
           </motion.div>
 
           <motion.h2
@@ -323,8 +323,8 @@ const Index = () => {
             </ul>
           </div>
         </div>
-        <div className="container mx-auto mt-20 pt-10 border-t border-white/5 flex flex-col md:row justify-between items-center text-gray-600 text-sm text-center">
-          <p>{t('footer.rights')}</p>
+        <div className="container mx-auto mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-gray-600 text-sm text-center">
+          <p className="font-bold tracking-tight uppercase">© 2026 OKE MEKANIK MASTERPIECE v28.2. ENGINEERED FOR EXCELLENCE.</p>
           <div className="flex space-x-8 mt-4 md:mt-0">
             <span>{t('footer.privacy')}</span>
             <span>{t('footer.terms')}</span>

@@ -40,7 +40,7 @@ app.use('/api/', limiter);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+    origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || ['http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081'],
     methods: ['GET', 'POST', 'PATCH']
   }
 });
@@ -53,7 +53,7 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 }
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+  origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || ['http://localhost:5173', 'http://localhost:8080', 'http://localhost:8081'],
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -174,7 +174,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Oke Mekanik API',
-    version: '7.0.0',
+    version: '7.0.1',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     stats: {
@@ -193,7 +193,7 @@ httpServer.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════════════╗
   ║                                                  ║
-  ║   🔧 OKE MEKANIK - Backend Server v7.0.0        ║
+  ║   🔧 OKE MEKANIK - Backend Server v7.0.1        ║
   ║   "Uber untuk Mekanik/Bengkel"                   ║
   ║                                                  ║
   ║   Server: http://localhost:${PORT}                 ║

@@ -7,6 +7,23 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-06-18
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.1 ULTIMATE+ dengan dukungan EV/Hybrid (svc-13).
+- Layanan Overhaul / Turun Mesin (svc-9) sebagai kategori utama.
+- Sinkronisasi branding ekosistem ke Masterpiece v28.2 ULTIMATE+.
+- Pembaruan seed data dengan mekanik spesialis EV (Elon Mekanik).
+
+## [7.0.0] - 2026-06-16
+
+### Ditambahkan
+- Rewrite total backend menggunakan modular Express 5.
+- Migrasi ke SQLite (Better-SQLite3) untuk persistensi data nyata.
+- Penegakan Kebijakan Zero-Mock di seluruh aplikasi.
+- AI Diagnostic Engine v7.0.0 dengan skor kepercayaan.
+- Integrasi Localization Engine (ID/EN) yang lebih mendalam.
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan

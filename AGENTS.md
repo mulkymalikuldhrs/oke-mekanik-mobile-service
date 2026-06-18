@@ -1,4 +1,4 @@
-# AGENTS.md - Masterpiece v28.1 ULTIMATE+
+# AGENTS.md - Masterpiece v28.2 ULTIMATE+
 
 This document provides instructions for AI agents working on the Masterpiece v28.1 ULTIMATE+ codebase.
 
@@ -31,7 +31,7 @@ Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce 
 - Visual fidelity is confirmed via Playwright screenshots in `tests/`.
 - AI Diagnostic mapping is verified in `server/controllers/aiController.js`.
 
-© 2024 OKE MEKANIK MASTERPIECE v28. ENGINEERED FOR EXCELLENCE.
+© 2026 OKE MEKANIK MASTERPIECE v28.2 ULTIMATE+. ENGINEERED FOR EXCELLENCE.
 
 ---
 

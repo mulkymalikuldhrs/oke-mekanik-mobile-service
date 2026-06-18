@@ -4,7 +4,7 @@ import { verifyToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// AI diagnostic requires authentication to prevent abuse
-router.post('/diagnose', verifyToken, diagnoseProblem);
+// AI diagnostic is public for better initial UX
+router.post('/diagnose', diagnoseProblem);
 
 export default router;

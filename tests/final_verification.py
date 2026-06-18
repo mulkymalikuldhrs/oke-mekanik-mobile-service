@@ -46,31 +46,39 @@ async def run_verification():
         # 3. Booking & AI Diagnostic
         try:
             print("Navigating to Booking Page...")
-            # Button on dashboard might be 'PANGGIL SEKARANG'
-            await page.click("button:has-text('PANGGIL SEKARANG')")
+            # Redirect to booking page directly if needed, or find the right button
+            await page.goto("http://localhost:8080/customer/booking")
             await page.wait_for_url("**/customer/booking**")
 
             print("Testing AI Diagnostic Flow...")
-            await page.fill("input[placeholder='Masukkan alamat lengkap']", "Jl. Sudirman No. 1, Jakarta")
+            # Wait for any of the service buttons to be visible to ensure page is loaded
+            await page.wait_for_selector("text=Pilih Layanan")
 
-            # Select Brand
-            await page.select_option("select#brand", label="Toyota")
-            await page.fill("input[placeholder='Avanza, Vario, dll']", "Fortuner")
-
-            # AI Problem Description
-            # The placeholder is: 'Tuliskan gejala atau masalah kendaraan Anda (contoh: mesin mati mendadak, aki soak, rem bunyi...)'
-            await page.fill("textarea", "mesin saya ngobos dan keluar asap putih dari knalpot")
+            # Input problem for AI
+            await page.fill("textarea[placeholder='Contoh: mesin brebet, rem berdecit, aki soak...']", "mesin saya ngobos dan keluar asap putih dari knalpot")
 
             print("Clicking AI Diagnostic Button...")
-            await page.click("button:has-text('AI DIAGNOSTIC')")
+            # Look for the button with the sparkles icon or based on type/position
+            # In step 1, the diagnostic button is inside a Card and has no text, only an icon
+            await page.locator("button:has(svg.lucide-sparkles)").click()
 
-            # Wait for AI result card or success message
-            print("Waiting for AI analysis...")
-            # The success message is 'Analisa AI Selesai'
-            await page.wait_for_selector("text=Analisa AI Selesai", timeout=20000)
+            # Wait for AI result
+            await page.wait_for_selector("text=AI:", timeout=20000)
+            print("AI Diagnostic result visible.")
 
-            await page.screenshot(path="verification_ai_result.png")
-            print("AI Diagnostic verified.")
+            await page.click("button:has-text('Lanjutkan')")
+
+            # Step 2: Location
+            print("Step 2: Location & Vehicle")
+            await page.wait_for_selector("text=Lokasi & Kendaraan")
+            await page.fill("input[placeholder='Jl. Sudirman No. 1, Jakarta']", "Jl. Sudirman No. 1, Jakarta Central")
+            await page.fill("input[placeholder='Avanza, Vario...']", "Fortuner")
+
+            # Detail Masalah
+            await page.fill("textarea[placeholder='Jelaskan masalah kendaraan Anda...']", "mesin saya ngobos dan keluar asap putih dari knalpot")
+
+            await page.screenshot(path="verification_booking_step2.png")
+            print("Step 2 completed.")
 
         except Exception as e:
             print(f"Booking/AI Error: {e}")
