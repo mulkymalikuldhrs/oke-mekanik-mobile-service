@@ -7,6 +7,35 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-06-11
+
+### Ditambahkan
+- **AI Diagnostic Engine v7.0.1**: Dukungan penuh untuk Kendaraan Listrik (EV) dan Hybrid.
+- Layanan Baru: `svc-13` (Cek Sistem EV/Hybrid) mencakup Baterai HV, Inverter, dan Motor Listrik.
+- Technical Boost Score ditingkatkan menjadi +45 untuk akurasi diagnosa masalah teknis yang spesifik.
+- UI Fidelity Upgrade: Implementasi `.glass-card` pada dashboard Pelanggan dan Mekanik.
+- Sinkronisasi Branding Masterpiece v28.2 ULTIMATE+ di seluruh platform.
+
+### Diubah
+- Migrasi infrastruktur backend ke Node.js ESM murni dengan menghapus sisa-sisa sintaks TypeScript.
+- Pembaruan dokumentasi teknis (`README.md`, `TECHNICAL.md`, `AGENTS.md`) untuk mencerminkan arsitektur Vite + React 19.
+
+### Diperbaiki
+- **Kestabilan Server**: Memperbaiki SyntaxError pada middleware backend yang mencegah server berjalan di lingkungan Node.js standar.
+- Validasi data database seeding untuk memastikan integrasi layanan EV/Hybrid yang tepat.
+
+---
+
+## [7.0.0] - 2026-06-06
+
+### Ditambahkan
+- Upgrade besar ke ekosistem Masterpiece v28.1 ULTIMATE+.
+- Integrasi layanan Overhaul / Turun Mesin (`svc-9`) ke dalam model AI.
+- Penggunaan Request Trace ID (`req.id`) untuk observabilitas end-to-end.
+- Mode Write-Ahead Logging (WAL) pada SQLite untuk performa konkuren yang lebih baik.
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
