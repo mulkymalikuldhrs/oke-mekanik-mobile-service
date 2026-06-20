@@ -115,6 +115,6 @@ AI 诊断引擎是 Oke Mekanik 的特色组件，使用先进的模式匹配技�
 
 > *"精工铸就卓越 — 科技与道路的交汇"*
 
-**Oke Mekanik** © 2024 — 至今 • **Mulky Malikul Dhaher**
+**Oke Mekanik v28.2 ULTIMATE+** © 2026 — 至今 • **Mulky Malikul Dhaher**
 
 </div>

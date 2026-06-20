@@ -154,7 +154,7 @@ const MechanicDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.2</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                 {mechanicData?.name || 'Mekanik'}
               </p>
@@ -171,7 +171,7 @@ const MechanicDashboard = () => {
 
       <div className="container mx-auto px-4 py-4 space-y-4">
         {/* Online/Offline Toggle */}
-        <Card className={`rounded-2xl overflow-hidden border ${isOnline ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
+        <Card className={`rounded-2xl overflow-hidden border glass-card ${isOnline ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -195,25 +195,32 @@ const MechanicDashboard = () => {
         </Card>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-3 gap-2">
-          <Card className="bg-white/5 border-white/5 rounded-xl">
-            <CardContent className="p-3 text-center">
-              <p className="text-xl font-black text-green-400">{completedCount}</p>
-              <p className="text-[10px] text-gray-500 font-bold uppercase">Selesai</p>
+        <div className="grid grid-cols-3 gap-3">
+          <Card className="bg-white/5 border-white/5 rounded-2xl glass-card transition-all hover:bg-white/10">
+            <CardContent className="p-4 text-center">
+              <div className="bg-green-500/10 w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 border border-green-500/20">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              </div>
+              <p className="text-xl font-black text-white">{completedCount}</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{t('dashboard.mechanic.completed')}</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/5 border-white/5 rounded-xl">
-            <CardContent className="p-3 text-center">
-              <p className="text-xl font-black text-blue-400">Rp {(totalEarnings/1000).toFixed(0)}K</p>
-              <p className="text-[10px] text-gray-500 font-bold uppercase">Pendapatan</p>
+          <Card className="bg-white/5 border-white/5 rounded-2xl glass-card transition-all hover:bg-white/10">
+            <CardContent className="p-4 text-center">
+              <div className="bg-blue-500/10 w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 border border-blue-500/20">
+                <TrendingUp className="h-4 w-4 text-blue-500" />
+              </div>
+              <p className="text-xl font-black text-white">Rp {(totalEarnings/1000).toFixed(0)}K</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Pendapatan</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/5 border-white/5 rounded-xl">
-            <CardContent className="p-3 text-center">
-              <p className="text-xl font-black text-yellow-400 flex items-center justify-center">
-                <Star className="h-4 w-4 mr-1 fill-current" />{mechanicData?.rating || '4.5'}
-              </p>
-              <p className="text-[10px] text-gray-500 font-bold uppercase">Rating</p>
+          <Card className="bg-white/5 border-white/5 rounded-2xl glass-card transition-all hover:bg-white/10">
+            <CardContent className="p-4 text-center">
+              <div className="bg-yellow-500/10 w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2 border border-yellow-500/20">
+                <Star className="h-4 w-4 text-yellow-500 fill-current" />
+              </div>
+              <p className="text-xl font-black text-white">{mechanicData?.rating || '4.5'}</p>
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{t('dashboard.mechanic.rating')}</p>
             </CardContent>
           </Card>
         </div>

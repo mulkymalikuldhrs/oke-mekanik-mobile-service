@@ -142,7 +142,7 @@ const CustomerDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.2</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
                 {user?.name || t('role.customer.title')}
               </p>
@@ -162,7 +162,7 @@ const CustomerDashboard = () => {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-2xl"
+          className="relative overflow-hidden rounded-2xl glass-card"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-red-600/30 to-orange-600/30 animate-pulse" />
           <div className="relative p-4 flex items-center justify-between">
@@ -225,7 +225,7 @@ const CustomerDashboard = () => {
 
         {/* Map Section */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-          <Card className="rounded-2xl overflow-hidden border-white/5">
+          <Card className="rounded-2xl overflow-hidden border-white/5 glass-card">
             <CardHeader className="pb-2 pt-3 px-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-sm font-black uppercase tracking-wider flex items-center gap-2">
@@ -308,26 +308,27 @@ const CustomerDashboard = () => {
 
         {/* Quick Service Buttons */}
         <div>
-          <h3 className="text-xs font-black uppercase tracking-widest text-gray-500 mb-2 px-1">Layanan Populer</h3>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="flex items-center justify-between mb-3 px-1">
+            <h3 className="text-xs font-black uppercase tracking-widest text-gray-500">Layanan Populer</h3>
+            <Badge variant="outline" className="text-[8px] border-blue-500/30 text-blue-400">AI OPTIMIZED</Badge>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {[
-              { icon: '🆘', label: 'Darak/SOS', svcId: 'svc-darurat', color: 'from-red-600 to-red-500' },
-              { icon: '🔧', label: 'Ganti Oli', svcId: 'svc-1', color: 'from-blue-600 to-blue-500' },
-              { icon: '🛞', label: 'Ban Kempes', svcId: 'svc-3', color: 'from-green-600 to-green-500' },
-              { icon: '⚡', label: 'Aki Soak', svcId: 'svc-7', color: 'from-yellow-600 to-yellow-500' },
-              { icon: '🛑', label: 'Rem', svcId: 'svc-6', color: 'from-purple-600 to-purple-500' },
-              { icon: '❄️', label: 'AC', svcId: 'svc-8', color: 'from-cyan-600 to-cyan-500' },
-              { icon: '🔊', label: 'Tune Up', svcId: 'svc-4', color: 'from-orange-600 to-orange-500' },
-              { icon: '📋', label: 'Servis', svcId: 'svc-2', color: 'from-pink-600 to-pink-500' },
+              { icon: <AlertTriangle className="h-6 w-6" />, label: 'SOS', svcId: 'svc-darurat', color: 'bg-red-500/10 text-red-500 border-red-500/20' },
+              { icon: <Zap className="h-6 w-6" />, label: 'EV/Hybrid', svcId: 'svc-13', color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' },
+              { icon: <Car className="h-6 w-6" />, label: 'Overhaul', svcId: 'svc-9', color: 'bg-orange-500/10 text-orange-500 border-orange-500/20' },
+              { icon: <Wrench className="h-6 w-6" />, label: 'Oli', svcId: 'svc-1', color: 'bg-blue-500/10 text-blue-500 border-blue-500/20' },
+              { icon: <ShieldCheck className="h-6 w-6" />, label: 'Servis', svcId: 'svc-2', color: 'bg-purple-500/10 text-purple-500 border-purple-500/20' },
             ].map((item) => (
               <motion.button
                 key={item.svcId}
+                whileHover={{ y: -5, scale: 1.02 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex flex-col items-center gap-1 p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all"
+                className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl glass-card border transition-all ${item.color}`}
                 onClick={() => navigate(`/customer/booking?serviceId=${item.svcId}`)}
               >
-                <span className="text-2xl">{item.icon}</span>
-                <span className="text-[10px] font-bold text-gray-300">{item.label}</span>
+                {item.icon}
+                <span className="text-[10px] font-black uppercase tracking-tight">{item.label}</span>
               </motion.button>
             ))}
           </div>
@@ -405,8 +406,16 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 px-2 text-[10px] text-blue-400 hover:text-blue-300 hover:bg-blue-500/10"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}

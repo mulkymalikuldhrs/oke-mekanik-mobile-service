@@ -29,6 +29,10 @@ vi.mock('@/lib/api', () => ({
     create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
     getByMechanicId: vi.fn().mockResolvedValue([]),
   },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn().mockResolvedValue(null),
+  },
   fetchWithAuth: vi.fn(),
 }));
 
@@ -58,7 +62,7 @@ describe('Review System', () => {
     });
   });
 
-  it('opens the review dialog when "Beri Ulasan" is clicked', async () => {
+  it('opens the review dialog when "dashboard.customer.btn_review" is clicked', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>

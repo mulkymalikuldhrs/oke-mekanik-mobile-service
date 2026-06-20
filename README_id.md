@@ -115,6 +115,6 @@ Proyek ini dilisensikan di bawah MIT License — lihat file [LICENSE](LICENSE) u
 
 > *"Dibangun untuk Keunggulan — Di Mana Teknologi Bertemu Jalan"*
 
-**Oke Mekanik** © 2024 — Sekarang • **Mulky Malikul Dhaher**
+**Oke Mekanik v28.2 ULTIMATE+** © 2026 — Sekarang • **Mulky Malikul Dhaher**
 
 </div>
