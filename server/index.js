@@ -47,7 +47,7 @@ const io = new Server(httpServer, {
 
 const PORT = process.env.PORT || 3001;
 
-if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'dev-secret-okemekanik-2024')) {
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'dev-secret-okemekanik-2026')) {
   console.error('FATAL: JWT_SECRET environment variable is missing or insecure in production!');
   process.exit(1);
 }

@@ -54,6 +54,20 @@ const AI_MODEL = [
     keywords: { rutin: 12, servis: 12, service: 12, berkala: 11, checkup: 10, 'ganti sparepart': 9, 'maintenance': 11, 'tahunan': 7, 'bulanan': 6, 'perawatan': 9, 'km': 8, 'kilometer': 8, 'inspeksi': 10, 'gluduk': 14, 'kaki-kaki': 13, 'shockbreaker': 12, 'tierod': 11, 'balljoint': 11, 'bunyi mendengung': 12, 'setir goyang': 10, 'bunyi kaki-kaki': 15, 'setir narik': 12 },
     causes: ['Sudah waktunya perawatan berkala', 'Mencegah kerusakan komponen lebih lanjut', 'Menjaga performa kendaraan tetap optimal', 'Memastikan keselamatan berkendara'],
     urgency: 'MEDIUM'
+  },
+  {
+    id: 'svc-13',
+    name: 'Cek Sistem EV/Hybrid',
+    keywords: { ev: 15, hybrid: 15, electric: 12, baterai: 10, battery: 10, inverter: 15, 'high voltage': 15, 'hv': 12, 'motor listrik': 14, 'charging': 11, 'cas': 10, 'regenerative': 12, 'phev': 14, 'ioniq': 13, 'leaf': 13, 'tesla': 13, 'kabel orange': 15, 'dc-dc': 14, 'range drop': 12, 'mobil listrik': 15, 'mobil hybrid': 15, 'baterai hv': 15, 'stasiun pengisian': 10 },
+    causes: ['Degradasi sel baterai High Voltage', 'Overheat pada inverter unit', 'Isolasi kabel tegangan tinggi bermasalah', 'Software BMS perlu update'],
+    urgency: 'CRITICAL'
+  },
+  {
+    id: 'svc-9',
+    name: 'Overhaul / Turun Mesin',
+    keywords: { overhaul: 20, 'turun mesin': 20, 'bongkar mesin': 15, 'bore up': 15, 'skir klep': 12, 'piston macet': 15, 'ngebul parah': 14, 'oli campur air': 15, 'metal jalan': 14, 'stang seher': 15, 'kruk as': 12, 'boros oli': 12, 'asap putih tebal': 15 },
+    causes: ['Kerusakan internal mesin yang parah', 'Usia pakai komponen internal sudah maksimal', 'Mesin pernah mengalami overheat ekstrem', 'Pelumasan yang sangat buruk dalam jangka panjang'],
+    urgency: 'CRITICAL'
   }
 ];
 
@@ -81,12 +95,14 @@ export const diagnoseProblem = (req, res) => {
       'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer'],
+      'svc-13': ['baterai hv', 'inverter', 'modul ev', 'isulasi fault', 'kabel oranye', 'phev system', 'bms error', 'battery pack'],
+      'svc-9': ['bongkar mesin', 'skir klep', 'piston macet', 'metal jalan', 'stang seher', 'oli campur air']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {
       if (terms.some(term => p.includes(term)) && service.id === svcId) {
-        score += 30;
+        score += 45;
       }
     }
 
@@ -102,6 +118,6 @@ export const diagnoseProblem = (req, res) => {
     confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
-    version: 'v7.0.0'
+    version: 'v7.0.1'
   });
 };
