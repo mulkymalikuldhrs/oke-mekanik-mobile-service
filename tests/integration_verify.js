@@ -24,7 +24,9 @@ async function verifyBackend() {
     { problem: 'aki soak tidak bisa stater', expected: 'Cek Aki' },
     { problem: 'ban bocor kena paku', expected: 'Ganti Ban' },
     { problem: 'rem bunyi mencit dan tidak pakem', expected: 'Ganti Kampas Rem' },
-    { problem: 'ac panas tidak dingin', expected: 'Isi Freon AC' }
+    { problem: 'ac panas tidak dingin', expected: 'Isi Freon AC' },
+    { problem: 'mobil listrik saya tidak bisa dicas baterai hv error', expected: 'EV / Hybrid Service' },
+    { problem: 'ingin turun mesin overhaul karena kompresi rendah', expected: 'Overhaul / Turun Mesin' }
   ];
 
   console.log('\n--- Verifying AI Diagnostic Engine ---');

@@ -42,9 +42,23 @@ const AI_MODEL = [
     urgency: 'HIGH'
   },
   {
+    id: 'svc-9',
+    name: 'Overhaul / Turun Mesin',
+    keywords: { 'turun mesin': 20, overhaul: 20, ngebul: 15, ngobos: 15, 'asap putih': 15, 'piston pecah': 20, 'stang seher': 20, 'oli campur air': 18, 'overheat parah': 15, 'mesin macet': 18, 'suara kasar': 10, 'kompresi hilang': 15 },
+    causes: ['Oli mesin jarang diganti atau habis', 'Sistem pendingin gagal total', 'Faktor usia komponen internal mesin', 'Masuk air ke ruang bakar (water hammer)'],
+    urgency: 'CRITICAL'
+  },
+  {
+    id: 'svc-13',
+    name: 'EV / Hybrid Service',
+    keywords: { 'mobil listrik': 15, 'cas': 12, 'baterai hv': 18, 'battery pack': 18, 'inverter': 20, 'ev': 15, 'hybrid': 15, 'charging': 12, 'motor listrik': 15, 'regulator': 10, 'pdu': 12, 'bms': 15 },
+    causes: ['Degradasi sel baterai HV', 'Malfungsi inverter daya', 'Sistem manajemen baterai (BMS) bermasalah', 'Kabel tegangan tinggi longgar atau korosi'],
+    urgency: 'HIGH'
+  },
+  {
     id: 'svc-4',
     name: 'Tune Up',
-    keywords: { mesin: 10, overheat: 12, asap: 10, brebet: 15, berebet: 15, pincang: 15, mati: 6, ngadat: 12, bensin: 6, boros: 11, 'mogok': 12, 'tarikan berat': 11, 'injeksi': 11, 'karburator': 11, 'piston': 10, 'klep': 10, 'radiator': 11, 'kopling': 10, 'transmisi': 9, 'throttle body': 11, 'carbon clean': 10, 'water pump': 11, 'head gasket': 11, 'fan belt': 9, 'ngelitik': 15, 'detonasi': 11, 'asap putih': 13, 'asap hitam': 13, 'nyendal': 12, 'nyentak': 12, 'suara tek tek': 11, 'boros bensin': 14, 'ngeden': 13, 'pagi-pagi susah nyala': 14, 'tunggakan gas': 11, 'ngebul': 14, 'ngobos': 15, 'turun mesin': 20, 'overhaul': 20, 'bore up': 15, 'injector': 12 },
+    keywords: { mesin: 10, overheat: 12, asap: 10, brebet: 15, berebet: 15, pincang: 15, mati: 6, ngadat: 12, bensin: 6, boros: 11, 'mogok': 12, 'tarikan berat': 11, 'injeksi': 11, 'karburator': 11, 'piston': 10, 'klep': 10, 'radiator': 11, 'kopling': 10, 'transmisi': 9, 'throttle body': 11, 'carbon clean': 10, 'water pump': 11, 'head gasket': 11, 'fan belt': 9, 'ngelitik': 15, 'detonasi': 11, 'asap putih': 13, 'asap hitam': 13, 'nyendal': 12, 'nyentak': 12, 'suara tek tek': 11, 'boros bensin': 14, 'ngeden': 13, 'pagi-pagi susah nyala': 14, 'tunggakan gas': 11, 'ngebul': 14, 'ngobos': 15, 'turun mesin': 5, 'overhaul': 5, 'bore up': 15, 'injector': 12 },
     causes: ['Throttle body kotor berkerak', 'Busi sudah lemah atau kotor', 'Saringan bahan bakar tersumbat', 'Kompresi mesin rendah (ngobos)', 'Sistem pendingin (radiator) tidak optimal'],
     urgency: 'HIGH'
   },
@@ -78,7 +92,9 @@ export const diagnoseProblem = (req, res) => {
     }
     const technicalBoosts = {
       'svc-1': ['oli meler', 'oli rembes', 'oil seal', 'karter', 'oil filter macet'],
-      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
+      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'nyendal', 'injector', 'bore up', 'skir klep', 'stel klep'],
+      'svc-9': ['overhaul', 'turun mesin', 'ngobos', 'ngebul', 'asap putih', 'kompresi rendah', 'mesin macet', 'stang seher', 'piston pecah'],
+      'svc-13': ['baterai hv', 'inverter', 'mobil listrik', 'hybrid', 'cas', 'motor listrik', 'bms', 'charging failure'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
       'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
@@ -102,6 +118,6 @@ export const diagnoseProblem = (req, res) => {
     confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
-    version: 'v7.0.0'
+    version: 'v7.0.1'
   });
 };

@@ -169,6 +169,7 @@ const seedData = async () => {
     insertUser.run('cust-2', 'Siti Pengguna', 'siti.cust@example.com', hashedPass, 'customer', '081222222222');
     
     // Mechanics
+    insertUser.run('mech-ev-user', 'Elon Mekanik', 'elon@example.com', hashedPass, 'mechanic', '081122334455');
     insertUser.run('mech-1-user', 'Jane Mechanic', 'mechanic@example.com', hashedPass, 'mechanic', '081234567890');
     insertUser.run('mech-2-user', 'Budi Santoso', 'budi@example.com', hashedPass, 'mechanic', '089876543210');
     insertUser.run('mech-3-user', 'Siti Aminah', 'siti@example.com', hashedPass, 'mechanic', '081222333444');
@@ -194,6 +195,7 @@ const seedData = async () => {
 
     // Seed Mechanics (Jakarta locations - spread around the city)
     const insertMechanic = db.prepare('INSERT INTO mechanics (id, user_id, workshop_id, name, speciality, rating, price_per_hour, is_online, lat, lng, avatar, years_of_experience, phone, bio, vehicle_type, vehicle_plate, is_workshop) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    insertMechanic.run('mech-ev', 'mech-ev-user', null, 'Elon Mekanik', 'EV/Hybrid, Inverter, Baterai HV', 4.9, 120000, 1, -6.2, 106.8, '⚡', 8, '081122334455', 'Spesialis kendaraan listrik dan hybrid. Sertifikasi Tesla & Hyundai.', 'car', 'B 2026 EV', 0);
     insertMechanic.run('mech-1', 'mech-1-user', null, 'Jane Mechanic', 'Ganti Oli, Servis Rutin', 4.8, 75000, 1, -6.2200, 106.8300, '👩‍🔧', 5, '081234567890', 'Berpengalaman menangani berbagai jenis kendaraan roda dua dan roda empat.', 'motorcycle', 'B 5678 JK', 0);
     insertMechanic.run('mech-2', 'mech-2-user', null, 'Budi Santoso', 'Servis Mesin, Tune Up, Overhaul', 4.9, 85000, 1, -6.1500, 106.9000, '👨‍🔧', 10, '089876543210', 'Spesialis mesin mobil Eropa dan Jepang. 10 tahun pengalaman.', 'car', 'B 1234 XY', 0);
     insertMechanic.run('mech-3', 'mech-3-user', null, 'Siti Aminah', 'Rem, Suspensi, Kaki-kaki', 4.7, 90000, 1, -6.2000, 106.8100, '👩‍🔧', 7, '081222333444', 'Ahli dalam sistem pengereman dan kaki-kaki kendaraan.', 'motorcycle', 'B 9012 AB', 0);
@@ -234,6 +236,7 @@ const seedData = async () => {
     insertService.run('svc-7', 'Cek Aki', 'Pengecekan tegangan dan kondisi aki + isi', 50000, 'electrical', 'battery', 20, 1);
     insertService.run('svc-8', 'Isi Freon AC', 'Pengisian ulang freon AC mobil', 150000, 'electrical', 'snowflake', 60, 0);
     insertService.run('svc-12', 'Ganti Busi', 'Penggantian busi + pengecekan coil', 60000, 'electrical', 'flame', 20, 0);
+    insertService.run('svc-13', 'EV / Hybrid Service', 'Perawatan khusus kendaraan listrik dan hybrid', 250000, 'electrical', 'zap', 120, 0);
 
     // Seed Bookings (Historic)
     const insertBooking = db.prepare(`
