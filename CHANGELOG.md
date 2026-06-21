@@ -7,6 +7,25 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-06-21
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.1 dengan dukungan Kendaraan Listrik (EV) & Hybrid.
+- Kategori layanan baru: EV / Hybrid Service (svc-13) dan Overhaul / Turun Mesin (svc-9).
+- Sinkronisasi branding Masterpiece v28.2 ULTIMATE+ di seluruh ekosistem.
+- Data seeder yang diperbarui dengan spesialis mekanik EV.
+
+### Diubah
+- Peningkatan akurasi AI dengan Technical Boost Engine.
+- Pembaruan tahun hak cipta menjadi 2026.
+- Penyesuaian CORS untuk mendukung berbagai port development (8080, 8081).
+
+### Diperbaiki
+- Perbaikan masalah impor tipe pada middleware backend (ESM compatibility).
+- Perbaikan akses publik untuk endpoint diagnosa AI.
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
