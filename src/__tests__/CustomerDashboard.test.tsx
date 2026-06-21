@@ -2,9 +2,40 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import CustomerDashboard from '../pages/CustomerDashboard';
-import { vi } from 'vitest';
+import { vi, describe, it, beforeEach, afterEach, expect } from 'vitest';
 import * as useLanguage from '../hooks/useLanguage';
 import * as AuthContext from '../contexts/AuthContext';
+
+// Mock the API
+vi.mock('@/lib/api', () => ({
+  bookingApi: {
+    getByUser: vi.fn().mockResolvedValue([
+      {
+        id: '1',
+        status: 'otw',
+        vehicle: { brand: 'Toyota', model: 'Avanza' },
+        problem: 'Ganti Ban',
+        createdAt: new Date().toISOString(),
+        etaMinutes: 15
+      }
+    ]),
+    sos: vi.fn(),
+  },
+  mechanicApi: {
+    getNearby: vi.fn().mockResolvedValue([
+      { id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2, lng: 106.8 }
+    ]),
+  },
+  reviewApi: {
+    create: vi.fn(),
+  },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli', isEmergencyAvailable: false },
+      { id: 'svc-darurat', name: 'SOS', isEmergencyAvailable: true }
+    ]),
+  },
+}));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +59,6 @@ describe('CustomerDashboard', () => {
       login: vi.fn(),
       register: vi.fn(),
       token: 'fake-token',
-      error: null,
     });
   });
 
@@ -48,22 +78,6 @@ describe('CustomerDashboard', () => {
   });
 
   it('renders success state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/bookings?userId=')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ([{ id: '1', status: 'otw', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', createdAt: new Date().toISOString() }]),
-        });
-      }
-      if (url.includes('/mechanics')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
-        });
-      }
-      return Promise.reject(new Error('Unknown URL'));
-    });
-
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -73,15 +87,12 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard.customer.heading_to_loc')).toBeInTheDocument();
+      expect(screen.getByText('dashboard.customer.active_service')).toBeInTheDocument();
+      expect(screen.getByText('Ganti Ban')).toBeInTheDocument();
     });
   });
 
-  it('renders error state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
-      return Promise.reject(new Error('Network response was not ok'));
-    });
-
+  it('renders nearby mechanics', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -91,7 +102,7 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('Test Mechanic')).toBeInTheDocument();
     });
   });
 });

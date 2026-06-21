@@ -142,9 +142,9 @@ const CustomerDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.2</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {user?.name || t('role.customer.title')}
+                v7.0.1 • {user?.name || t('role.customer.title')}
               </p>
             </div>
           </div>
@@ -407,6 +407,14 @@ const CustomerDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-[10px] h-6 text-blue-400 hover:text-blue-300 px-0"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}
