@@ -28,13 +28,13 @@
 <!-- AUTO-PACKAGE-BADGES:START -->
 <!-- Auto-generated package badges -->
 
-![npm version](https://img.shields.io/npm/v/oke-mekanik-mobile-service?style=flat-square&logo=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dw/oke-mekanik-mobile-service?style=flat-square&color=brightgreen) ![npm license](https://img.shields.io/npm/l/oke-mekanik-mobile-service?style=flat-square) [![Deployed](https://img.shields.io/badge/deployed-7.0.0-blue?style=flat-square)](https://www.npmjs.com/package/oke-mekanik-mobile-service)
+![npm version](https://img.shields.io/npm/v/oke-mekanik-mobile-service?style=flat-square&logo=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dw/oke-mekanik-mobile-service?style=flat-square&color=brightgreen) ![npm license](https://img.shields.io/npm/l/oke-mekanik-mobile-service?style=flat-square) [![Deployed](https://img.shields.io/badge/deployed-7.0.1-blue?style=flat-square)](https://www.npmjs.com/package/oke-mekanik-mobile-service)
 
 <!-- AUTO-PACKAGE-BADGES:END -->
 
 ## Overview
 
-**Oke Mekanik** is a mobile mechanic service platform built with Next.js. Customers can book mechanics to come to their location, receive AI-powered preliminary vehicle diagnostics, track mechanic arrival in real-time, and manage service history — all from a modern web interface.
+**Oke Mekanik** is a mobile mechanic service platform built with Vite and React 19. Customers can book mechanics to come to their location, receive AI-powered preliminary vehicle diagnostics, track mechanic arrival in real-time, and manage service history — all from a modern web interface.
 
 ## Visual Architecture
 
@@ -184,7 +184,7 @@ graph TB
     style PWA fill:#5A0FC8,color:#fff
 ```
 
-> **Published**: This package is published to npm as `oke-mekanik-mobile-service` v7.0.0. The AI diagnostics feature provides preliminary assessments only — always verify with an in-person mechanic inspection.
+> **Published**: This package is published to npm as `oke-mekanik-mobile-service` v7.0.1. The AI diagnostics feature provides preliminary assessments only — always verify with an in-person mechanic inspection.
 
 ---
 
