@@ -54,6 +54,13 @@ const AI_MODEL = [
     keywords: { rutin: 12, servis: 12, service: 12, berkala: 11, checkup: 10, 'ganti sparepart': 9, 'maintenance': 11, 'tahunan': 7, 'bulanan': 6, 'perawatan': 9, 'km': 8, 'kilometer': 8, 'inspeksi': 10, 'gluduk': 14, 'kaki-kaki': 13, 'shockbreaker': 12, 'tierod': 11, 'balljoint': 11, 'bunyi mendengung': 12, 'setir goyang': 10, 'bunyi kaki-kaki': 15, 'setir narik': 12 },
     causes: ['Sudah waktunya perawatan berkala', 'Mencegah kerusakan komponen lebih lanjut', 'Menjaga performa kendaraan tetap optimal', 'Memastikan keselamatan berkendara'],
     urgency: 'MEDIUM'
+  },
+  {
+    id: 'svc-13',
+    name: 'EV / Hybrid Service',
+    keywords: { 'mobil listrik': 15, 'hybrid': 15, 'ev': 12, 'baterai hv': 14, 'inverter': 13, 'charging': 11, 'cas': 10, 'motor listrik': 12, 'regenerative': 11, 'high voltage': 14, 'kabel orange': 12, 'phev': 13, 'tesla': 10, 'ioniq': 10, 'wuling ev': 10, 'leaf': 10, 'tidak bisa ngecas': 14, 'daya drop': 12, 'kura-kura': 15 },
+    causes: ['Degradasi sel baterai High Voltage', 'Kerusakan pada modul inverter/converter', 'Masalah pada sistem pendingin baterai', 'Kegagalan modul On-Board Charger (OBC)'],
+    urgency: 'HIGH'
   }
 ];
 
@@ -81,12 +88,13 @@ export const diagnoseProblem = (req, res) => {
       'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer'],
+      'svc-13': ['inverter mati', 'baterai overheat', 'isolation fault', 'kabel oranye', 'mcu error', 'bms failure', 'tidak bisa cas', 'fast charging gagal']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {
       if (terms.some(term => p.includes(term)) && service.id === svcId) {
-        score += 30;
+        score += 45;
       }
     }
 
@@ -102,6 +110,6 @@ export const diagnoseProblem = (req, res) => {
     confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
-    version: 'v7.0.0'
+    version: 'v7.0.1'
   });
 };

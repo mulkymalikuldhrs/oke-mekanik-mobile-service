@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import * as AuthContext from '@/contexts/AuthContext';
 import * as useLanguage from '@/hooks/useLanguage';
-import { reviewApi } from '@/lib/api';
+import { reviewApi, serviceApi, mechanicApi, bookingApi } from '@/lib/api';
 
 // Mock the API
 vi.mock('@/lib/api', () => ({
@@ -24,6 +24,9 @@ vi.mock('@/lib/api', () => ({
   },
   mechanicApi: {
     getNearby: vi.fn().mockResolvedValue([]),
+  },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
   },
   reviewApi: {
     create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
