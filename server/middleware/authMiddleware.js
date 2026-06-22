@@ -1,13 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
-import type { Request, Response, NextFunction } from 'express';
 
-interface JwtPayload {
-  id: string;
-  role: string;
-}
-
-export const authenticate = (req: Request & { userId?: string; userRole?: string }, res: Response, next: NextFunction) => {
+export const authenticate = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1];
 
   if (!token) {
@@ -18,9 +12,8 @@ export const authenticate = (req: Request & { userId?: string; userRole?: string
     if (err) {
       return res.status(401).json({ message: 'Sesi telah berakhir, silakan masuk kembali' });
     }
-    const payload = decoded as JwtPayload;
-    req.userId = payload.id;
-    req.userRole = payload.role;
+    req.userId = decoded.id;
+    req.userRole = decoded.role;
     next();
   });
 };
@@ -28,21 +21,21 @@ export const authenticate = (req: Request & { userId?: string; userRole?: string
 // Alias for backward compatibility
 export const verifyToken = authenticate;
 
-export const requireAdmin = (req: Request & { userRole?: string }, res: Response, next: NextFunction) => {
+export const requireAdmin = (req, res, next) => {
   if (req.userRole !== 'admin') {
     return res.status(403).json({ message: 'Akses ditolak. Hanya admin yang diizinkan.' });
   }
   next();
 };
 
-export const requireCustomer = (req: Request & { userRole?: string }, res: Response, next: NextFunction) => {
+export const requireCustomer = (req, res, next) => {
   if (req.userRole !== 'customer' && req.userRole !== 'admin') {
     return res.status(403).json({ message: 'Akses ditolak.' });
   }
   next();
 };
 
-export const requireMechanic = (req: Request & { userRole?: string }, res: Response, next: NextFunction) => {
+export const requireMechanic = (req, res, next) => {
   if (req.userRole !== 'mechanic' && req.userRole !== 'workshop' && req.userRole !== 'admin') {
     return res.status(403).json({ message: 'Akses ditolak.' });
   }
