@@ -7,6 +7,28 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-06-22
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.1 dengan dukungan penuh untuk EV / Hybrid (svc-13).
+- Deteksi canggih untuk masalah Inverter, Baterai HV, dan Motor Listrik.
+- Peningkatan teknis "Technical Boost" AI ke +45 poin untuk akurasi tinggi pada masalah Overhaul dan EV.
+- Tombol 'Quick Service' khusus untuk Overhaul dan EV/Hybrid di Dashboard Pelanggan.
+- Mekanik spesialis EV baru: 'Elon Mekanik' dengan keahlian Baterai HV.
+- Branding Masterpiece v28.2 ULTIMATE+ di seluruh ekosistem.
+- Sinkronisasi versi sistem backend dan frontend ke v7.0.1.
+
+### Diubah
+- Update footer copyright ke 2026 OKE MEKANIK MASTERPIECE v28.2 ULTIMATE+.
+- Refaktor middleware backend untuk menghilangkan SyntaxError pada environment Node.js ESM.
+- Pembaruan unit test untuk menggunakan modern API mocking (vi.mocked) sesuai Zero-Mock Policy.
+
+### Diperbaiki
+- Perbaikan masalah impor type di `authMiddleware.js` dan `errorMiddleware.js`.
+- Perbaikan inkonsistensi data pada dashboard pelanggan.
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan

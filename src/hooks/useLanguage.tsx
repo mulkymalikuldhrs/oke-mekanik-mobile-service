@@ -12,7 +12,7 @@ interface LanguageContextType {
 const translations = {
   id: {
     'hero.title': 'Bengkel Keliling Terpercaya',
-    'hero.title.v28': 'Bengkel Masa Depan Dalam Genggaman.',
+    'hero.title.v28': 'Bengkel Masa Depan Dalam Genggaman v28.2.',
     'hero.subtitle': 'Panggil mekanik profesional ke lokasi Anda kapan saja, dimana saja',
     'hero.cta': 'Mulai Sekarang',
     'landing.badge': '#1 Bengkel Panggilan Indonesia v28',
@@ -68,7 +68,7 @@ const translations = {
     'footer.oli': 'Ganti Oli',
     'footer.emergency': 'Emergency 24/7',
     'footer.contact': 'Hubungi Kami',
-    'footer.rights': '© 2024 OKE MEKANIK MASTERPIECE v28. ENGINEERED FOR EXCELLENCE.',
+    'footer.rights': '© 2026 OKE MEKANIK MASTERPIECE v28.2 ULTIMATE+. ENGINEERED FOR EXCELLENCE.',
     'footer.tagline': 'Revolusi servis kendaraan masa depan. Profesional, transparan, dan instan langsung ke lokasi Anda.',
     'footer.location': 'Jakarta, Indonesia',
     'login.title': 'Masuk ke akun Anda',
@@ -347,7 +347,7 @@ const translations = {
   },
   en: {
     'hero.title': 'Trusted Mobile Mechanic',
-    'hero.title.v28': 'Future Workshop in Your Hands.',
+    'hero.title.v28': 'Future Workshop in Your Hands v28.2.',
     'hero.subtitle': 'Call professional mechanics to your location anytime, anywhere',
     'hero.cta': 'Start Now',
     'landing.badge': '#1 Mobile Mechanic Indonesia v28',
@@ -403,7 +403,7 @@ const translations = {
     'footer.oli': 'Oil Change',
     'footer.emergency': 'Emergency 24/7',
     'footer.contact': 'Contact Us',
-    'footer.rights': '© 2024 OKE MEKANIK MASTERPIECE v28. ENGINEERED FOR EXCELLENCE.',
+    'footer.rights': '© 2026 OKE MEKANIK MASTERPIECE v28.2 ULTIMATE+. ENGINEERED FOR EXCELLENCE.',
     'footer.tagline': 'Future vehicle service revolution. Professional, transparent, and instant directly to your location.',
     'footer.location': 'Jakarta, Indonesia',
     'login.title': 'Login to your account',
