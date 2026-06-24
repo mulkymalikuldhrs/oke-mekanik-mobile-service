@@ -234,6 +234,7 @@ const seedData = async () => {
     insertService.run('svc-7', 'Cek Aki', 'Pengecekan tegangan dan kondisi aki + isi', 50000, 'electrical', 'battery', 20, 1);
     insertService.run('svc-8', 'Isi Freon AC', 'Pengisian ulang freon AC mobil', 150000, 'electrical', 'snowflake', 60, 0);
     insertService.run('svc-12', 'Ganti Busi', 'Penggantian busi + pengecekan coil', 60000, 'electrical', 'flame', 20, 0);
+    insertService.run('svc-13', 'EV/Hybrid Service', 'Perawatan dan diagnosa kendaraan listrik & hybrid', 250000, 'electrical', 'battery-charging', 90, 0);
 
     // Seed Bookings (Historic)
     const insertBooking = db.prepare(`

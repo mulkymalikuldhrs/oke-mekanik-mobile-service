@@ -319,6 +319,8 @@ const CustomerDashboard = () => {
               { icon: '❄️', label: 'AC', svcId: 'svc-8', color: 'from-cyan-600 to-cyan-500' },
               { icon: '🔊', label: 'Tune Up', svcId: 'svc-4', color: 'from-orange-600 to-orange-500' },
               { icon: '📋', label: 'Servis', svcId: 'svc-2', color: 'from-pink-600 to-pink-500' },
+              { icon: '⚙️', label: 'Overhaul', svcId: 'svc-9', color: 'from-slate-600 to-slate-500' },
+              { icon: '🔌', label: 'EV/Hybrid', svcId: 'svc-13', color: 'from-emerald-600 to-emerald-500' },
             ].map((item) => (
               <motion.button
                 key={item.svcId}

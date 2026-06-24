@@ -2,6 +2,26 @@
 
 Semua perubahan penting pada proyek Oke Mekanik akan didokumentasikan dalam file ini.
 
+---
+
+## [7.0.1] - 2026-06-18
+
+### Ditambahkan
+- AI Diagnostic Engine v7.0.1 dengan dukungan Kendaraan Listrik (EV) & Hybrid.
+- Kategori layanan baru: EV/Hybrid Service (`svc-13`).
+- Peningkatan akurasi diagnosa dengan technical scoring boost (+45).
+- Sinkronisasi branding Masterpiece v28.2 ULTIMATE+ di seluruh platform.
+- Dashboard pelanggan yang diperbarui dengan akses cepat ke layanan Overhaul dan EV.
+
+### Diubah
+- Update sistem ke v7.0.1 dengan basis React 19 dan Vite 8.
+- Optimalisasi database untuk mendukung kategori layanan baru.
+
+### Diperbaiki
+- Sinkronisasi versi antara frontend dan backend.
+- Perbaikan minor pada tampilan peta di dashboard pelanggan.
+
+
 Format didasarkan pada [Keep a Changelog](https://keepachangelog.com/id/1.1.0/),
 dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
