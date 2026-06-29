@@ -1,6 +1,6 @@
-# AGENTS.md - Masterpiece v28.1 ULTIMATE+
+# AGENTS.md - Masterpiece v28.2 ULTIMATE+
 
-This document provides instructions for AI agents working on the Masterpiece v28.1 ULTIMATE+ codebase.
+This document provides instructions for AI agents working on the Masterpiece v28.2 ULTIMATE+ codebase.
 
 ## Project Vision
 Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce a **Zero-Mock Policy**. All data must flow through the Express/SQLite backend.
@@ -20,7 +20,7 @@ Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce 
 ## Workflow
 - **API Calls**: Must use `src/lib/api.ts`.
 - **Environment**: Use `.env` for configuration (see `.env.example`).
-- **Verification**: Always run `python3 tests/final_verification.py` after significant changes.
+- **Verification**: Always run `node tests/verify_v701.js` after significant changes.
 
 ## Development Commands
 - `npm run dev`: Starts both Vite and Express (via concurrently).
