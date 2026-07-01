@@ -16,6 +16,17 @@ const queryClient = new QueryClient({
 
 describe('CustomerDashboard', () => {
   beforeEach(() => {
+    const mockGeolocation = {
+      getCurrentPosition: vi.fn().mockImplementation((success) => success({
+        coords: {
+          latitude: -6.2088,
+          longitude: 106.8456,
+        },
+      })),
+      watchPosition: vi.fn(),
+    };
+    (global as any).navigator.geolocation = mockGeolocation;
+
     vi.spyOn(useLanguage, 'useLanguage').mockReturnValue({
       language: 'id',
       setLanguage: vi.fn(),
@@ -58,7 +69,7 @@ describe('CustomerDashboard', () => {
       if (url.includes('/mechanics')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
+          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2088, lng: 106.8456 }]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
