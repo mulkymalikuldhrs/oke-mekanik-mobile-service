@@ -1,37 +1,27 @@
-
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BookingPage from '../pages/BookingPage';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { LanguageProvider } from '@/hooks/useLanguage';
-import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import * as AuthContext from '../contexts/AuthContext';
+import * as useLanguage from '../hooks/useLanguage';
 
 // Mock the API
 vi.mock('@/lib/api', () => ({
-  mechanicApi: {
+  serviceApi: {
     getAll: vi.fn().mockResolvedValue([
-      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
+      { id: 'svc-1', name: 'Ganti Oli', category: 'engine', basePrice: 150000, estimatedDuration: 30 }
     ]),
-    getById: vi.fn(),
-    updateStatus: vi.fn(),
+  },
+  mechanicApi: {
+    getNearby: vi.fn().mockResolvedValue([]),
+  },
+  aiApi: {
+    diagnose: vi.fn(),
   },
   bookingApi: {
-    create: vi.fn().mockResolvedValue({ id: 'BK-123' }),
-    getById: vi.fn(),
-    getByUser: vi.fn(),
-    getByMechanic: vi.fn(),
-    updateStatus: vi.fn(),
-    getActiveServices: vi.fn(),
-  },
-  serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
-    getById: vi.fn(),
-  },
-  messageApi: {
-    getByBookingId: vi.fn(),
-    send: vi.fn(),
+    create: vi.fn(),
+    autoDispatch: vi.fn(),
   }
 }));
 
@@ -43,44 +33,56 @@ const queryClient = new QueryClient({
   },
 });
 
-const renderWithProviders = (ui: React.ReactElement) => {
-  return render(
-    <QueryClientProvider client={queryClient}>
-      <LanguageProvider>
-        <BrowserRouter>
-          <AuthProvider>
-            {ui}
-          </AuthProvider>
-        </BrowserRouter>
-      </LanguageProvider>
-    </QueryClientProvider>
-  );
-};
-
 describe('BookingPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(useLanguage, 'useLanguage').mockReturnValue({
+      t: (key: string) => key,
+      language: 'id',
+      setLanguage: vi.fn(),
+    });
+    vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
+      user: { id: 'cust-1', name: 'John Doe', role: 'customer' },
+      login: vi.fn(),
+      logout: vi.fn(),
+      register: vi.fn(),
+      isLoading: false,
+      token: 'fake-token'
+    });
   });
 
   it('renders booking page steps', async () => {
-    renderWithProviders(<BookingPage />);
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <BookingPage />
+        </BrowserRouter>
+      </QueryClientProvider>
+    );
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(screen.getByText('PESAN MEKANIK v28.2')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Ganti Oli')).toBeInTheDocument();
+    });
   });
 
   it('navigates through steps', async () => {
-    renderWithProviders(<BookingPage />);
+    render(
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <BookingPage />
+        </BrowserRouter>
+      </QueryClientProvider>
+    );
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    await waitFor(() => screen.getByText('Ganti Oli'));
+    fireEvent.click(screen.getByText('Ganti Oli'));
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
+    const nextButton = screen.getByText(/Lanjutkan/i);
     fireEvent.click(nextButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByText('Lokasi & Kendaraan')).toBeInTheDocument();
     });
   });
 });
