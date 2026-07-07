@@ -1,7 +1,6 @@
 import { z } from 'zod';
-import type { Request, Response, NextFunction } from 'express';
 
-export const errorHandler = (err: Error & { status?: number; statusCode?: number; code?: string }, req: Request, res: Response, _next: NextFunction) => {
+export const errorHandler = (err, req, res, _next) => {
   // ZodError: expose only field-level info, never internal schema paths or structures
   if (err instanceof z.ZodError) {
     return res.status(400).json({
