@@ -7,6 +7,37 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-07-06
+
+### Ditambahkan
+- **AI Diagnostic Engine v7.0.1**: Penambahan kategori khusus untuk EV/Hybrid (`svc-13`) dan Overhaul (`svc-9`).
+- **Technical Scoring Boost (+55)**: Peningkatan akurasi diagnosa untuk istilah teknis otomotif.
+- **Ecosystem Branding v28.2 ULTIMATE+**: Sinkronisasi branding di seluruh dashboard dan landing page.
+- **Dukungan Kendaraan Listrik**: Integrasi penuh layanan untuk mobil listrik dan hybrid (Elon Mekanik).
+
+### Diubah
+- Upgrade ke **Vite 8** dan **React 19** untuk performa frontend maksimal.
+- Pembaruan skema database untuk mendukung layanan baru.
+- Peningkatan sistem keamanan pada backend middleware (removal of JS syntax errors).
+
+### Diperbaiki
+- Sinkronisasi status mekanik real-time pada dashboard pelanggan.
+- Perbaikan validasi input pada form pendaftaran mekanik.
+- Optimasi aset visual untuk loading yang lebih cepat.
+
+---
+
+## [7.0.0] - 2026-05-20
+
+### Ditambahkan
+- Upgrade ke Masterpiece v28.1 ULTIMATE+
+- Implementasi penuh Zero-Mock Policy
+- Migrasi ke Vite 8 dan React 19 production build
+- Database SQLite dengan mode WAL (Write-Ahead Logging)
+- Global Request Trace ID untuk pemantauan end-to-end
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
@@ -40,14 +71,6 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Dashboard admin untuk manajemen mekanik dan pesanan
 - Notifikasi push untuk pembaruan status booking
 
-### Diubah
-- Peningkatan performa loading halaman
-- Optimasi database SQLite untuk query yang lebih cepat
-
-### Diperbaiki
-- Perbaikan masalah koneksi Socket.io yang terputus
-- Perbaikan tampilan chat pada mode gelap
-
 ---
 
 ## [5.6.0] - 2025-10-15
@@ -58,15 +81,6 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Integrasi pembayaran digital
 - Halaman profil mekanik
 
-### Diubah
-- Redesign UI ke glassmorphism
-- Migrasi dari CSS biasa ke Tailwind CSS
-- Pembaruan dependensi keamanan
-
-### Diperbaiki
-- Perbaikan bug autentikasi pada sesi kadaluarsa
-- Perbaikan memory leak pada koneksi Socket.io
-
 ---
 
 ## [5.5.0] - 2025-08-01
@@ -76,10 +90,6 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Sistem booking sederhana
 - Autentikasi JWT
 - Rate limiting pada API
-
-### Diubah
-- Peningkatan struktur proyek untuk skalabilitas
-- Pembaruan ke TypeScript 5.5
 
 ---
 
@@ -94,6 +104,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+[7.0.1]: https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service/releases/tag/v7.0.1
 [5.8.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.1
 [5.7.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.7.0
 [5.6.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.6.0
