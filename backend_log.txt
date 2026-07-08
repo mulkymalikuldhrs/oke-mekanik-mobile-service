@@ -1,0 +1,18 @@
+
+> oke-mekanik-mobile-service@7.0.1 backend
+> node server/index.js
+
+[OkeMekanik] WARNING: JWT_SECRET env var not set. Using random secret. Set JWT_SECRET in production!
+
+  ╔══════════════════════════════════════════════════╗
+  ║                                                  ║
+  ║   🔧 OKE MEKANIK - Backend Server v7.0.1        ║
+  ║   "Uber untuk Mekanik/Bengkel"                   ║
+  ║                                                  ║
+  ║   Server: http://localhost:3001                 ║
+  ║   API:    http://localhost:3001/api/health      ║
+  ║   Socket: Enabled                                ║
+  ║                                                  ║
+  ╚══════════════════════════════════════════════════╝
+
+[TRACE:1697805f-9258-4cc4-a2f1-31bbd42e8df4] 2026-07-08T17:07:02.427Z | POST /api/auth/login | STATUS:200 | 133ms
