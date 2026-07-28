@@ -34,7 +34,7 @@
 
 ## Overview
 
-**Oke Mekanik** is a mobile mechanic service platform built with Next.js. Customers can book mechanics to come to their location, receive AI-powered preliminary vehicle diagnostics, track mechanic arrival in real-time, and manage service history — all from a modern web interface.
+**Oke Mekanik** is a mobile mechanic service platform built with React 19 and Vite 8. Customers can book mechanics to come to their location, receive AI-powered preliminary vehicle diagnostics (v7.0.1), track mechanic arrival in real-time, and manage service history — all from a modern web interface.
 
 ## Visual Architecture
 
@@ -238,19 +238,17 @@ npm run dev
 ```
 oke-mekanik-mobile-service/
 ├── src/
-│   ├── app/              # Next.js app router
-│   ├── components/
-│   │   ├── booking/      # Service booking UI
-│   │   ├── diagnostics/  # AI diagnostic interface
-│   │   ├── tracking/     # Real-time tracking
-│   │   └── dashboard/    # Mechanic dashboard
-│   ├── lib/
-│   │   ├── ai/           # AI diagnostic engine
-│   │   ├── booking/      # Booking logic
-│   │   ├── tracking/     # GPS tracking
-│   │   └── payments/     # Payment integration
+│   ├── pages/            # View pages
+│   ├── components/       # Reusable UI components
+│   ├── contexts/         # React Contexts (Auth, etc.)
+│   ├── hooks/            # Custom hooks (Localization, etc.)
+│   ├── lib/              # API clients and utilities
 │   └── types/            # TypeScript definitions
-└── public/               # Static assets
+├── server/               # Express Backend v7.0.1
+│   ├── controllers/      # Business logic
+│   ├── routes/           # API routes
+│   └── middleware/       # Security & Auth
+└── tests/                # Quality verification suite
 ```
 
 ---
