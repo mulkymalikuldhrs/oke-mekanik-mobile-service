@@ -13,14 +13,15 @@ Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce 
 
 ## Architecture
 - **Backend**: Modular Express routes/controllers located in `server/`.
-- **Database**: Persistent SQLite (`server/okemekanik.db`).
+- **Database**: Persistent SQLite (`server/okemekanik.db`) with WAL mode.
 - **Frontend**: React 19 + Vite 8.
+- **AI Engine**: v7.0.0 ULTIMATE+ with specialized Overhaul and EV/Hybrid support.
 - **Communication**: Socket.io for real-time events.
 
 ## Workflow
 - **API Calls**: Must use `src/lib/api.ts`.
 - **Environment**: Use `.env` for configuration (see `.env.example`).
-- **Verification**: Always run `python3 tests/final_verification.py` after significant changes.
+- **Verification**: Always run `node tests/verify_ai_v700.js` and `python3 tests/final_verification.py` after significant changes.
 
 ## Development Commands
 - `npm run dev`: Starts both Vite and Express (via concurrently).
@@ -30,11 +31,10 @@ Oke Mekanik is a production-ready mobile mechanic platform. We strictly enforce 
 ## Verification Memory
 - Visual fidelity is confirmed via Playwright screenshots in `tests/`.
 - AI Diagnostic mapping is verified in `server/controllers/aiController.js`.
+- Specialized service IDs: `svc-9` (Overhaul), `svc-13` (EV/Hybrid).
 
 © 2024 OKE MEKANIK MASTERPIECE v28. ENGINEERED FOR EXCELLENCE.
 
 ---
 
 > **Contact:** Mulky Malikul Dhaher — [mulkymalikuldhaher@email.com](mailto:mulkymalikuldhaher@email.com)
->
-> **Disclaimer:** This project is for Education Purpose only. Risiko apapun tidak kita tanggung. (We are not responsible for any risks or damages.)
