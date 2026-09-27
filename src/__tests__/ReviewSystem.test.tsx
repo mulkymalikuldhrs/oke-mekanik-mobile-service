@@ -16,6 +16,7 @@ vi.mock('@/lib/api', () => ({
         status: 'completed',
         problem: 'Ganti Oli',
         vehicle: { brand: 'Toyota', model: 'Avanza' },
+        location: { lat: -6.2088, lng: 106.8456, address: 'Jakarta' },
         createdAt: new Date().toISOString(),
         estimatedCost: 150000,
         mechanicId: 'mech-1'
@@ -25,9 +26,19 @@ vi.mock('@/lib/api', () => ({
   mechanicApi: {
     getNearby: vi.fn().mockResolvedValue([]),
   },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn(),
+  },
+  aiApi: {
+    diagnose: vi.fn(),
+  },
   reviewApi: {
     create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
     getByMechanicId: vi.fn().mockResolvedValue([]),
+  },
+  authApi: {
+    getProfile: vi.fn(),
   },
   fetchWithAuth: vi.fn(),
 }));
