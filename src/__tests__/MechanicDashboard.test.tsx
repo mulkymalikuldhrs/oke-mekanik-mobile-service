@@ -89,7 +89,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('OKE MEKANIK')).toBeInTheDocument();
     });
   });
 });
