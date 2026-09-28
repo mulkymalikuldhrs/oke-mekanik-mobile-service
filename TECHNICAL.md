@@ -1,6 +1,6 @@
-# 🛠️ Oke Mekanik - Technical Architecture (v5.8.1 ULTIMATE+)
+# 🛠️ Oke Mekanik - Technical Architecture (v7.0.0 ULTIMATE+)
 
-This document defines the technical standards and architectural patterns for the **Masterpiece v28.1** ecosystem.
+This document defines the technical standards and architectural patterns for the **Oke Mekanik Mobile Service v7.0.0** ecosystem.
 
 ## 1. Full-Stack Philosophy
 Oke Mekanik operates on a **Zero-Mock Policy**. All data must originate from the authoritative backend. Static JSON files or client-side simulations for API calls are strictly prohibited in the production codebase.
@@ -18,7 +18,7 @@ We use SQLite for its reliability, performance, and "local-first" persistence ca
 - **Schema Management**: Managed via `server/db.js`. Includes automated seeding for development environments.
 - **Indexes**: Optimized for performance with specific indexes on `users(email)`, `bookings(user_id)`, and `reviews(mechanic_id)`.
 
-## 3. AI Diagnostic Engine v5.8.1
+## 3. AI Diagnostic Engine v7.0.0
 The AI Engine uses a weighted keyword matching system optimized for the Indonesian automotive context.
 
 ### Confidence Scoring Algorithm
@@ -28,7 +28,7 @@ let score = baseWeightSum;
 if (matches > 1) {
   score += Math.pow(matches, 2);
 }
-// Add technical term boosts (+30 points for v5.8.1)
+// Add technical term boosts (+30 points for v7.0.0)
 if (technicalTermsFound) score += 30;
 ```
 This ensures that specific, complex descriptions result in higher confidence than vague ones.

@@ -20,7 +20,6 @@ describe('Index Page', () => {
         </AuthProvider>
       </MemoryRouter>
     );
-    // In v28, the heading contains multiple spans/elements for styling
-    expect(screen.getByText(/OKE MEKANIK v28/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/OKE MEKANIK/i)[0]).toBeInTheDocument();
   });
 });

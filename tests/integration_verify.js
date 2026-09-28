@@ -18,6 +18,20 @@ async function verifyBackend() {
     console.error('❌ Health Check: ERROR', err.message);
   }
 
+  // Login for authentication
+  let token = '';
+  try {
+    const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'customer@example.com', password: 'password123', role: 'customer' })
+    });
+    const loginData = await loginRes.json();
+    token = loginData.token;
+  } catch (e) {
+    console.error('Failed to log in for token:', e.message);
+  }
+
   // 2. AI Diagnostic Logic Verification
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -32,7 +46,10 @@ async function verifyBackend() {
     try {
       const aiRes = await fetch(`${API_BASE_URL}/ai/diagnose`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const aiData = await aiRes.json();
