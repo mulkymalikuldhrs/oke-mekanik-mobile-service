@@ -95,11 +95,11 @@ const Index = () => {
             <Wrench className="h-6 w-6 text-white" />
           </div>
           <h1 className="text-2xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
-            OKE MEKANIK v28.1
+            OKE MEKANIK v7.0.0
           </h1>
           <div className="flex items-center space-x-2">
             <span className="hidden md:inline-block px-2 py-0.5 rounded bg-blue-600/20 border border-blue-500/30 text-[10px] font-black text-blue-400 tracking-widest uppercase">
-              v5.8.1 ULTIMATE+
+              v7.0.0 ULTIMATE+
             </span>
             <div className={`flex items-center space-x-1.5 px-2 py-0.5 rounded-full border ${
               systemStatus === 'online' ? 'bg-green-500/10 border-green-500/30' :
