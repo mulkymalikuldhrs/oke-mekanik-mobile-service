@@ -14,6 +14,9 @@ vi.mock('@/lib/api', () => ({
     getAll: vi.fn().mockResolvedValue([
       { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
     ]),
+    getNearby: vi.fn().mockResolvedValue([
+      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8, distance: 1.2 }
+    ]),
     getById: vi.fn(),
     updateStatus: vi.fn(),
   },
@@ -26,8 +29,18 @@ vi.mock('@/lib/api', () => ({
     getActiveServices: vi.fn(),
   },
   serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli Engine', basePrice: 150000, description: 'Pengantian oli berkala' }
+    ]),
     getById: vi.fn(),
+  },
+  aiApi: {
+    diagnose: vi.fn().mockResolvedValue({
+      suggestion: 'Ganti Oli Engine',
+      serviceId: 'svc-1',
+      confidence: 95,
+      urgency_level: 'Low'
+    }),
   },
   messageApi: {
     getByBookingId: vi.fn(),
@@ -65,22 +78,37 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(await screen.findByText('Pilih Layanan')).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    // Step 1: Select Service
+    const serviceCard = await screen.findByText('Ganti Oli Engine');
+    fireEvent.click(serviceCard);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
+    const step1NextButton = screen.getByRole('button', { name: /Lanjutkan/i });
+    fireEvent.click(step1NextButton);
 
+    // Step 2: Location & Vehicle
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByText('Lokasi & Kendaraan')).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText('Jl. Sudirman No. 1, Jakarta'), {
+      target: { value: 'Jl. Merdeka No. 10' },
+    });
+
+    const brandSelect = screen.getByRole('combobox');
+    fireEvent.change(brandSelect, { target: { value: 'Toyota' } });
+
+    const step2NextButton = screen.getByRole('button', { name: /Cari Mekanik/i });
+    fireEvent.click(step2NextButton);
+
+    // Step 3: Choose Mechanic
+    await waitFor(() => {
+      expect(screen.getByText('Pilih Mekanik')).toBeInTheDocument();
     });
   });
 });
