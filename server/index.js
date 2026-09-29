@@ -174,7 +174,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Oke Mekanik API',
-    version: '7.0.0',
+    version: '7.0.1',
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     stats: {
@@ -193,7 +193,7 @@ httpServer.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════════════════════╗
   ║                                                  ║
-  ║   🔧 OKE MEKANIK - Backend Server v7.0.0        ║
+  ║   🔧 OKE MEKANIK - Backend Server v7.0.1        ║
   ║   "Uber untuk Mekanik/Bengkel"                   ║
   ║                                                  ║
   ║   Server: http://localhost:${PORT}                 ║
