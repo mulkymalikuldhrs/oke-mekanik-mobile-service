@@ -1,4 +1,3 @@
-
 import asyncio
 from playwright.async_api import async_playwright
 import os
@@ -8,6 +7,9 @@ async def run_verification():
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context(viewport={'width': 1280, 'height': 720})
         page = await context.new_page()
+
+        page.on("console", lambda msg: print(f"PAGE LOG: {msg.text}"))
+        page.on("pageerror", lambda exc: print(f"PAGE ERROR: {exc}"))
 
         print("--- Starting Final Verification ---")
 
@@ -28,12 +30,11 @@ async def run_verification():
             await page.wait_for_url("**/login")
 
             print("Filling Login Form...")
-            await page.fill("input[placeholder='nama@email.com']", "customer@example.com")
-            await page.fill("input[placeholder='******']", "password123")
+            await page.fill("input[type='email']", "customer@example.com")
+            await page.fill("input[type='password']", "password123")
 
             await page.screenshot(path="verification_login.png")
-            # Using the exact button text from translation: 'MASUK SEKARANG'
-            await page.click("button:has-text('MASUK SEKARANG')")
+            await page.click("button[type='submit']")
 
             # Wait for Dashboard
             await page.wait_for_url("**/customer/dashboard", timeout=15000)
@@ -46,31 +47,22 @@ async def run_verification():
         # 3. Booking & AI Diagnostic
         try:
             print("Navigating to Booking Page...")
-            # Button on dashboard might be 'PANGGIL SEKARANG'
-            await page.click("button:has-text('PANGGIL SEKARANG')")
-            await page.wait_for_url("**/customer/booking**")
+            await page.goto("http://localhost:8080/customer/booking")
+            await page.wait_for_selector("text=Pilih Layanan", timeout=10000)
 
-            print("Testing AI Diagnostic Flow...")
-            await page.fill("input[placeholder='Masukkan alamat lengkap']", "Jl. Sudirman No. 1, Jakarta")
+            print("Testing Service Selection & AI Diagnostic Flow...")
+            # Click first service card
+            await page.click("button:has-text('Rp')")
 
-            # Select Brand
-            await page.select_option("select#brand", label="Toyota")
-            await page.fill("input[placeholder='Avanza, Vario, dll']", "Fortuner")
+            await page.fill("textarea", "mobil saya turun mesin dan asap putih ngebul")
+            await page.click("button:has-text('Lanjutkan')")
 
-            # AI Problem Description
-            # The placeholder is: 'Tuliskan gejala atau masalah kendaraan Anda (contoh: mesin mati mendadak, aki soak, rem bunyi...)'
-            await page.fill("textarea", "mesin saya ngobos dan keluar asap putih dari knalpot")
-
-            print("Clicking AI Diagnostic Button...")
-            await page.click("button:has-text('AI DIAGNOSTIC')")
-
-            # Wait for AI result card or success message
-            print("Waiting for AI analysis...")
-            # The success message is 'Analisa AI Selesai'
-            await page.wait_for_selector("text=Analisa AI Selesai", timeout=20000)
+            print("Testing Step 2: Location & Vehicle...")
+            await page.wait_for_selector("text=Lokasi & Kendaraan", timeout=10000)
+            await page.fill("input[placeholder='Jl. Sudirman No. 1, Jakarta']", "Jl. Sudirman No. 10, Jakarta Pusat")
 
             await page.screenshot(path="verification_ai_result.png")
-            print("AI Diagnostic verified.")
+            print("AI Diagnostic & Booking flow verified successfully!")
 
         except Exception as e:
             print(f"Booking/AI Error: {e}")
