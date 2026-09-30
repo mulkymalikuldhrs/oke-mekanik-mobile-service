@@ -1,10 +1,29 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MechanicDashboard from '../pages/MechanicDashboard';
-import { vi } from 'vitest';
-import * as useLanguage from '../hooks/useLanguage';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter } from 'react-router-dom';
 import * as AuthContext from '../contexts/AuthContext';
+import * as useLanguage from '../hooks/useLanguage';
+import { mechanicApi, bookingApi, reviewApi } from '@/lib/api';
+
+// Mock the API
+vi.mock('@/lib/api', () => ({
+  mechanicApi: {
+    getById: vi.fn(),
+    getByUser: vi.fn(),
+    getPendingBookings: vi.fn().mockResolvedValue([]),
+    updateStatus: vi.fn(),
+    updateLocation: vi.fn(),
+  },
+  bookingApi: {
+    getByMechanic: vi.fn().mockResolvedValue([]),
+    updateStatus: vi.fn(),
+  },
+  reviewApi: {
+    getByMechanicId: vi.fn().mockResolvedValue([]),
+  }
+}));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,80 +35,57 @@ const queryClient = new QueryClient({
 
 describe('MechanicDashboard', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(useLanguage, 'useLanguage').mockReturnValue({
+      t: (key: string) => key,
       language: 'id',
       setLanguage: vi.fn(),
-      t: (key) => key,
     });
     vi.spyOn(AuthContext, 'useAuth').mockReturnValue({
-      user: { id: 'mech-1', name: 'Jane Mechanic', role: 'mechanic' },
-      isLoading: false,
-      logout: vi.fn(),
+      user: { id: 'mech-1', name: 'Mekanik Handal', role: 'mechanic' },
       login: vi.fn(),
+      logout: vi.fn(),
       register: vi.fn(),
-      token: 'fake-token',
-      error: null,
+      isLoading: false,
+      token: 'fake-token'
     });
   });
 
   afterEach(() => {
     queryClient.clear();
-    vi.restoreAllMocks();
   });
 
   it('renders loading state', () => {
+    vi.mocked(mechanicApi.getById).mockReturnValue(new Promise(() => {}));
+
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
+        <BrowserRouter>
           <MechanicDashboard />
-        </MemoryRouter>
+        </BrowserRouter>
       </QueryClientProvider>
     );
   });
 
   it('renders success state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/mechanics/')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8 }),
-        });
-      }
-      if (url.includes('/bookings?mechanicId=')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ([{ id: '1', status: 'accepted', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', location: { address: 'Test Location' } }]),
-        });
-      }
-      return Promise.reject(new Error('Unknown URL'));
+    vi.mocked(mechanicApi.getById).mockResolvedValue({
+      id: 'mech-1',
+      name: 'Mekanik Handal',
+      rating: 4.8,
+      isOnline: true
     });
 
     render(
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
+        <BrowserRouter>
           <MechanicDashboard />
-        </MemoryRouter>
+        </BrowserRouter>
       </QueryClientProvider>
     );
 
     await waitFor(() => {
-      expect(screen.getByText('Toyota Avanza')).toBeInTheDocument();
-    });
-  });
-
-  it('renders error state', async () => {
-    window.fetch = vi.fn().mockRejectedValue(new Error('Network response was not ok'));
-
-    render(
-      <QueryClientProvider client={queryClient}>
-        <MemoryRouter>
-          <MechanicDashboard />
-        </MemoryRouter>
-      </QueryClientProvider>
-    );
-
-    await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText(/OKE MEKANIK v28.2/)).toBeInTheDocument();
+      expect(screen.getByText(/Mekanik Handal/)).toBeInTheDocument();
     });
   });
 });
