@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import * as AuthContext from '@/contexts/AuthContext';
 import * as useLanguage from '@/hooks/useLanguage';
-import { reviewApi } from '@/lib/api';
+import { reviewApi, bookingApi } from '@/lib/api';
 
 // Mock the API
 vi.mock('@/lib/api', () => ({
@@ -24,6 +24,12 @@ vi.mock('@/lib/api', () => ({
   },
   mechanicApi: {
     getNearby: vi.fn().mockResolvedValue([]),
+  },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+  },
+  aiApi: {
+    diagnose: vi.fn().mockResolvedValue({ suggestion: 'Aman', confidence: 90 }),
   },
   reviewApi: {
     create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
@@ -59,6 +65,18 @@ describe('Review System', () => {
   });
 
   it('opens the review dialog when "Beri Ulasan" is clicked', async () => {
+    vi.mocked(bookingApi.getByUser).mockResolvedValue([
+      {
+        id: 'BOOK-1',
+        status: 'completed',
+        problem: 'Ganti Oli',
+        vehicle: { brand: 'Toyota', model: 'Avanza' },
+        createdAt: new Date().toISOString(),
+        estimatedCost: 150000,
+        mechanicId: 'mech-1'
+      }
+    ]);
+
     render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
@@ -74,6 +92,18 @@ describe('Review System', () => {
   });
 
   it('submits a review successfully', async () => {
+    vi.mocked(bookingApi.getByUser).mockResolvedValue([
+      {
+        id: 'BOOK-1',
+        status: 'completed',
+        problem: 'Ganti Oli',
+        vehicle: { brand: 'Toyota', model: 'Avanza' },
+        createdAt: new Date().toISOString(),
+        estimatedCost: 150000,
+        mechanicId: 'mech-1'
+      }
+    ]);
+
     render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>

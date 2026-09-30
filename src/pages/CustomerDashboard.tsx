@@ -405,8 +405,16 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 text-[10px] h-6 px-2 rounded-lg"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}

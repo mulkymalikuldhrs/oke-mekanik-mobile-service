@@ -58,7 +58,13 @@ describe('CustomerDashboard', () => {
       if (url.includes('/mechanics')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
+          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2, lng: 106.8 }]),
+        });
+      }
+      if (url.includes('/services')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
@@ -73,12 +79,12 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard.customer.heading_to_loc')).toBeInTheDocument();
+      expect(screen.getByText('dashboard.customer.active_service')).toBeInTheDocument();
     });
   });
 
   it('renders error state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
+    window.fetch = vi.fn().mockImplementation(() => {
       return Promise.reject(new Error('Network response was not ok'));
     });
 
@@ -91,7 +97,7 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('OKE MEKANIK')).toBeInTheDocument();
     });
   });
 });

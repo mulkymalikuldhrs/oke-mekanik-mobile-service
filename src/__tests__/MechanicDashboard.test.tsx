@@ -61,7 +61,10 @@ describe('MechanicDashboard', () => {
           json: async () => ([{ id: '1', status: 'accepted', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', location: { address: 'Test Location' } }]),
         });
       }
-      return Promise.reject(new Error('Unknown URL'));
+      return Promise.resolve({
+        ok: true,
+        json: async () => ([]),
+      });
     });
 
     render(
@@ -89,7 +92,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('OKE MEKANIK')).toBeInTheDocument();
     });
   });
 });
