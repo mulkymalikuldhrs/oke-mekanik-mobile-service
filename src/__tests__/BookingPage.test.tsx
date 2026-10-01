@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BookingPage from '../pages/BookingPage';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -14,11 +13,15 @@ vi.mock('@/lib/api', () => ({
     getAll: vi.fn().mockResolvedValue([
       { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
     ]),
+    getNearby: vi.fn().mockResolvedValue([
+      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
+    ]),
     getById: vi.fn(),
     updateStatus: vi.fn(),
   },
   bookingApi: {
     create: vi.fn().mockResolvedValue({ id: 'BK-123' }),
+    autoDispatch: vi.fn().mockResolvedValue({ id: 'BK-123' }),
     getById: vi.fn(),
     getByUser: vi.fn(),
     getByMechanic: vi.fn(),
@@ -26,8 +29,13 @@ vi.mock('@/lib/api', () => ({
     getActiveServices: vi.fn(),
   },
   serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli', basePrice: 150000, description: 'Ganti oli mesin', category: 'engine', isEmergencyAvailable: false }
+    ]),
     getById: vi.fn(),
+  },
+  aiApi: {
+    diagnose: vi.fn(),
   },
   messageApi: {
     getByBookingId: vi.fn(),
@@ -65,22 +73,21 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    // Wait for services to render and select a service
+    const serviceOption = await screen.findByText('Ganti Oli');
+    fireEvent.click(serviceOption);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
+    const nextButton = screen.getByText(/Lanjutkan/i);
     fireEvent.click(nextButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByText(/Lokasi & Kendaraan/i)).toBeInTheDocument();
     });
   });
 });
