@@ -262,43 +262,45 @@ const CustomerDashboard = () => {
 
                   {/* Nearby mechanics */}
                   {nearbyMechanics.map((mech) => (
-                    <Marker
-                      key={mech.id}
-                      position={[mech.lat, mech.lng]}
-                      icon={mech.isWorkshop ? workshopIcon : mechanicIcon}
-                    >
-                      <Popup className="custom-popup">
-                        <div className="p-2 min-w-[180px]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl">{mech.avatar || '🔧'}</span>
-                            <div>
-                              <p className="font-bold text-sm">{mech.name}</p>
-                              <div className="flex items-center gap-1">
-                                <Star className="h-3 w-3 text-yellow-500 fill-current" />
-                                <span className="text-xs">{mech.rating}</span>
-                                {mech.distance && (
-                                  <span className="text-xs text-gray-500">• {mech.distance.toFixed(1)}km</span>
-                                )}
+                    mech.lat !== undefined && mech.lng !== undefined ? (
+                      <Marker
+                        key={mech.id}
+                        position={[mech.lat, mech.lng]}
+                        icon={mech.isWorkshop ? workshopIcon : mechanicIcon}
+                      >
+                        <Popup className="custom-popup">
+                          <div className="p-2 min-w-[180px]">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-xl">{mech.avatar || '🔧'}</span>
+                              <div>
+                                <p className="font-bold text-sm">{mech.name}</p>
+                                <div className="flex items-center gap-1">
+                                  <Star className="h-3 w-3 text-yellow-500 fill-current" />
+                                  <span className="text-xs">{mech.rating}</span>
+                                  {mech.distance && (
+                                    <span className="text-xs text-gray-500">• {mech.distance.toFixed(1)}km</span>
+                                  )}
+                                </div>
                               </div>
                             </div>
+                            <p className="text-xs text-gray-500 mb-2">{mech.speciality?.join(', ')}</p>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-green-600">Rp {mech.pricePerHour?.toLocaleString()}/jam</span>
+                              {mech.etaMinutes && (
+                                <span className="text-xs text-blue-600">~{mech.etaMinutes}m</span>
+                              )}
+                            </div>
+                            <Button
+                              size="sm"
+                              className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg h-7"
+                              onClick={() => navigate(`/customer/booking?mechanicId=${mech.id}`)}
+                            >
+                              Pilih Mekanik
+                            </Button>
                           </div>
-                          <p className="text-xs text-gray-500 mb-2">{mech.speciality?.join(', ')}</p>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-green-600">Rp {mech.pricePerHour?.toLocaleString()}/jam</span>
-                            {mech.etaMinutes && (
-                              <span className="text-xs text-blue-600">~{mech.etaMinutes}m</span>
-                            )}
-                          </div>
-                          <Button
-                            size="sm"
-                            className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white text-xs rounded-lg h-7"
-                            onClick={() => navigate(`/customer/booking?mechanicId=${mech.id}`)}
-                          >
-                            Pilih Mekanik
-                          </Button>
-                        </div>
-                      </Popup>
-                    </Marker>
+                        </Popup>
+                      </Marker>
+                    ) : null
                   ))}
                 </MapContainer>
               </div>
@@ -405,8 +407,18 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs border-white/10 text-white hover:bg-white/10"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}
