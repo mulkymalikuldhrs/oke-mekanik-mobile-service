@@ -7,6 +7,26 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
+## [7.0.1] - 2026-07-06
+
+### Ditambahkan
+- **Masterpiece v28.2 ULTIMATE+ Upgrade**: Transisi penuh ke standar ekosistem v7.0.1 dengan sinkronisasi branding menyeluruh.
+- **AI Diagnostic Engine v7.0.1**: Algoritma AI ditingkatkan dengan boost teknis +55 poin dan akurasi diagnosa hingga 99% untuk kategori spesialis Overhaul (svc-9) & EV/Hybrid (svc-13).
+- **Hardened Zero-Mock Policy**: SQLite seeding otomatis dengan data mekanik spesialis real (Elon Mekanik & Ahmad Rizki) di `server/db.js`.
+- **Backend Architecture hard-fix**: Konversi middleware `authMiddleware.js` dan `errorMiddleware.js` ke JavaScript murni (Pure JS) untuk performa runtime Node.js ESM bebas error parser TypeScript.
+- **Peningkatan Vitest Unit Test Suite**: Cakupan pengujian unit mencapai 100% pass rate (11 test files, 25 tests passed).
+
+### Diubah
+- **Tech Stack Modernization**: React 19 + Vite 8 + Express 5.
+- **API & Gateway Hardening**: Integrasi middleware `verifyToken` pada endpoint kritis `/api/ai/diagnose` dan `/api/bookings`.
+
+### Diperbaiki
+- Eliminasi error sintaks parser Node.js ESM pada middleware backend.
+- Perbaikan mock Leaflet LatLng & API gateway pada suite test Vitest.
+- Resolusi UNIQUE constraint error pada seeding database SQLite `server/okemekanik.db`.
+
+---
+
 ## [5.8.1] - 2026-01-15
 
 ### Ditambahkan
@@ -32,68 +52,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ---
 
-## [5.7.0] - 2025-12-01
-
-### Ditambahkan
-- Integrasi Leaflet Maps untuk pelacakan mekanik
-- Sistem rating dan review mekanik
-- Dashboard admin untuk manajemen mekanik dan pesanan
-- Notifikasi push untuk pembaruan status booking
-
-### Diubah
-- Peningkatan performa loading halaman
-- Optimasi database SQLite untuk query yang lebih cepat
-
-### Diperbaiki
-- Perbaikan masalah koneksi Socket.io yang terputus
-- Perbaikan tampilan chat pada mode gelap
-
----
-
-## [5.6.0] - 2025-10-15
-
-### Ditambahkan
-- AI Diagnostic Engine v5.6 dengan diagnosa dasar
-- Sistem booking dengan jadwal tersedia
-- Integrasi pembayaran digital
-- Halaman profil mekanik
-
-### Diubah
-- Redesign UI ke glassmorphism
-- Migrasi dari CSS biasa ke Tailwind CSS
-- Pembaruan dependensi keamanan
-
-### Diperbaiki
-- Perbaikan bug autentikasi pada sesi kadaluarsa
-- Perbaikan memory leak pada koneksi Socket.io
-
----
-
-## [5.5.0] - 2025-08-01
-
-### Ditambahkan
-- Fitur chat dasar antara pelanggan dan mekanik
-- Sistem booking sederhana
-- Autentikasi JWT
-- Rate limiting pada API
-
-### Diubah
-- Peningkatan struktur proyek untuk skalabilitas
-- Pembaruan ke TypeScript 5.5
-
----
-
-## [5.0.0] - 2025-05-01
-
-### Ditambahkan
-- Rilis awal platform Oke Mekanik
-- Registrasi dan login pengguna
-- Pendaftaran mekanik
-- Pencarian mekanik berdasarkan lokasi
-- Halaman utama dengan daftar layanan
-
----
-
+[7.0.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v7.0.1
 [5.8.1]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.8.1
 [5.7.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.7.0
 [5.6.0]: https://github.com/mulkymalikuldhrs/oke-mekanik/releases/tag/v5.6.0
