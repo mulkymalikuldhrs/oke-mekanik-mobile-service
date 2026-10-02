@@ -93,7 +93,7 @@ const CustomerDashboard = () => {
   // Active booking
   const activeBooking = bookings.find(b => !['completed', 'cancelled'].includes(b.status));
 
-  // Completed bookings without review
+  // Completed bookings
   const completedBookings = bookings.filter(b => b.status === 'completed');
 
   // Services
@@ -128,9 +128,6 @@ const CustomerDashboard = () => {
     logout();
     navigate('/');
   };
-
-  const emergencyServices = services.filter(s => s.isEmergencyAvailable);
-  const regularServices = services.filter(s => !s.isEmergencyAvailable);
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
@@ -405,8 +402,16 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 px-2 text-[10px] text-yellow-400 hover:text-yellow-300 hover:bg-yellow-400/10 p-0"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}
