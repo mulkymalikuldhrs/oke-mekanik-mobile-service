@@ -18,6 +18,25 @@ async function verifyBackend() {
     console.error('❌ Health Check: ERROR', err.message);
   }
 
+  // Login to get token
+  let token = '';
+  try {
+    const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'customer@example.com', password: 'password123', role: 'customer' })
+    });
+    const loginData = await loginRes.json();
+    if (loginRes.ok && loginData.token) {
+      token = loginData.token;
+      console.log('✅ Login successful, token acquired');
+    } else {
+      console.error('❌ Login failed:', loginData);
+    }
+  } catch (err) {
+    console.error('❌ Login error:', err.message);
+  }
+
   // 2. AI Diagnostic Logic Verification
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -32,7 +51,10 @@ async function verifyBackend() {
     try {
       const aiRes = await fetch(`${API_BASE_URL}/ai/diagnose`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const aiData = await aiRes.json();
