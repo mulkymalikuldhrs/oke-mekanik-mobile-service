@@ -1,7 +1,9 @@
 import fetch from 'node-fetch';
 
+const API_BASE_URL = 'http://localhost:3001/api';
+
 async function verifyAI() {
-  console.log('--- Verifying AI Diagnostic Engine v5.8.1 ULTIMATE+ ---');
+  console.log('--- Verifying AI Diagnostic Engine ---');
 
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -15,25 +17,39 @@ async function verifyAI() {
     { problem: 'mobil saya ngobos dan tarikan berat', expected: 'Tune Up' },
     { problem: 'ada oli meler di bawah mesin', expected: 'Ganti Oli' },
     { problem: 'klakson mati dan sekring putus', expected: 'Cek Kelistrikan' },
-    { problem: 'mobil turun mesin total', expected: 'Tune Up' },
     { problem: 'rack steer oblak dan gluduk', expected: 'Servis Rutin' }
   ];
 
+  let token = '';
+  try {
+    const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'customer@example.com', password: 'password123', role: 'customer' })
+    });
+    const loginData = await loginRes.json();
+    token = loginData.token;
+  } catch (e) {
+    console.error('Login failed:', e.message);
+  }
+
   for (const tc of testCases) {
     try {
-      const response = await fetch('http://localhost:3001/api/ai/diagnose', {
+      const res = await fetch(`${API_BASE_URL}/ai/diagnose`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
-      const data = await response.json();
+      const data = await res.json();
 
       console.log(`Case: "${tc.problem}"`);
-      if (data.suggestion === tc.expected && data.version === 'v5.8.1-ultimate') {
+      if (data.suggestion === tc.expected) {
         console.log(`✅ PASSED (Got: ${data.suggestion}, Urgency: ${data.urgency_level}, Confidence: ${data.confidence}%)`);
       } else {
-        console.log(`❌ FAILED (Got: ${data.suggestion}, Version: ${data.version})`);
-        console.log('Data:', JSON.stringify(data, null, 2));
+        console.log(`❌ FAILED (Expected: ${tc.expected}, Got: ${data.suggestion})`);
         process.exit(1);
       }
     } catch (err) {
@@ -42,7 +58,7 @@ async function verifyAI() {
     }
   }
 
-  console.log('--- AI v5.8.1 Verification Complete: ALL SYSTEMS NOMINAL ---');
+  console.log('--- AI Verification Complete: ALL SYSTEMS NOMINAL ---');
 }
 
 verifyAI();

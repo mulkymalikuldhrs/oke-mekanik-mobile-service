@@ -27,12 +27,29 @@ async function verifyBackend() {
     { problem: 'ac panas tidak dingin', expected: 'Isi Freon AC' }
   ];
 
+  console.log('\n--- Authenticating ---');
+  let token = '';
+  try {
+    const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'customer@example.com', password: 'password123', role: 'customer' })
+    });
+    const loginData = await loginRes.json();
+    token = loginData.token;
+  } catch (err) {
+    console.error('Auth error:', err.message);
+  }
+
   console.log('\n--- Verifying AI Diagnostic Engine ---');
   for (const tc of testCases) {
     try {
       const aiRes = await fetch(`${API_BASE_URL}/ai/diagnose`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const aiData = await aiRes.json();
