@@ -291,11 +291,11 @@ const MechanicDashboard = () => {
             </CardHeader>
             <CardContent className="px-4 pb-4 space-y-3">
               <div className="text-sm space-y-1">
-                <p><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></p>
-                <p><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</p>
-                <p><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
-                <p><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</p>
-                <p><span className="text-gray-500">Lokasi:</span> {activeBooking.location?.address}</p>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></div>
+                <div><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</div>
+                <div><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</div>
+                <div><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</div>
+                <div><span className="text-gray-500">Lokasi:</span> {activeBooking.location?.address}</div>
               </div>
               
               {/* Status Action Buttons */}
