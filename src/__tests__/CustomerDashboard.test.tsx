@@ -49,7 +49,7 @@ describe('CustomerDashboard', () => {
 
   it('renders success state', async () => {
     window.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/bookings?userId=')) {
+      if (url.includes('/bookings')) {
         return Promise.resolve({
           ok: true,
           json: async () => ([{ id: '1', status: 'otw', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', createdAt: new Date().toISOString() }]),
@@ -58,10 +58,16 @@ describe('CustomerDashboard', () => {
       if (url.includes('/mechanics')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
+          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2088, lng: 106.8456 }]),
         });
       }
-      return Promise.reject(new Error('Unknown URL'));
+      if (url.includes('/services')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
+        });
+      }
+      return Promise.reject(new Error('Unknown URL: ' + url));
     });
 
     render(
@@ -78,7 +84,7 @@ describe('CustomerDashboard', () => {
   });
 
   it('renders error state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
+    window.fetch = vi.fn().mockImplementation(() => {
       return Promise.reject(new Error('Network response was not ok'));
     });
 
