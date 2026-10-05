@@ -23,14 +23,14 @@ const MechanicDashboard = () => {
   const [incomingOrder, setIncomingOrder] = useState<any>(null);
 
   // Get mechanic profile
-  const { data: mechanicData, isLoading } = useQuery({
+  const { data: mechanicData, isLoading, isError: mechanicError } = useQuery({
     queryKey: ['mechanicDashboard', user?.id],
     queryFn: () => mechanicApi.getById(user?.id || ''),
     enabled: !!user?.id,
   });
 
   // Get mechanic bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['mechanicBookings', user?.id],
     queryFn: () => bookingApi.getByMechanic(user?.id || ''),
     enabled: !!user?.id,
@@ -140,6 +140,14 @@ const MechanicDashboard = () => {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <LoaderCircle className="h-8 w-8 text-orange-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (mechanicError || bookingsError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
+        <p>{t('error.load_failed')}</p>
       </div>
     );
   }
