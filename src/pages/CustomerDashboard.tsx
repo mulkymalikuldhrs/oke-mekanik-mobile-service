@@ -407,6 +407,9 @@ const CustomerDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button size="sm" variant="outline" className="mt-1 border-white/10 text-xs h-6 px-2" onClick={() => setReviewDialog(booking)}>
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}
