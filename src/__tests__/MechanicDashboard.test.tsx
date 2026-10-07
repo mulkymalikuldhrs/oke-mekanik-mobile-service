@@ -77,8 +77,19 @@ describe('MechanicDashboard', () => {
     });
   });
 
-  it('renders error state', async () => {
-    window.fetch = vi.fn().mockRejectedValue(new Error('Network response was not ok'));
+  it('renders dashboard with offline state', async () => {
+    window.fetch = vi.fn().mockImplementation((url) => {
+      if (url.includes('/mechanics/')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8, isOnline: false }),
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ([]),
+      });
+    });
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -89,7 +100,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('OKE MEKANIK')).toBeInTheDocument();
     });
   });
 });

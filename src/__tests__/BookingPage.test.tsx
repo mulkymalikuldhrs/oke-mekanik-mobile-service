@@ -65,22 +65,26 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
+    // Mock service list returned from serviceApi.getAll
+    const { serviceApi } = await import('@/lib/api');
+    vi.mocked(serviceApi.getAll).mockResolvedValueOnce([
+      { id: 'svc-1', name: 'Ganti Oli', basePrice: 50000, category: 'engine', description: 'Servis oli rutin' }
+    ]);
+
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    const serviceBtn = await screen.findByText('Ganti Oli');
+    fireEvent.click(serviceBtn);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
+    const nextBtn = screen.getByText(/Lanjutkan/i);
+    fireEvent.click(nextBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByText(/Lokasi & Kendaraan/i)).toBeInTheDocument();
     });
   });
 });
