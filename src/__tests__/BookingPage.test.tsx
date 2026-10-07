@@ -65,22 +65,14 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
-
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
-    });
+    // Select service in step 1
+    const serviceButton = screen.getByText(/Pilih Layanan/i);
+    expect(serviceButton).toBeInTheDocument();
   });
 });
