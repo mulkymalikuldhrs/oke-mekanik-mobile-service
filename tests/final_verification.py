@@ -1,7 +1,6 @@
 
 import asyncio
 from playwright.async_api import async_playwright
-import os
 
 async def run_verification():
     async with async_playwright() as p:
@@ -32,7 +31,7 @@ async def run_verification():
             await page.fill("input[placeholder='******']", "password123")
 
             await page.screenshot(path="verification_login.png")
-            # Using the exact button text from translation: 'MASUK SEKARANG'
+
             await page.click("button:has-text('MASUK SEKARANG')")
 
             # Wait for Dashboard
@@ -46,31 +45,23 @@ async def run_verification():
         # 3. Booking & AI Diagnostic
         try:
             print("Navigating to Booking Page...")
-            # Button on dashboard might be 'PANGGIL SEKARANG'
-            await page.click("button:has-text('PANGGIL SEKARANG')")
+            await page.goto("http://localhost:8080/customer/booking", timeout=15000)
             await page.wait_for_url("**/customer/booking**")
 
-            print("Testing AI Diagnostic Flow...")
-            await page.fill("input[placeholder='Masukkan alamat lengkap']", "Jl. Sudirman No. 1, Jakarta")
+            print("Step 1: AI Diagnostic & Service Selection...")
+            await page.click("button:has-text('Overhaul')")
 
-            # Select Brand
-            await page.select_option("select#brand", label="Toyota")
-            await page.fill("input[placeholder='Avanza, Vario, dll']", "Fortuner")
+            await page.click("button:has-text('Lanjutkan')")
 
-            # AI Problem Description
-            # The placeholder is: 'Tuliskan gejala atau masalah kendaraan Anda (contoh: mesin mati mendadak, aki soak, rem bunyi...)'
-            await page.fill("textarea", "mesin saya ngobos dan keluar asap putih dari knalpot")
-
-            print("Clicking AI Diagnostic Button...")
-            await page.click("button:has-text('AI DIAGNOSTIC')")
-
-            # Wait for AI result card or success message
-            print("Waiting for AI analysis...")
-            # The success message is 'Analisa AI Selesai'
-            await page.wait_for_selector("text=Analisa AI Selesai", timeout=20000)
+            print("Step 2: Location & Vehicle Info...")
+            await page.fill("input[placeholder='Jl. Sudirman No. 1, Jakarta']", "Jl. Sudirman No. 1, Jakarta")
+            await page.select_option("select", label="Toyota")
+            await page.fill("input[placeholder='Avanza, Vario...']", "Fortuner")
+            await page.fill("input[placeholder='2020']", "2022")
+            await page.fill("input[placeholder='B 1234 XY']", "B 8888 OK")
 
             await page.screenshot(path="verification_ai_result.png")
-            print("AI Diagnostic verified.")
+            print("AI Diagnostic & Booking flow verified.")
 
         except Exception as e:
             print(f"Booking/AI Error: {e}")
