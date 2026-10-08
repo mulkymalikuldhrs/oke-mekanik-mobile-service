@@ -14,9 +14,10 @@
 <!-- BADGES -->
 <div align="center">
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-5-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
 
@@ -28,13 +29,13 @@
 <!-- AUTO-PACKAGE-BADGES:START -->
 <!-- Auto-generated package badges -->
 
-![npm version](https://img.shields.io/npm/v/oke-mekanik-mobile-service?style=flat-square&logo=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dw/oke-mekanik-mobile-service?style=flat-square&color=brightgreen) ![npm license](https://img.shields.io/npm/l/oke-mekanik-mobile-service?style=flat-square) [![Deployed](https://img.shields.io/badge/deployed-7.0.0-blue?style=flat-square)](https://www.npmjs.com/package/oke-mekanik-mobile-service)
+![npm version](https://img.shields.io/npm/v/oke-mekanik-mobile-service?style=flat-square&logo=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dw/oke-mekanik-mobile-service?style=flat-square&color=brightgreen) ![npm license](https://img.shields.io/npm/l/oke-mekanik-mobile-service?style=flat-square) [![Deployed](https://img.shields.io/badge/deployed-7.0.1-blue?style=flat-square)](https://www.npmjs.com/package/oke-mekanik-mobile-service)
 
 <!-- AUTO-PACKAGE-BADGES:END -->
 
 ## Overview
 
-**Oke Mekanik** is a mobile mechanic service platform built with Next.js. Customers can book mechanics to come to their location, receive AI-powered preliminary vehicle diagnostics, track mechanic arrival in real-time, and manage service history — all from a modern web interface.
+**Oke Mekanik** is a mobile mechanic service platform built with React 19, Vite 8, and Express 5. Customers can book mechanics to come to their location, receive AI-powered preliminary vehicle diagnostics, track mechanic arrival in real-time, and manage service history — all from a modern web interface.
 
 ## Visual Architecture
 
@@ -184,7 +185,7 @@ graph TB
     style PWA fill:#5A0FC8,color:#fff
 ```
 
-> **Published**: This package is published to npm as `oke-mekanik-mobile-service` v7.0.0. The AI diagnostics feature provides preliminary assessments only — always verify with an in-person mechanic inspection.
+> **Published**: This package is published to npm as `oke-mekanik-mobile-service` v7.0.1. The AI diagnostics feature provides preliminary assessments only — always verify with an in-person mechanic inspection.
 
 ---
 
@@ -237,19 +238,15 @@ npm run dev
 
 ```
 oke-mekanik-mobile-service/
+├── server/               # Express 5 backend & SQLite DB
 ├── src/
-│   ├── app/              # Next.js app router
-│   ├── components/
-│   │   ├── booking/      # Service booking UI
-│   │   ├── diagnostics/  # AI diagnostic interface
-│   │   ├── tracking/     # Real-time tracking
-│   │   └── dashboard/    # Mechanic dashboard
-│   ├── lib/
-│   │   ├── ai/           # AI diagnostic engine
-│   │   ├── booking/      # Booking logic
-│   │   ├── tracking/     # GPS tracking
-│   │   └── payments/     # Payment integration
+│   ├── components/       # UI & shared components
+│   ├── contexts/         # React Auth context
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # API gateways & utilities
+│   ├── pages/            # React SPA page routes
 │   └── types/            # TypeScript definitions
+├── tests/                # Verification & audit scripts
 └── public/               # Static assets
 ```
 
