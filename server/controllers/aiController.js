@@ -44,8 +44,22 @@ const AI_MODEL = [
   {
     id: 'svc-4',
     name: 'Tune Up',
-    keywords: { mesin: 10, overheat: 12, asap: 10, brebet: 15, berebet: 15, pincang: 15, mati: 6, ngadat: 12, bensin: 6, boros: 11, 'mogok': 12, 'tarikan berat': 11, 'injeksi': 11, 'karburator': 11, 'piston': 10, 'klep': 10, 'radiator': 11, 'kopling': 10, 'transmisi': 9, 'throttle body': 11, 'carbon clean': 10, 'water pump': 11, 'head gasket': 11, 'fan belt': 9, 'ngelitik': 15, 'detonasi': 11, 'asap putih': 13, 'asap hitam': 13, 'nyendal': 12, 'nyentak': 12, 'suara tek tek': 11, 'boros bensin': 14, 'ngeden': 13, 'pagi-pagi susah nyala': 14, 'tunggakan gas': 11, 'ngebul': 14, 'ngobos': 15, 'turun mesin': 20, 'overhaul': 20, 'bore up': 15, 'injector': 12 },
+    keywords: { mesin: 10, overheat: 12, asap: 10, brebet: 15, berebet: 15, pincang: 15, mati: 6, ngadat: 12, bensin: 6, boros: 11, 'mogok': 12, 'tarikan berat': 11, 'injeksi': 11, 'karburator': 11, 'piston': 10, 'klep': 10, 'radiator': 11, 'kopling': 10, 'transmisi': 9, 'throttle body': 11, 'carbon clean': 10, 'water pump': 11, 'head gasket': 11, 'fan belt': 9, 'ngelitik': 15, 'detonasi': 11, 'asap putih': 13, 'asap hitam': 13, 'nyendal': 12, 'nyentak': 12, 'suara tek tek': 11, 'boros bensin': 14, 'ngeden': 13, 'pagi-pagi susah nyala': 14, 'tunggakan gas': 11, 'ngebul': 14, 'ngobos': 15, 'bore up': 15, 'injector': 12 },
     causes: ['Throttle body kotor berkerak', 'Busi sudah lemah atau kotor', 'Saringan bahan bakar tersumbat', 'Kompresi mesin rendah (ngobos)', 'Sistem pendingin (radiator) tidak optimal'],
+    urgency: 'HIGH'
+  },
+  {
+    id: 'svc-9',
+    name: 'Overhaul / Turun Mesin',
+    keywords: { 'turun mesin': 30, overhaul: 30, 'skir klep': 25, 'metal jalan': 25, 'metal duduk': 25, 'piston pecah': 25, 'stang seher': 25, 'kruk as': 25, 'packing head': 20, 'oli campur air': 30, 'asap putih pekat': 25, 'mesin macet': 30, 'suara kasar banget': 25, 'ganti seher': 25, 'turun setengah': 20, 'ngebul parah': 25, 'suara kasar logam': 25, 'macet total': 30 },
+    causes: ['Kerusakan internal mesin fatal', 'Mesin pernah overheat parah', 'Pelumasan gagal total', 'Usia pakai komponen internal sudah maksimal'],
+    urgency: 'CRITICAL'
+  },
+  {
+    id: 'svc-13',
+    name: 'Cek Sistem EV/Hybrid',
+    keywords: { hybrid: 30, ev: 30, 'baterai hv': 30, 'hv battery': 30, 'inverter': 30, 'converter': 25, 'motor listrik': 25, 'regenerative braking': 20, 'charging port': 20, 'obc': 25, 'bms': 25, 'lithium': 20, 'phev': 30, 'bev': 30, 'mobil listrik': 30, 'cas': 20, 'baterai lithium': 25, tesla: 30, ioniq: 30, 'wuling ev': 30, 'port cas': 25, 'baterai 12v hybrid': 25, 'kabel orange': 30 },
+    causes: ['Degradasi sel baterai high voltage', 'Overheating pada modul inverter', 'Malfungsi sistem Battery Management (BMS)', 'Korupsi pada modul kontrol daya'],
     urgency: 'HIGH'
   },
   {
@@ -78,15 +92,17 @@ export const diagnoseProblem = (req, res) => {
     }
     const technicalBoosts = {
       'svc-1': ['oli meler', 'oli rembes', 'oil seal', 'karter', 'oil filter macet'],
-      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'overhaul', 'skir klep', 'turun mesin', 'stel klep', 'kompresi rendah'],
+      'svc-4': ['brebet', 'berebet', 'ngelitik', 'pincang', 'ngeden', 'asap hitam', 'asap putih', 'nyendal', 'ngebul', 'ngobos', 'injector', 'bore up', 'stel klep', 'kompresi rendah'],
       'svc-5': ['limp mode', 'check engine', 'konslet', 'korslet', 'ecu', 'wiring', 'sekring putus', 'short circuit', 'grounding', 'sensor tps', 'sensor iat'],
       'svc-7': ['pagi susah nyala', 'stater berat', 'aki tekor', 'dinamo ampre', 'alternator bench', 'carbon brush habis'],
-      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer']
+      'svc-2': ['gluduk', 'kaki-kaki', 'bunyi kaki-kaki', 'setir narik', 'v-belt', 'cv joint', 'bushing arm', 'link stabilizer', 'rack steer'],
+      'svc-9': ['overhaul', 'skir klep', 'turun mesin', 'mesin macet', 'metal jalan', 'metal duduk', 'ganti seher', 'turun setengah', 'ngebul parah', 'suara kasar logam'],
+      'svc-13': ['hybrid', 'baterai hv', 'inverter', 'motor listrik', 'lithium', 'phev', 'bev', 'charging port', 'mobil listrik', 'baterai lithium', 'cas', 'tesla', 'ioniq', 'wuling ev', 'port cas', 'kabel orange']
     };
 
     for (const [svcId, terms] of Object.entries(technicalBoosts)) {
       if (terms.some(term => p.includes(term)) && service.id === svcId) {
-        score += 30;
+        score += 55; // Upgraded boost for v7.0.1 ULTIMATE+
       }
     }
 
@@ -102,6 +118,6 @@ export const diagnoseProblem = (req, res) => {
     confidence: bestMatch.score > 0 ? Math.min(Math.round((bestMatch.score / 100) * 100), 99) : 40,
     possible_causes: bestMatch.causes,
     urgency_level: bestMatch.urgency,
-    version: 'v7.0.0'
+    version: 'v7.0.1 ULTIMATE+'
   });
 };
