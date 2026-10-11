@@ -16,8 +16,8 @@ test.describe('Oke Mekanik Full-Stack E2E', () => {
     await page.goto('http://localhost:8080/login');
     await expect(page).toHaveURL(/\/login/);
 
-    await page.fill('input[id="email"]', 'customer@example.com');
-    await page.fill('input[id="password"]', 'password123');
+    await page.getByPlaceholder('nama@email.com').fill('customer@example.com');
+    await page.getByPlaceholder('******').fill('password123');
 
     // MASUK SEKARANG button
     const loginBtn = page.locator('button:has-text("MASUK SEKARANG")');
@@ -31,8 +31,8 @@ test.describe('Oke Mekanik Full-Stack E2E', () => {
   test('ai-powered booking flow', async ({ page }) => {
     // Login first
     await page.goto('http://localhost:8080/login');
-    await page.fill('input[id="email"]', 'customer@example.com');
-    await page.fill('input[id="password"]', 'password123');
+    await page.getByPlaceholder('nama@email.com').fill('customer@example.com');
+    await page.getByPlaceholder('******').fill('password123');
     await page.click('button:has-text("MASUK SEKARANG")');
 
     await expect(page).toHaveURL(/\/customer\/dashboard/);
