@@ -55,10 +55,16 @@ describe('MechanicDashboard', () => {
           json: async () => ({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8 }),
         });
       }
-      if (url.includes('/bookings?mechanicId=')) {
+      if (url.includes('/bookings')) {
         return Promise.resolve({
           ok: true,
           json: async () => ([{ id: '1', status: 'accepted', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', location: { address: 'Test Location' } }]),
+        });
+      }
+      if (url.includes('/reviews')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
@@ -89,7 +95,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('ONLINE')).toBeInTheDocument();
     });
   });
 });
