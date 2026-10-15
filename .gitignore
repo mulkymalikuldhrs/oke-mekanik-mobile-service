@@ -53,6 +53,7 @@ server/*.db-shm
 /screenshots/
 test-results/
 coverage/
+*.png
 
 # OS generated files
 Thumbs.db
