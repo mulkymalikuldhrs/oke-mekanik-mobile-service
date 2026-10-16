@@ -1,7 +1,30 @@
 import fetch from 'node-fetch';
 
 async function verifyAI() {
-  console.log('--- Verifying AI Diagnostic Engine v5.8.1 ULTIMATE+ ---');
+  console.log('--- Verifying AI Diagnostic Engine v7.0.1 ULTIMATE+ ---');
+
+  let token = '';
+  try {
+    const loginRes = await fetch('http://localhost:3001/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'customer@example.com',
+        password: 'password123',
+        role: 'customer'
+      })
+    });
+    const loginData = await loginRes.json();
+    if (loginRes.ok && loginData.token) {
+      token = loginData.token;
+    } else {
+      console.error('Login failed:', loginData);
+      process.exit(1);
+    }
+  } catch (err) {
+    console.error('Login error:', err.message);
+    process.exit(1);
+  }
 
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -23,13 +46,16 @@ async function verifyAI() {
     try {
       const response = await fetch('http://localhost:3001/api/ai/diagnose', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const data = await response.json();
 
       console.log(`Case: "${tc.problem}"`);
-      if (data.suggestion === tc.expected && data.version === 'v5.8.1-ultimate') {
+      if (data.suggestion === tc.expected && data.version === 'v7.0.1 ULTIMATE+') {
         console.log(`✅ PASSED (Got: ${data.suggestion}, Urgency: ${data.urgency_level}, Confidence: ${data.confidence}%)`);
       } else {
         console.log(`❌ FAILED (Got: ${data.suggestion}, Version: ${data.version})`);
@@ -42,7 +68,7 @@ async function verifyAI() {
     }
   }
 
-  console.log('--- AI v5.8.1 Verification Complete: ALL SYSTEMS NOMINAL ---');
+  console.log('--- AI v7.0.1 Verification Complete: ALL SYSTEMS NOMINAL ---');
 }
 
 verifyAI();

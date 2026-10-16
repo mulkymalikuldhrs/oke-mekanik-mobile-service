@@ -77,14 +77,14 @@ const CustomerDashboard = () => {
   }, []);
 
   // Fetch nearby mechanics
-  const { data: nearbyMechanics = [], isLoading: mechanicsLoading } = useQuery({
+  const { data: nearbyMechanics = [], isLoading: mechanicsLoading, isError: mechanicsError } = useQuery({
     queryKey: ['nearbyMechanics', userLocation.lat, userLocation.lng],
     queryFn: () => mechanicApi.getNearby(userLocation.lat, userLocation.lng, 15),
     enabled: locationReady,
   });
 
   // Fetch user bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['userBookings', user?.id],
     queryFn: () => bookingApi.getByUser(user?.id || ''),
     enabled: !!user?.id,
@@ -131,6 +131,14 @@ const CustomerDashboard = () => {
 
   const emergencyServices = services.filter(s => s.isEmergencyAvailable);
   const regularServices = services.filter(s => !s.isEmergencyAvailable);
+
+  if (mechanicsError || bookingsError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-red-500">
+        <p>{t('error.load_failed')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
@@ -405,8 +413,16 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="flex items-center gap-2">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs border-white/10 text-white hover:bg-white/10"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}

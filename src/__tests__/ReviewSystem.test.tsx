@@ -29,6 +29,13 @@ vi.mock('@/lib/api', () => ({
     create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
     getByMechanicId: vi.fn().mockResolvedValue([]),
   },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn().mockResolvedValue(null),
+  },
+  aiApi: {
+    diagnose: vi.fn().mockResolvedValue({ confidence: 99, suggestion: 'Oli Mesin' }),
+  },
   fetchWithAuth: vi.fn(),
 }));
 
