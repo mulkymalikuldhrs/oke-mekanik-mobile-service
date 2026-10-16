@@ -26,7 +26,9 @@ vi.mock('@/lib/api', () => ({
     getActiveServices: vi.fn(),
   },
   serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli', basePrice: 100000, category: 'engine', description: 'Servis oli mesin' }
+    ]),
     getById: vi.fn(),
   },
   messageApi: {
@@ -65,22 +67,32 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    // Step 1: Select Service
+    const serviceCard = await screen.findByText('Ganti Oli');
+    fireEvent.click(serviceCard);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
+    const nextStep1 = screen.getByText(/Lanjutkan/i);
+    fireEvent.click(nextStep1);
+
+    // Step 2: Location & Vehicle
+    await waitFor(() => {
+      expect(screen.getByText(/Lokasi & Kendaraan/i)).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(/Jl. Sudirman No. 1, Jakarta/i), { target: { value: 'Jl. Merdeka No. 1' } });
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Toyota' } });
+
+    const searchMechanicBtn = screen.getByText(/Cari Mekanik/i);
+    fireEvent.click(searchMechanicBtn);
 
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: 'Pilih Mekanik' })).toBeInTheDocument();
     });
   });
 });

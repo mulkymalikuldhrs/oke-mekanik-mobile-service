@@ -38,9 +38,11 @@ const limiter = rateLimit({
 
 app.use('/api/', limiter);
 const httpServer = createServer(app);
+const allowedOrigins = process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || ['http://localhost:5173', 'http://localhost:8080', 'http://127.0.0.1:8080'];
+
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PATCH']
   }
 });
@@ -53,7 +55,7 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 }
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
