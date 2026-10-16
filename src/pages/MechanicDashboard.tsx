@@ -23,7 +23,7 @@ const MechanicDashboard = () => {
   const [incomingOrder, setIncomingOrder] = useState<any>(null);
 
   // Get mechanic profile
-  const { data: mechanicData, isLoading } = useQuery({
+  const { data: mechanicData, isLoading, isError: isMechanicError } = useQuery({
     queryKey: ['mechanicDashboard', user?.id],
     queryFn: () => mechanicApi.getById(user?.id || ''),
     enabled: !!user?.id,
@@ -140,6 +140,15 @@ const MechanicDashboard = () => {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <LoaderCircle className="h-8 w-8 text-orange-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (isMechanicError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center text-white p-4">
+        <AlertTriangle className="h-12 w-12 text-red-500 mb-2" />
+        <p className="text-lg font-bold">{t('error.load_failed')}</p>
       </div>
     );
   }
@@ -291,7 +300,7 @@ const MechanicDashboard = () => {
             </CardHeader>
             <CardContent className="px-4 pb-4 space-y-3">
               <div className="text-sm space-y-1">
-                <p><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></p>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></div>
                 <p><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</p>
                 <p><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
                 <p><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</p>
