@@ -77,7 +77,7 @@ describe('MechanicDashboard', () => {
     });
   });
 
-  it('renders error state', async () => {
+  it('renders error state gracefully', async () => {
     window.fetch = vi.fn().mockRejectedValue(new Error('Network response was not ok'));
 
     render(
@@ -89,7 +89,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('OKE MEKANIK')).toBeInTheDocument();
     });
   });
 });

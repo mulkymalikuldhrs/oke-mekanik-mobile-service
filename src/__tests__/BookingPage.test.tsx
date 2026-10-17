@@ -14,11 +14,15 @@ vi.mock('@/lib/api', () => ({
     getAll: vi.fn().mockResolvedValue([
       { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
     ]),
+    getNearby: vi.fn().mockResolvedValue([
+      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8, lat: -6.2088, lng: 106.8456 }
+    ]),
     getById: vi.fn(),
     updateStatus: vi.fn(),
   },
   bookingApi: {
     create: vi.fn().mockResolvedValue({ id: 'BK-123' }),
+    autoDispatch: vi.fn().mockResolvedValue({ id: 'BK-123' }),
     getById: vi.fn(),
     getByUser: vi.fn(),
     getByMechanic: vi.fn(),
@@ -26,12 +30,17 @@ vi.mock('@/lib/api', () => ({
     getActiveServices: vi.fn(),
   },
   serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli', category: 'engine', basePrice: 150000, description: 'Ganti oli mesin', isEmergencyAvailable: true }
+    ]),
     getById: vi.fn(),
   },
   messageApi: {
     getByBookingId: vi.fn(),
     send: vi.fn(),
+  },
+  aiApi: {
+    diagnose: vi.fn().mockResolvedValue({ suggestion: 'Ganti Oli', confidence: 95, urgency_level: 'tinggi', serviceId: 'svc-1' }),
   }
 }));
 
@@ -65,22 +74,33 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    // Step 1: Select service
+    const serviceCard = await screen.findByText('Ganti Oli');
+    fireEvent.click(serviceCard);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
+    const step1Button = screen.getByText(/^Lanjutkan$/i);
+    fireEvent.click(step1Button);
 
+    // Step 2: Location & Vehicle
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByText(/Lokasi & Kendaraan/i)).toBeInTheDocument();
+    });
+
+    fireEvent.change(screen.getByPlaceholderText(/Jl. Sudirman No. 1, Jakarta/i), { target: { value: 'Jl. Merdeka No. 1' } });
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Toyota' } });
+
+    const step2Button = screen.getByText(/Cari Mekanik/i);
+    fireEvent.click(step2Button);
+
+    // Step 3: Choose Mechanic
+    await waitFor(() => {
+      expect(screen.getByText(/Auto-Assign \(Rekomendasi\)/i)).toBeInTheDocument();
     });
   });
 });
