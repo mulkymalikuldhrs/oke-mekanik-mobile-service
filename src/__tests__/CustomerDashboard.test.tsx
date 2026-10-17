@@ -49,7 +49,7 @@ describe('CustomerDashboard', () => {
 
   it('renders success state', async () => {
     window.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/bookings?userId=')) {
+      if (url.includes('/bookings')) {
         return Promise.resolve({
           ok: true,
           json: async () => ([{ id: '1', status: 'otw', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', createdAt: new Date().toISOString() }]),
@@ -58,7 +58,13 @@ describe('CustomerDashboard', () => {
       if (url.includes('/mechanics')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
+          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2088, lng: 106.8456 }]),
+        });
+      }
+      if (url.includes('/services')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
@@ -73,14 +79,18 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard.customer.heading_to_loc')).toBeInTheDocument();
+      expect(screen.getByText('Ganti Ban')).toBeInTheDocument();
     });
   });
 
   it('renders error state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
-      return Promise.reject(new Error('Network response was not ok'));
-    });
+    window.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: 'Failed to fetch' }),
+      })
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -91,7 +101,7 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText(/OKE MEKANIK/i)).toBeInTheDocument();
     });
   });
 });

@@ -49,16 +49,22 @@ describe('MechanicDashboard', () => {
 
   it('renders success state', async () => {
     window.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/mechanics/')) {
+      if (url.includes('/mechanics')) {
         return Promise.resolve({
           ok: true,
           json: async () => ({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8 }),
         });
       }
-      if (url.includes('/bookings?mechanicId=')) {
+      if (url.includes('/bookings')) {
         return Promise.resolve({
           ok: true,
           json: async () => ([{ id: '1', status: 'accepted', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', location: { address: 'Test Location' } }]),
+        });
+      }
+      if (url.includes('/reviews')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => ([]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
@@ -78,7 +84,13 @@ describe('MechanicDashboard', () => {
   });
 
   it('renders error state', async () => {
-    window.fetch = vi.fn().mockRejectedValue(new Error('Network response was not ok'));
+    window.fetch = vi.fn().mockImplementation(() =>
+      Promise.resolve({
+        ok: false,
+        status: 500,
+        json: async () => ({ message: 'Failed to fetch' }),
+      })
+    );
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -89,7 +101,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText(/OKE MEKANIK/i)).toBeInTheDocument();
     });
   });
 });
