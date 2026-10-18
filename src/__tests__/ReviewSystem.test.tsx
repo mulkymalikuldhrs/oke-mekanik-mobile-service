@@ -5,31 +5,41 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import * as AuthContext from '@/contexts/AuthContext';
 import * as useLanguage from '@/hooks/useLanguage';
-import { reviewApi } from '@/lib/api';
+
+const mockBooking = {
+  id: 'BOOK-1',
+  status: 'completed',
+  problem: 'Ganti Oli',
+  vehicle: { brand: 'Toyota', model: 'Avanza' },
+  createdAt: new Date().toISOString(),
+  estimatedCost: 150000,
+  mechanicId: 'mech-1'
+};
+
+const mockCreateReview = vi.fn().mockResolvedValue({ id: 'REV-1' });
 
 // Mock the API
 vi.mock('@/lib/api', () => ({
   bookingApi: {
-    getByUser: vi.fn().mockResolvedValue([
-      {
-        id: 'BOOK-1',
-        status: 'completed',
-        problem: 'Ganti Oli',
-        vehicle: { brand: 'Toyota', model: 'Avanza' },
-        createdAt: new Date().toISOString(),
-        estimatedCost: 150000,
-        mechanicId: 'mech-1'
-      }
-    ]),
+    getByUser: vi.fn().mockImplementation(() => Promise.resolve([mockBooking])),
   },
   mechanicApi: {
     getNearby: vi.fn().mockResolvedValue([]),
   },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn().mockResolvedValue(null),
+  },
   reviewApi: {
-    create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
+    create: (...args: any[]) => mockCreateReview(...args),
     getByMechanicId: vi.fn().mockResolvedValue([]),
   },
-  fetchWithAuth: vi.fn(),
+  fetchWithAuth: vi.fn().mockImplementation((url: string) => {
+    if (url.includes('/bookings')) {
+      return Promise.resolve([mockBooking]);
+    }
+    return Promise.resolve([]);
+  }),
 }));
 
 const queryClient = new QueryClient({
@@ -55,6 +65,25 @@ describe('Review System', () => {
       register: vi.fn(),
       isLoading: false,
       token: 'fake-token'
+    });
+
+    window.fetch = vi.fn().mockImplementation((url: string) => {
+      if (url.includes('/bookings')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [mockBooking],
+        });
+      }
+      if (url.includes('/services') || url.includes('/mechanics')) {
+        return Promise.resolve({
+          ok: true,
+          json: async () => [],
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({}),
+      });
     });
   });
 
@@ -92,7 +121,7 @@ describe('Review System', () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(reviewApi.create).toHaveBeenCalledWith(expect.objectContaining({
+      expect(mockCreateReview).toHaveBeenCalledWith(expect.objectContaining({
         comment: 'Layanan sangat bagus!',
         rating: 5
       }));
