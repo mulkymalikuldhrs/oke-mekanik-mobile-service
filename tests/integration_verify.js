@@ -18,6 +18,25 @@ async function verifyBackend() {
     console.error('❌ Health Check: ERROR', err.message);
   }
 
+  // Login to get auth token
+  let token = '';
+  try {
+    const loginRes = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: 'customer@example.com', password: 'password123', role: 'customer' })
+    });
+    const loginData = await loginRes.json();
+    if (loginRes.ok && loginData.token) {
+      token = loginData.token;
+      console.log('✅ Auth Login: PASSED');
+    } else {
+      console.error('❌ Auth Login: FAILED', loginData);
+    }
+  } catch (err) {
+    console.error('❌ Auth Login: ERROR', err.message);
+  }
+
   // 2. AI Diagnostic Logic Verification
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -28,25 +47,34 @@ async function verifyBackend() {
   ];
 
   console.log('\n--- Verifying AI Diagnostic Engine ---');
+  let allAiPassed = true;
   for (const tc of testCases) {
     try {
       const aiRes = await fetch(`${API_BASE_URL}/ai/diagnose`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const aiData = await aiRes.json();
       if (aiRes.ok && aiData.suggestion === tc.expected) {
         console.log(`✅ AI Case "${tc.problem}": PASSED (Got: ${aiData.suggestion})`);
       } else {
+        allAiPassed = false;
         console.error(`❌ AI Case "${tc.problem}": FAILED (Expected: ${tc.expected}, Got: ${aiData.suggestion})`);
       }
     } catch (err) {
+      allAiPassed = false;
       console.error(`❌ AI Case "${tc.problem}": ERROR`, err.message);
     }
   }
 
   console.log('\n--- Backend Verification Complete ---');
+  if (!allAiPassed) {
+    process.exit(1);
+  }
 }
 
 verifyBackend();
