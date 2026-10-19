@@ -22,13 +22,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Mechanic } from '@/types';
 import { toast } from 'sonner';
 
-const mechanicMapIcon = L.divIcon({
-  html: `<div style="background:#f97316;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span style="font-size:18px">🔧</span></div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-  className: '',
-});
-
 const userMapIcon = L.divIcon({
   html: `<div style="background:#22c55e;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3)"><span style="font-size:16px">📍</span></div>`,
   iconSize: [32, 32],
@@ -44,24 +37,14 @@ function MapUpdater({ center }: { center: [number, number] }) {
 
 const vehicleBrands = ['Toyota', 'Honda', 'Suzuki', 'Mitsubishi', 'Nissan', 'Daihatsu', 'Hyundai', 'Kia', 'BMW', 'Mercedes'];
 
-const serviceCategories = [
-  { id: 'emergency', label: '🆘 Darurat', color: 'border-red-500/30 bg-red-500/10' },
-  { id: 'engine', label: '🔧 Mesin', color: 'border-orange-500/30 bg-orange-500/10' },
-  { id: 'brakes', label: '🛑 Rem', color: 'border-purple-500/30 bg-purple-500/10' },
-  { id: 'tires', label: '🛞 Ban', color: 'border-green-500/30 bg-green-500/10' },
-  { id: 'electrical', label: '⚡ Listrik', color: 'border-yellow-500/30 bg-yellow-500/10' },
-  { id: 'general', label: '📋 Umum', color: 'border-blue-500/30 bg-blue-500/10' },
-];
-
 const BookingPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const { user } = useAuth();
 
-  const [step, setStep] = useState(1); // 1=service, 2=location, 3=mechanic, 4=confirm
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedServiceId, setSelectedServiceId] = useState<string>('');
+  const [step, setStep] = useState(1); // 1=Location & Vehicle, 2=Mechanic, 3=Confirm
+  const [selectedServiceId, setSelectedServiceId] = useState<string>('svc-1');
   const [vehicleData, setVehicleData] = useState({ brand: '', model: '', year: '', licensePlate: '' });
   const [problem, setProblem] = useState('');
   const [location, setLocation] = useState({ address: '', lat: -6.2088, lng: 106.8456 });
@@ -77,10 +60,9 @@ const BookingPage = () => {
     const svcId = searchParams.get('serviceId');
     if (svcId) {
       setSelectedServiceId(svcId);
-      setStep(2);
     }
     if (mechId) {
-      setStep(3);
+      setStep(2);
     }
   }, [searchParams]);
 
@@ -103,7 +85,6 @@ const BookingPage = () => {
   const { data: nearbyMechanics = [] } = useQuery({
     queryKey: ['nearbyMechanics', location.lat, location.lng, selectedServiceId],
     queryFn: () => mechanicApi.getNearby(location.lat, location.lng, 15, selectedServiceId || undefined),
-    enabled: !!selectedServiceId,
   });
 
   // Auto-dispatch booking
@@ -166,10 +147,6 @@ const BookingPage = () => {
     }
   };
 
-  const filteredServices = selectedCategory
-    ? services.filter(s => s.category === selectedCategory)
-    : services;
-
   const selectedService = services.find(s => s.id === selectedServiceId);
 
   const handleConfirmBooking = () => {
@@ -189,12 +166,11 @@ const BookingPage = () => {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-sm font-black">PESAN MEKANIK</h1>
-            <p className="text-[10px] text-gray-500">Step {step}/4</p>
+            <h1 className="text-sm font-black">{t('booking.title')}</h1>
+            <p className="text-[10px] text-gray-500">Step {step}/3</p>
           </div>
-          {/* Progress dots */}
           <div className="flex gap-1">
-            {[1,2,3,4].map(s => (
+            {[1,2,3].map(s => (
               <div key={s} className={`w-2 h-2 rounded-full transition-all ${s <= step ? 'bg-blue-500' : 'bg-white/10'}`} />
             ))}
           </div>
@@ -203,103 +179,12 @@ const BookingPage = () => {
 
       <div className="container mx-auto px-4 py-4 max-w-2xl">
         <AnimatePresence mode="wait">
-          {/* Step 1: Select Service */}
+          {/* Step 1: Location & Vehicle Problem */}
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div>
-                <h2 className="text-xl font-black mb-1">Pilih Layanan</h2>
-                <p className="text-sm text-gray-500">Apa masalah kendaraan Anda?</p>
-              </div>
-
-              {/* Category Filter */}
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {serviceCategories.map(cat => (
-                  <button
-                    key={cat.id}
-                    className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
-                      selectedCategory === cat.id ? cat.color + ' border-opacity-50' : 'border-white/10 text-gray-400'
-                    }`}
-                    onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Service Grid */}
-              <div className="grid grid-cols-2 gap-2">
-                {filteredServices.map(svc => (
-                  <motion.button
-                    key={svc.id}
-                    whileTap={{ scale: 0.97 }}
-                    className={`p-3 rounded-xl border text-left transition-all ${
-                      selectedServiceId === svc.id
-                        ? 'border-blue-500/50 bg-blue-500/10'
-                        : 'border-white/5 bg-white/5 hover:bg-white/10'
-                    } ${svc.isEmergencyAvailable ? 'ring-1 ring-red-500/20' : ''}`}
-                    onClick={() => { setSelectedServiceId(svc.id); setIsEmergency(svc.category === 'emergency'); }}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold text-blue-400">Rp {svc.basePrice?.toLocaleString()}</span>
-                      {svc.isEmergencyAvailable && (
-                        <Badge className="bg-red-500/20 text-red-400 text-[8px] border-0 h-4">24/7</Badge>
-                      )}
-                    </div>
-                    <p className="font-bold text-sm">{svc.name}</p>
-                    <p className="text-[10px] text-gray-500 mt-0.5 line-clamp-2">{svc.description}</p>
-                    <div className="flex items-center gap-1 mt-1 text-[10px] text-gray-600">
-                      <Clock className="h-3 w-3" />
-                      <span>~{svc.estimatedDuration || 60} mnt</span>
-                    </div>
-                  </motion.button>
-                ))}
-              </div>
-
-              {/* AI Diagnostic */}
-              <Card className="bg-white/5 border-white/5 rounded-xl">
-                <CardContent className="p-3">
-                  <p className="text-xs text-gray-400 mb-2">Tidak yakin masalahnya? AI bisa bantu diagnosa:</p>
-                  <div className="flex gap-2">
-                    <Textarea
-                      value={problem}
-                      onChange={(e) => setProblem(e.target.value)}
-                      placeholder="Contoh: mesin brebet, rem berdecit, aki soak..."
-                      className="flex-1 bg-white/5 border-white/10 text-white text-xs min-h-[60px]"
-                    />
-                    <Button
-                      size="sm"
-                      className="bg-blue-600 hover:bg-blue-500 self-end"
-                      onClick={handleAiDiagnostic}
-                      disabled={isAnalyzing}
-                    >
-                      {isAnalyzing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                    </Button>
-                  </div>
-                  {aiSuggestion && (
-                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-2 p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                      <p className="text-xs font-bold text-blue-400">AI: {aiSuggestion.suggestion} ({aiSuggestion.confidence}%)</p>
-                      <p className="text-[10px] text-gray-400 mt-1">Urgency: {aiSuggestion.urgency_level}</p>
-                    </motion.div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-500 h-12 rounded-xl font-bold"
-                disabled={!selectedServiceId}
-                onClick={() => setStep(2)}
-              >
-                Lanjutkan <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-            </motion.div>
-          )}
-
-          {/* Step 2: Location & Vehicle */}
-          {step === 2 && (
-            <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-              <div>
-                <h2 className="text-xl font-black mb-1">Lokasi & Kendaraan</h2>
-                <p className="text-sm text-gray-500">Di mana Anda butuh mekanik?</p>
+                <h2 className="text-xl font-black mb-1">{t('booking.step1.title')}</h2>
+                <p className="text-sm text-gray-500">{t('booking.subtitle')}</p>
               </div>
 
               {/* Mini Map */}
@@ -315,12 +200,13 @@ const BookingPage = () => {
 
               {/* Location Input */}
               <div className="space-y-2">
-                <Label className="text-xs text-gray-400">{t('booking.step1.address')}</Label>
+                <Label htmlFor="address-input" className="text-xs text-gray-400">{t('booking.step1.address')}</Label>
                 <div className="flex gap-2">
                   <Input
+                    id="address-input"
                     value={location.address}
                     onChange={(e) => setLocation(prev => ({ ...prev, address: e.target.value }))}
-                    placeholder="Jl. Sudirman No. 1, Jakarta"
+                    placeholder={t('booking.step1.address_placeholder')}
                     className="flex-1 bg-white/5 border-white/10 text-white"
                   />
                   <Button variant="outline" className="border-white/10 text-white" onClick={handleGetLocation}>
@@ -332,52 +218,93 @@ const BookingPage = () => {
               {/* Vehicle Info */}
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label className="text-xs text-gray-400">Merk</Label>
-                  <select className="w-full p-2 border border-white/10 bg-black/40 text-white rounded-md text-sm" value={vehicleData.brand} onChange={(e) => setVehicleData(prev => ({ ...prev, brand: e.target.value }))}>
-                    <option value="">Pilih merk</option>
-                    {vehicleBrands.map(b => <option key={b} value={b} className="bg-gray-900">{b}</option>)}
-                  </select>
+                  <Label htmlFor="brand-select" className="text-xs text-gray-400">{t('booking.step1.brand')}</Label>
+                  <Input
+                    id="brand-select"
+                    value={vehicleData.brand}
+                    onChange={(e) => setVehicleData(prev => ({ ...prev, brand: e.target.value }))}
+                    placeholder={t('booking.step1.brand_placeholder')}
+                    className="bg-white/5 border-white/10 text-white text-sm"
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-400">Model</Label>
-                  <Input value={vehicleData.model} onChange={(e) => setVehicleData(prev => ({ ...prev, model: e.target.value }))} placeholder="Avanza, Vario..." className="bg-white/5 border-white/10 text-white text-sm" />
+                  <Label htmlFor="model-input" className="text-xs text-gray-400">{t('booking.step1.model')}</Label>
+                  <Input
+                    id="model-input"
+                    value={vehicleData.model}
+                    onChange={(e) => setVehicleData(prev => ({ ...prev, model: e.target.value }))}
+                    placeholder={t('booking.step1.model_placeholder')}
+                    className="bg-white/5 border-white/10 text-white text-sm"
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-400">Tahun</Label>
-                  <Input value={vehicleData.year} onChange={(e) => setVehicleData(prev => ({ ...prev, year: e.target.value }))} placeholder="2020" className="bg-white/5 border-white/10 text-white text-sm" />
+                  <Label htmlFor="year-input" className="text-xs text-gray-400">{t('booking.step1.year')}</Label>
+                  <Input
+                    id="year-input"
+                    value={vehicleData.year}
+                    onChange={(e) => setVehicleData(prev => ({ ...prev, year: e.target.value }))}
+                    placeholder={t('booking.step1.year_placeholder')}
+                    className="bg-white/5 border-white/10 text-white text-sm"
+                  />
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-400">Plat Nomor</Label>
-                  <Input value={vehicleData.licensePlate} onChange={(e) => setVehicleData(prev => ({ ...prev, licensePlate: e.target.value }))} placeholder="B 1234 XY" className="bg-white/5 border-white/10 text-white text-sm" />
+                  <Label htmlFor="plate-input" className="text-xs text-gray-400">{t('booking.step1.plate')}</Label>
+                  <Input
+                    id="plate-input"
+                    value={vehicleData.licensePlate}
+                    onChange={(e) => setVehicleData(prev => ({ ...prev, licensePlate: e.target.value }))}
+                    placeholder={t('booking.step1.plate_placeholder')}
+                    className="bg-white/5 border-white/10 text-white text-sm"
+                  />
                 </div>
               </div>
 
-              {/* Problem Description */}
-              <div>
-                <Label className="text-xs text-gray-400">Detail Masalah</Label>
-                <Textarea
-                  value={problem}
-                  onChange={(e) => setProblem(e.target.value)}
-                  placeholder="Jelaskan masalah kendaraan Anda..."
-                  className="bg-white/5 border-white/10 text-white min-h-[80px]"
-                />
+              {/* Problem Description & AI Diagnostic */}
+              <div className="space-y-2">
+                <Label htmlFor="problem-input" className="text-xs text-gray-400">{t('booking.step1.problem')}</Label>
+                <div className="flex gap-2">
+                  <Textarea
+                    id="problem-input"
+                    value={problem}
+                    onChange={(e) => setProblem(e.target.value)}
+                    placeholder={t('booking.step1.problem_desc_placeholder')}
+                    className="flex-1 bg-white/5 border-white/10 text-white min-h-[80px]"
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-blue-500/30 text-blue-400 hover:bg-blue-500/10 w-full"
+                  onClick={handleAiDiagnostic}
+                  disabled={isAnalyzing}
+                >
+                  {isAnalyzing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+                  Analisis Diagnosa AI
+                </Button>
+
+                {aiSuggestion && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                    <p className="text-xs font-bold text-blue-400">Rekomendasi AI: {aiSuggestion.suggestion} ({aiSuggestion.confidence}%)</p>
+                    <p className="text-[10px] text-gray-400 mt-1">Urgency: {aiSuggestion.urgency_level}</p>
+                  </motion.div>
+                )}
               </div>
 
               <Button
-                className="w-full bg-blue-600 hover:bg-blue-500 h-12 rounded-xl font-bold"
+                className="w-full bg-blue-600 hover:bg-blue-500 h-12 rounded-xl font-bold text-sm"
                 disabled={!location.address || !vehicleData.brand}
-                onClick={() => setStep(3)}
+                onClick={() => setStep(2)}
               >
-                Cari Mekanik <ArrowRight className="h-4 w-4 ml-2" />
+                {t('booking.step1.next')} <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </motion.div>
           )}
 
-          {/* Step 3: Choose Mechanic */}
-          {step === 3 && (
-            <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+          {/* Step 2: Choose Mechanic */}
+          {step === 2 && (
+            <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div>
-                <h2 className="text-xl font-black mb-1">Pilih Mekanik</h2>
+                <h2 className="text-xl font-black mb-1">{t('booking.step2.title')}</h2>
                 <p className="text-sm text-gray-500">{nearbyMechanics.length} mekanik tersedia di sekitar Anda</p>
               </div>
 
@@ -456,18 +383,18 @@ const BookingPage = () => {
               <Button
                 className="w-full bg-blue-600 hover:bg-blue-500 h-12 rounded-xl font-bold"
                 disabled={!autoDispatchMode && !selectedMechanic}
-                onClick={() => setStep(4)}
+                onClick={() => setStep(3)}
               >
-                {autoDispatchMode ? 'Pesan Sekarang (Auto)' : 'Lanjutkan'} <ArrowRight className="h-4 w-4 ml-2" />
+                {t('booking.step2.next')} <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </motion.div>
           )}
 
-          {/* Step 4: Confirmation */}
-          {step === 4 && (
-            <motion.div key="step4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
+          {/* Step 3: Confirmation */}
+          {step === 3 && (
+            <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
               <div>
-                <h2 className="text-xl font-black mb-1">Konfirmasi Pesanan</h2>
+                <h2 className="text-xl font-black mb-1">{t('booking.step3.title')}</h2>
                 <p className="text-sm text-gray-500">Pastikan semua data sudah benar</p>
               </div>
 
@@ -492,33 +419,33 @@ const BookingPage = () => {
 
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Layanan</span>
-                      <span className="font-bold">{selectedService?.name || '-'}</span>
+                      <span className="text-gray-500">{t('booking.step3.mechanic')}</span>
+                      <span className="font-bold">{autoDispatchMode ? 'Auto-Assign' : selectedMechanic?.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Kendaraan</span>
+                      <span className="text-gray-500">{t('booking.step3.vehicle')}</span>
                       <span>{vehicleData.brand} {vehicleData.model}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Lokasi</span>
+                      <span className="text-gray-500">{t('booking.step3.location')}</span>
                       <span className="text-right max-w-[200px] truncate">{location.address}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Masalah</span>
+                      <span className="text-gray-500">{t('booking.step3.problem')}</span>
                       <span className="text-right max-w-[200px] truncate">{problem || selectedService?.name}</span>
                     </div>
                   </div>
 
                   <div className="border-t border-white/5 pt-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-500">Estimasi Biaya</span>
+                      <span className="text-gray-500">{t('booking.step3.cost')}</span>
                       <span className="text-lg font-black text-blue-400">
-                        Rp {((selectedService?.basePrice || 0) + (isEmergency ? 50000 : 0))?.toLocaleString()}
+                        Rp {((selectedService?.basePrice || 75000) + (isEmergency ? 50000 : 0))?.toLocaleString()}
                       </span>
                     </div>
                     {!autoDispatchMode && selectedMechanic?.etaMinutes && (
                       <div className="flex justify-between items-center mt-1">
-                        <span className="text-gray-500">Estimasi Tiba</span>
+                        <span className="text-gray-500">{t('booking.step3.eta')}</span>
                         <span className="text-sm font-bold text-green-400">~{selectedMechanic.etaMinutes} menit</span>
                       </div>
                     )}
@@ -532,9 +459,9 @@ const BookingPage = () => {
                 disabled={bookingMutation.isPending || autoDispatchMutation.isPending}
               >
                 {(bookingMutation.isPending || autoDispatchMutation.isPending) ? (
-                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Mencari Mekanik...</>
+                  <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> {t('booking.step3.processing')}</>
                 ) : (
-                  <><CheckCircle className="h-5 w-5 mr-2" /> KONFIRMASI PESANAN</>
+                  <><CheckCircle className="h-5 w-5 mr-2" /> {t('booking.step3.confirm')}</>
                 )}
               </Button>
             </motion.div>

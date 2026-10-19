@@ -77,14 +77,14 @@ const CustomerDashboard = () => {
   }, []);
 
   // Fetch nearby mechanics
-  const { data: nearbyMechanics = [], isLoading: mechanicsLoading } = useQuery({
+  const { data: nearbyMechanics = [], isLoading: mechanicsLoading, isError: mechanicsError } = useQuery({
     queryKey: ['nearbyMechanics', userLocation.lat, userLocation.lng],
     queryFn: () => mechanicApi.getNearby(userLocation.lat, userLocation.lng, 15),
     enabled: locationReady,
   });
 
   // Fetch user bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['userBookings', user?.id],
     queryFn: () => bookingApi.getByUser(user?.id || ''),
     enabled: !!user?.id,
@@ -129,8 +129,13 @@ const CustomerDashboard = () => {
     navigate('/');
   };
 
-  const emergencyServices = services.filter(s => s.isEmergencyAvailable);
-  const regularServices = services.filter(s => !s.isEmergencyAvailable);
+  if (mechanicsError || bookingsError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-red-400 font-bold p-4">
+        {t('error.load_failed')}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white">
@@ -195,7 +200,7 @@ const CustomerDashboard = () => {
                       <Navigation className="h-5 w-5 text-blue-400 animate-pulse" />
                     </div>
                     <div>
-                      <p className="text-xs text-blue-400 font-bold uppercase">{t('dashboard.customer.active_service')}</p>
+                      <p className="text-xs text-blue-400 font-bold uppercase">{t('dashboard.customer.heading_to_loc')}</p>
                       <p className="text-sm font-bold text-white">{activeBooking.problem}</p>
                     </div>
                   </div>
@@ -264,7 +269,7 @@ const CustomerDashboard = () => {
                   {nearbyMechanics.map((mech) => (
                     <Marker
                       key={mech.id}
-                      position={[mech.lat, mech.lng]}
+                      position={[mech.lat ?? -6.2088, mech.lng ?? 106.8456]}
                       icon={mech.isWorkshop ? workshopIcon : mechanicIcon}
                     >
                       <Popup className="custom-popup">
@@ -405,8 +410,11 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex items-center gap-2">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button size="sm" variant="outline" className="text-xs h-7 border-white/10 text-white" onClick={() => setReviewDialog(booking)}>
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}

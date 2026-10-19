@@ -23,14 +23,14 @@ const MechanicDashboard = () => {
   const [incomingOrder, setIncomingOrder] = useState<any>(null);
 
   // Get mechanic profile
-  const { data: mechanicData, isLoading } = useQuery({
+  const { data: mechanicData, isLoading, isError: mechanicError } = useQuery({
     queryKey: ['mechanicDashboard', user?.id],
     queryFn: () => mechanicApi.getById(user?.id || ''),
     enabled: !!user?.id,
   });
 
   // Get mechanic bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['mechanicBookings', user?.id],
     queryFn: () => bookingApi.getByMechanic(user?.id || ''),
     enabled: !!user?.id,
@@ -140,6 +140,14 @@ const MechanicDashboard = () => {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center">
         <LoaderCircle className="h-8 w-8 text-orange-500 animate-spin" />
+      </div>
+    );
+  }
+
+  if (mechanicError || bookingsError) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center text-red-400 font-bold p-4">
+        {t('error.load_failed')}
       </div>
     );
   }
@@ -291,11 +299,11 @@ const MechanicDashboard = () => {
             </CardHeader>
             <CardContent className="px-4 pb-4 space-y-3">
               <div className="text-sm space-y-1">
-                <p><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></p>
-                <p><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</p>
-                <p><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
-                <p><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</p>
-                <p><span className="text-gray-500">Lokasi:</span> {activeBooking.location?.address}</p>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></div>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Pelanggan:</span> <span>{activeBooking.customer?.name || '-'}</span></div>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Kendaraan:</span> <span>{activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</span></div>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Masalah:</span> <span>{activeBooking.problem}</span></div>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Lokasi:</span> <span>{activeBooking.location?.address}</span></div>
               </div>
               
               {/* Status Action Buttons */}

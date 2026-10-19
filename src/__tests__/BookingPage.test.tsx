@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BookingPage from '../pages/BookingPage';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -14,11 +13,15 @@ vi.mock('@/lib/api', () => ({
     getAll: vi.fn().mockResolvedValue([
       { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
     ]),
+    getNearby: vi.fn().mockResolvedValue([
+      { id: 'mech_1', name: 'Ahmad Rizki', pricePerHour: 75000, isOnline: true, speciality: ['Mesin'], rating: 4.8 }
+    ]),
     getById: vi.fn(),
     updateStatus: vi.fn(),
   },
   bookingApi: {
     create: vi.fn().mockResolvedValue({ id: 'BK-123' }),
+    autoDispatch: vi.fn().mockResolvedValue({ id: 'BK-123' }),
     getById: vi.fn(),
     getByUser: vi.fn(),
     getByMechanic: vi.fn(),
@@ -28,6 +31,9 @@ vi.mock('@/lib/api', () => ({
   serviceApi: {
     getAll: vi.fn().mockResolvedValue([]),
     getById: vi.fn(),
+  },
+  aiApi: {
+    diagnose: vi.fn().mockResolvedValue({ suggestion: 'Tune Up', confidence: 95 }),
   },
   messageApi: {
     getByBookingId: vi.fn(),
@@ -80,7 +86,7 @@ describe('BookingPage', () => {
     fireEvent.click(nextButton);
 
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Pilih Mekanik/i).length).toBeGreaterThan(0);
     });
   });
 });
