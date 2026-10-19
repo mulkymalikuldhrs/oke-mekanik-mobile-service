@@ -154,9 +154,9 @@ const MechanicDashboard = () => {
               <Wrench className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK</h1>
+              <h1 className="text-lg font-black tracking-tight">OKE MEKANIK v28.2</h1>
               <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">
-                {mechanicData?.name || 'Mekanik'}
+                v7.0.1 • {mechanicData?.name || 'Mekanik'}
               </p>
             </div>
           </div>
@@ -291,7 +291,7 @@ const MechanicDashboard = () => {
             </CardHeader>
             <CardContent className="px-4 pb-4 space-y-3">
               <div className="text-sm space-y-1">
-                <p><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></p>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></div>
                 <p><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</p>
                 <p><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
                 <p><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</p>
