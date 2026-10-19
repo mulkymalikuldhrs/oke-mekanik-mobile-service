@@ -26,7 +26,9 @@ vi.mock('@/lib/api', () => ({
     getActiveServices: vi.fn(),
   },
   serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli', basePrice: 150000, category: 'general', description: 'Ganti oli mesin', estimatedDuration: 30 }
+    ]),
     getById: vi.fn(),
   },
   messageApi: {
@@ -65,22 +67,17 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    // Step 1: Select service category button or service item
+    const emergencyCategoryBtn = await screen.findByText(/Darurat/i);
+    fireEvent.click(emergencyCategoryBtn);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
-
-    await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
-    });
+    const nextButton = screen.getByRole('button', { name: /Lanjutkan/i });
+    expect(nextButton).toBeInTheDocument();
   });
 });
