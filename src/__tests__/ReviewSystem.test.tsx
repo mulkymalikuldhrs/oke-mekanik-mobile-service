@@ -21,6 +21,7 @@ vi.mock('@/lib/api', () => ({
         mechanicId: 'mech-1'
       }
     ]),
+    sos: vi.fn(),
   },
   mechanicApi: {
     getNearby: vi.fn().mockResolvedValue([]),
@@ -28,6 +29,13 @@ vi.mock('@/lib/api', () => ({
   reviewApi: {
     create: vi.fn().mockResolvedValue({ id: 'REV-1' }),
     getByMechanicId: vi.fn().mockResolvedValue([]),
+  },
+  serviceApi: {
+    getAll: vi.fn().mockResolvedValue([]),
+    getById: vi.fn(),
+  },
+  aiApi: {
+    diagnose: vi.fn(),
   },
   fetchWithAuth: vi.fn(),
 }));
