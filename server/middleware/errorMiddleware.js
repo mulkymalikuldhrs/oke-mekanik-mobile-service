@@ -1,38 +1,30 @@
 import { z } from 'zod';
-import type { Request, Response, NextFunction } from 'express';
 
-export const errorHandler = (err: Error & { status?: number; statusCode?: number; code?: string }, req: Request, res: Response, _next: NextFunction) => {
-  // ZodError: expose only field-level info, never internal schema paths or structures
+export const errorHandler = (err, req, res, _next) => {
+  // Log server-side internal errors for diagnostic monitoring
+  if (!err.status || err.status >= 500) {
+    console.error('[SERVER ERROR]', err);
+  }
+
+  // ZodError: expose field-level validation issues cleanly
   if (err instanceof z.ZodError) {
     return res.status(400).json({
-      message: 'Validasi gagal',
+      message: 'Data tidak valid',
       errors: err.errors.map(e => ({
         field: e.path.join('.'),
-        message: e.message,
-      })),
-      code: 'VALIDATION_ERROR'
+        message: e.message
+      }))
     });
   }
 
+  // HTTP Errors or client-facing operational errors
   const statusCode = err.status || err.statusCode || 500;
+  const isProduction = process.env.NODE_ENV === 'production';
 
-  // Always log full error server-side
-  console.error(`[Error] ${new Date().toISOString()} - ${req.method} ${req.url}: ${err.message}`);
-  if (err.stack) {
-    console.error(err.stack);
-  }
+  // Sanitize internal server errors to prevent exposing database or stack trace details
+  const message = (statusCode >= 500 && isProduction)
+    ? 'Terjadi kesalahan pada server'
+    : (err.message || 'Terjadi kesalahan pada server');
 
-  // Never expose internal error details to clients
-  let message = 'Terjadi kesalahan internal pada server';
-  if (statusCode === 400) message = 'Permintaan tidak valid';
-  else if (statusCode === 401) message = 'Sesi berakhir, silakan masuk kembali';
-  else if (statusCode === 403) message = 'Akses ditolak atau izin tidak mencukupi';
-  else if (statusCode === 404) message = 'Sumber daya tidak ditemukan';
-
-  res.status(statusCode).json({
-    message,
-    code: statusCode >= 500 ? 'INTERNAL_SERVER_ERROR' : (err.code || 'ERROR'),
-    timestamp: new Date().toISOString(),
-    path: req.url,
-  });
+  res.status(statusCode).json({ message });
 };

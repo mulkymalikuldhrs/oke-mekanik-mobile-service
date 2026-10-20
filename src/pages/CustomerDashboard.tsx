@@ -129,9 +129,6 @@ const CustomerDashboard = () => {
     navigate('/');
   };
 
-  const emergencyServices = services.filter(s => s.isEmergencyAvailable);
-  const regularServices = services.filter(s => !s.isEmergencyAvailable);
-
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* Header */}
@@ -405,8 +402,11 @@ const CustomerDashboard = () => {
                       <p className="text-xs text-gray-500">{booking.vehicle?.brand} {booking.vehicle?.model} • {new Date(booking.createdAt).toLocaleDateString('id-ID')}</p>
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right flex flex-col items-end gap-1">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button size="sm" variant="outline" className="text-[10px] h-6 border-white/10 text-white hover:bg-white/10" onClick={() => setReviewDialog(booking)}>
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}
