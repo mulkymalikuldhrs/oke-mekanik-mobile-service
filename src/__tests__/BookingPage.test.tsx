@@ -26,7 +26,9 @@ vi.mock('@/lib/api', () => ({
     getActiveServices: vi.fn(),
   },
   serviceApi: {
-    getAll: vi.fn().mockResolvedValue([]),
+    getAll: vi.fn().mockResolvedValue([
+      { id: 'svc-1', name: 'Ganti Oli', basePrice: 150000, category: 'engine', description: 'Ganti oli mesin', isEmergencyAvailable: false }
+    ]),
     getById: vi.fn(),
   },
   messageApi: {
@@ -65,22 +67,35 @@ describe('BookingPage', () => {
   it('renders booking page steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    expect(screen.getByText(/Lokasi & Masalah Kendaraan/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Pilih Layanan/i)).toBeInTheDocument();
   });
 
   it('navigates through steps', async () => {
     renderWithProviders(<BookingPage />);
 
-    // Fill in required fields to enable "Lanjutkan"
-    fireEvent.change(screen.getByPlaceholderText(/Masukkan alamat lengkap/i), { target: { value: 'Jl. Merdeka No. 1' } });
-    fireEvent.change(screen.getByLabelText(/Merk Kendaraan/i), { target: { value: 'Toyota' } });
-    fireEvent.change(screen.getByPlaceholderText(/Avanza, Vario, dll/i), { target: { value: 'Avanza' } });
+    // Select service in Step 1
+    const serviceOption = await screen.findByText('Ganti Oli');
+    fireEvent.click(serviceOption);
 
-    const nextButton = screen.getByText(/Lanjutkan ke Pemilihan Mekanik/i);
-    fireEvent.click(nextButton);
+    const step1Next = screen.getByRole('button', { name: /Lanjutkan/i });
+    fireEvent.click(step1Next);
+
+    // Step 2: Fill location & vehicle
+    await waitFor(() => {
+      expect(screen.getByText(/Lokasi & Kendaraan/i)).toBeInTheDocument();
+    });
+
+    const addressInput = screen.getByPlaceholderText(/Jl. Sudirman No. 1, Jakarta/i);
+    fireEvent.change(addressInput, { target: { value: 'Jl. Merdeka No. 1' } });
+
+    const brandSelect = screen.getByRole('combobox');
+    fireEvent.change(brandSelect, { target: { value: 'Toyota' } });
+
+    const step2Next = screen.getByRole('button', { name: /Cari Mekanik/i });
+    fireEvent.click(step2Next);
 
     await waitFor(() => {
-      expect(screen.getByText(/Pilih Mekanik/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /Pilih Mekanik/i })).toBeInTheDocument();
     });
   });
 });

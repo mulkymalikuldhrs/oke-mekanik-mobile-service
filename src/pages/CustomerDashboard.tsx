@@ -77,14 +77,14 @@ const CustomerDashboard = () => {
   }, []);
 
   // Fetch nearby mechanics
-  const { data: nearbyMechanics = [], isLoading: mechanicsLoading } = useQuery({
+  const { data: nearbyMechanics = [], isLoading: mechanicsLoading, isError: mechanicsError } = useQuery({
     queryKey: ['nearbyMechanics', userLocation.lat, userLocation.lng],
     queryFn: () => mechanicApi.getNearby(userLocation.lat, userLocation.lng, 15),
     enabled: locationReady,
   });
 
   // Fetch user bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['userBookings', user?.id],
     queryFn: () => bookingApi.getByUser(user?.id || ''),
     enabled: !!user?.id,
@@ -158,6 +158,12 @@ const CustomerDashboard = () => {
       </header>
 
       <div className="container mx-auto px-4 py-4 space-y-4">
+        {(mechanicsError || bookingsError) && (
+          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium text-sm">
+            {t('error.load_failed')}
+          </div>
+        )}
+
         {/* SOS Emergency Button */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -407,6 +413,14 @@ const CustomerDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-green-400">Rp {(booking.finalCost || booking.estimatedCost)?.toLocaleString()}</p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="mt-1 border-white/10 text-xs text-white"
+                      onClick={() => setReviewDialog(booking)}
+                    >
+                      {t('dashboard.customer.btn_review')}
+                    </Button>
                   </div>
                 </div>
               ))}

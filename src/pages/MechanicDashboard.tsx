@@ -23,14 +23,14 @@ const MechanicDashboard = () => {
   const [incomingOrder, setIncomingOrder] = useState<any>(null);
 
   // Get mechanic profile
-  const { data: mechanicData, isLoading } = useQuery({
+  const { data: mechanicData, isLoading, isError: mechanicError } = useQuery({
     queryKey: ['mechanicDashboard', user?.id],
     queryFn: () => mechanicApi.getById(user?.id || ''),
     enabled: !!user?.id,
   });
 
   // Get mechanic bookings
-  const { data: bookings = [] } = useQuery({
+  const { data: bookings = [], isError: bookingsError } = useQuery({
     queryKey: ['mechanicBookings', user?.id],
     queryFn: () => bookingApi.getByMechanic(user?.id || ''),
     enabled: !!user?.id,
@@ -170,6 +170,12 @@ const MechanicDashboard = () => {
       </header>
 
       <div className="container mx-auto px-4 py-4 space-y-4">
+        {(mechanicError || bookingsError) && (
+          <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium text-sm">
+            {t('error.load_failed')}
+          </div>
+        )}
+
         {/* Online/Offline Toggle */}
         <Card className={`rounded-2xl overflow-hidden border ${isOnline ? 'border-green-500/20 bg-green-500/5' : 'border-red-500/20 bg-red-500/5'}`}>
           <CardContent className="p-4">
@@ -291,7 +297,7 @@ const MechanicDashboard = () => {
             </CardHeader>
             <CardContent className="px-4 pb-4 space-y-3">
               <div className="text-sm space-y-1">
-                <p><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></p>
+                <div className="flex items-center gap-2"><span className="text-gray-500">Status:</span> <Badge className="bg-blue-500/20 text-blue-400">{activeBooking.status.toUpperCase()}</Badge></div>
                 <p><span className="text-gray-500">Pelanggan:</span> {activeBooking.customer?.name || '-'}</p>
                 <p><span className="text-gray-500">Kendaraan:</span> {activeBooking.vehicle?.brand} {activeBooking.vehicle?.model}</p>
                 <p><span className="text-gray-500">Masalah:</span> {activeBooking.problem}</p>
