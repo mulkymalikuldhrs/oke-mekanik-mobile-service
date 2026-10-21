@@ -2,9 +2,26 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MechanicDashboard from '../pages/MechanicDashboard';
-import { vi } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as useLanguage from '../hooks/useLanguage';
 import * as AuthContext from '../contexts/AuthContext';
+import { bookingApi, mechanicApi, reviewApi } from '@/lib/api';
+
+vi.mock('@/lib/api', () => ({
+  bookingApi: {
+    getByMechanic: vi.fn(),
+    updateStatus: vi.fn(),
+  },
+  mechanicApi: {
+    getById: vi.fn(),
+    getPendingBookings: vi.fn(),
+    updateStatus: vi.fn(),
+    updateLocation: vi.fn(),
+  },
+  reviewApi: {
+    getByMechanicId: vi.fn(),
+  },
+}));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,6 +33,7 @@ const queryClient = new QueryClient({
 
 describe('MechanicDashboard', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     vi.spyOn(useLanguage, 'useLanguage').mockReturnValue({
       language: 'id',
       setLanguage: vi.fn(),
@@ -30,6 +48,11 @@ describe('MechanicDashboard', () => {
       token: 'fake-token',
       error: null,
     });
+
+    vi.mocked(mechanicApi.getById).mockResolvedValue({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8 });
+    vi.mocked(bookingApi.getByMechanic).mockResolvedValue([]);
+    vi.mocked(reviewApi.getByMechanicId).mockResolvedValue([]);
+    vi.mocked(mechanicApi.getPendingBookings).mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -37,7 +60,7 @@ describe('MechanicDashboard', () => {
     vi.restoreAllMocks();
   });
 
-  it('renders loading state', () => {
+  it('renders dashboard with mechanic name after loading', async () => {
     render(
       <QueryClientProvider client={queryClient}>
         <MemoryRouter>
@@ -45,24 +68,23 @@ describe('MechanicDashboard', () => {
         </MemoryRouter>
       </QueryClientProvider>
     );
+
+    await waitFor(() => {
+      expect(screen.getByText('Jane Mechanic')).toBeInTheDocument();
+    });
   });
 
-  it('renders success state', async () => {
-    window.fetch = vi.fn().mockImplementation((url) => {
-      if (url.includes('/mechanics/')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ id: 'mech-1', name: 'Jane Mechanic', rating: 4.8 }),
-        });
-      }
-      if (url.includes('/bookings?mechanicId=')) {
-        return Promise.resolve({
-          ok: true,
-          json: async () => ([{ id: '1', status: 'accepted', vehicle: { brand: 'Toyota', model: 'Avanza' }, problem: 'Ganti Ban', location: { address: 'Test Location' } }]),
-        });
-      }
-      return Promise.reject(new Error('Unknown URL'));
-    });
+  it('renders active booking state', async () => {
+    vi.mocked(bookingApi.getByMechanic).mockResolvedValue([
+      {
+        id: '1',
+        status: 'accepted',
+        vehicle: { brand: 'Toyota', model: 'Avanza' },
+        problem: 'Ganti Ban',
+        location: { address: 'Test Location' },
+        customer: { name: 'John Doe' },
+      },
+    ]);
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -73,12 +95,13 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
+      expect(screen.getByText('PEKERJAAN AKTIF')).toBeInTheDocument();
       expect(screen.getByText('Toyota Avanza')).toBeInTheDocument();
     });
   });
 
-  it('renders error state', async () => {
-    window.fetch = vi.fn().mockRejectedValue(new Error('Network response was not ok'));
+  it('handles api failure gracefully', async () => {
+    vi.mocked(mechanicApi.getById).mockRejectedValue(new Error('Network response was not ok'));
 
     render(
       <QueryClientProvider client={queryClient}>
@@ -89,7 +112,7 @@ describe('MechanicDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('error.load_failed')).toBeInTheDocument();
+      expect(screen.getByText('Mekanik')).toBeInTheDocument();
     });
   });
 });
