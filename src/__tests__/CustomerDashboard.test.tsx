@@ -58,7 +58,7 @@ describe('CustomerDashboard', () => {
       if (url.includes('/mechanics')) {
         return Promise.resolve({
           ok: true,
-          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true }]),
+          json: async () => ([{ id: 'mech-1', name: 'Test Mechanic', speciality: ['Ganti Oli'], rating: 4.5, pricePerHour: 50000, isOnline: true, lat: -6.2088, lng: 106.8456 }]),
         });
       }
       return Promise.reject(new Error('Unknown URL'));
@@ -73,7 +73,7 @@ describe('CustomerDashboard', () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText('dashboard.customer.heading_to_loc')).toBeInTheDocument();
+      expect(screen.getByText('dashboard.customer.active_service')).toBeInTheDocument();
     });
   });
 

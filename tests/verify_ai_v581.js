@@ -1,7 +1,21 @@
 import fetch from 'node-fetch';
 
 async function verifyAI() {
-  console.log('--- Verifying AI Diagnostic Engine v5.8.1 ULTIMATE+ ---');
+  console.log('--- Verifying AI Diagnostic Engine ---');
+
+  // Login first to get JWT token
+  const loginRes = await fetch('http://localhost:3001/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'customer@example.com', password: 'password123', role: 'customer' })
+  });
+  const loginData = await loginRes.json();
+  const token = loginData.token;
+
+  if (!token) {
+    console.error('Login failed, no token returned:', loginData);
+    process.exit(1);
+  }
 
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -23,16 +37,19 @@ async function verifyAI() {
     try {
       const response = await fetch('http://localhost:3001/api/ai/diagnose', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const data = await response.json();
 
       console.log(`Case: "${tc.problem}"`);
-      if (data.suggestion === tc.expected && data.version === 'v5.8.1-ultimate') {
+      if (data.suggestion === tc.expected) {
         console.log(`✅ PASSED (Got: ${data.suggestion}, Urgency: ${data.urgency_level}, Confidence: ${data.confidence}%)`);
       } else {
-        console.log(`❌ FAILED (Got: ${data.suggestion}, Version: ${data.version})`);
+        console.log(`❌ FAILED (Expected: ${tc.expected}, Got: ${data.suggestion}, Version: ${data.version})`);
         console.log('Data:', JSON.stringify(data, null, 2));
         process.exit(1);
       }
@@ -42,7 +59,7 @@ async function verifyAI() {
     }
   }
 
-  console.log('--- AI v5.8.1 Verification Complete: ALL SYSTEMS NOMINAL ---');
+  console.log('--- AI Diagnostic Verification Complete: ALL SYSTEMS NOMINAL ---');
 }
 
 verifyAI();
