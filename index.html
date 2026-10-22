@@ -1,30 +1,23 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OKE MEKANIK v28.2 ULTIMATE+</title>
-    <meta name="description" content="Platform bengkel keliling masa depan - Panggil mekanik profesional ke lokasi Anda kapan saja, dimana saja" />
+    <meta name="description" content="Platform bengkel keliling, toko sparepart, dan layanan mekanik masa depan" />
     <meta name="author" content="Oke Mekanik" />
 
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="/manifest.json" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#2563eb" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="OKE MEKANIK" />
 
     <!-- Open Graph -->
     <meta property="og:title" content="OKE MEKANIK v28.2 ULTIMATE+" />
-    <meta property="og:description" content="Platform bengkel keliling masa depan - Panggil mekanik profesional ke lokasi Anda kapan saja, dimana saja" />
+    <meta property="og:description" content="Platform bengkel keliling, toko sparepart, dan layanan mekanik masa depan" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@okemekanik" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
@@ -33,5 +26,12 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
