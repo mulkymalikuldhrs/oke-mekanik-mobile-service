@@ -11,7 +11,7 @@ dan proyek ini mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Ditambahkan
 - **AI Diagnostic Engine v7.0.1**: Penambahan kategori khusus untuk EV/Hybrid (`svc-13`) dan Overhaul (`svc-9`).
-- **Technical Scoring Boost (+45)**: Peningkatan akurasi diagnosa untuk istilah teknis otomotif.
+- **Technical Scoring Boost (+55)**: Peningkatan akurasi diagnosa untuk istilah teknis otomotif.
 - **Ecosystem Branding v28.2 ULTIMATE+**: Sinkronisasi branding di seluruh dashboard dan landing page.
 - **Dukungan Kendaraan Listrik**: Integrasi penuh layanan untuk mobil listrik dan hybrid (Elon Mekanik).
 

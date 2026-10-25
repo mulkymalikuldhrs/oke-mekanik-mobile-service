@@ -1,11 +1,11 @@
 
 <!-- CAPSULE-RENDER HEADER -->
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0a1628,50:0d2b4a,100:143d5e&fontColor=3b82f6&descColor=f59e0b&height=220&section=header&text=Oke%20Mekanik&fontSize=65&desc=Mobile%20Mechanic%20Service&animation=fadeIn" />
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0a1628,50:0d2b4a,100:143d5e&fontColor=3b82f6&descColor=f59e0b&height=220&section=header&text=Oke%20Mekanik&fontSize=65&desc=Mobile%20Mechanic%2C%20Workshop%20%26%20Sparepart%20Marketplace&animation=fadeIn" />
 
 <!-- TYPING SVG -->
 <div align="center">
   <a href="https://git.io/typing-svg">
-    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=3B82F6&center=true&vCenter=true&width=600&lines=Mobile+Mechanic+at+Your+Door;AI-Powered+Diagnostic+v7.0.1;Book+%2C+Track+%2C+Get+Fixed;MASTERPIECE+v28.2+ULTIMATE+" alt="Typing SVG" />
+    <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=3B82F6&center=true&vCenter=true&width=600&lines=Mobile+Mechanic+at+Your+Door;Store+Sparepart+Marketplace;Uber%2FGrab-Style+Tracking;PWA+%2B+Capacitor.js+Mobile+Ready;MASTERPIECE+v28.2+ULTIMATE+" alt="Typing SVG" />
   </a>
 </div>
 
@@ -16,157 +16,61 @@
 
 [![Vite](https://img.shields.io/badge/Vite-8.x-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Capacitor](https://img.shields.io/badge/Capacitor.js-6.x-119EFF?style=for-the-badge&logo=capacitor&logoColor=white)](https://capacitorjs.com/)
 [![Express](https://img.shields.io/badge/Express-5.x-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-WAL-003B57?style=for-the-badge&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](./LICENSE)
 
 </div>
 
 ---
 
-
-<!-- AUTO-PACKAGE-BADGES:START -->
-<!-- Auto-generated package badges -->
-
-![npm version](https://img.shields.io/npm/v/oke-mekanik-mobile-service?style=flat-square&logo=npm&color=blue) ![npm downloads](https://img.shields.io/npm/dw/oke-mekanik-mobile-service?style=flat-square&color=brightgreen) ![npm license](https://img.shields.io/npm/l/oke-mekanik-mobile-service?style=flat-square) [![Deployed](https://img.shields.io/badge/deployed-7.0.1-blue?style=flat-square)](https://www.npmjs.com/package/oke-mekanik-mobile-service)
-
-<!-- AUTO-PACKAGE-BADGES:END -->
-
 ## Overview
 
-**Oke Mekanik (Masterpiece v28.2 ULTIMATE+)** is a production-ready mobile mechanic platform built with React 19, Vite 8, and Express 5. Customers can book mechanics instantly, receive AI-powered vehicle diagnostics (v7.0.1), track mechanic arrival in real-time via GPS, and manage their automotive ecosystem from a futuristic glassmorphism interface.
+**Oke Mekanik (Masterpiece v28.2 ULTIMATE+)** is a production-grade, zero-mock full-stack ecosystem for mobile mechanics, workshops, and sparepart stores. Customers can request nearby mechanics, track real-time mechanic arrival (Uber/Grab style), diagnose vehicle issues via AI v7.0.1, and buy spareparts directly from local stores with seller-provided payment methods.
+
+## Core Multi-Role Ecosystem
+
+1. **Pelanggan (Customer)** — Request nearby mechanics, track route in real time, run AI diagnostics, and purchase spareparts from local stores.
+2. **Mekanik Keliling (Mechanic)** — Independent mobile mechanics receiving job dispatches and tracking client routes.
+3. **Bengkel Resmi (Workshop)** — Brick-and-mortar automotive service workshops managing teams of technicians.
+4. **Toko Suku Cadang (Store / Sparepart Seller)** — List spareparts, set stock levels, and attach direct payment options (BCA, Mandiri, BRI, QRIS, GoPay).
 
 ## Visual Architecture
 
-### Service Booking Flow
+### Full Ecosystem & Marketplace Flow
 
 ```mermaid
 flowchart LR
-    subgraph Request["Request"]
-        A["Open App"] --> B["AI Diagnosis / Select Service"]
-        B --> C["Set Location & Vehicle"]
-        C --> D["Submit Booking"]
+    subgraph Roles["Multi-Role Onboarding"]
+        Customer["Pelanggan"]
+        Mechanic["Mekanik Keliling"]
+        Workshop["Bengkel Resmi"]
+        Store["Toko Sparepart"]
+      end
+
+    subgraph Dispatch["Uber/Grab-Style Geo Engine"]
+        Customer --> Geo["Haversine Nearby Discovery"]
+        Geo --> Route["Socket.io Real-Time Tracking"]
+        Route --> Arrival["Job Execution"]
     end
 
-    subgraph Match["Match"]
-        D --> E["Auto-Dispatch System"]
-        E --> F["Mechanic Accepts Job"]
-        F --> G["ETA & Route Calculation"]
+    subgraph StoreMarketplace["Store & Sparepart Marketplace"]
+        Store --> Catalog["List Spareparts & Stock"]
+        Catalog --> DirectPay["Direct Seller Payment (Bank / QRIS)"]
+        DirectPay --> Customer
     end
 
-    subgraph Track["Track"]
-        G --> H["Real-Time GPS (Socket.io)"]
-        H --> I["Mechanic En Route"]
-        I --> J["Arrival Notification"]
-    end
-
-    subgraph Complete["Complete"]
-        J --> K["Service Execution"]
-        K --> L["Secure Payment"]
-        L --> M["Review & Feedback"]
-    end
-
-    style A fill:#0a1628,color:#3b82f6
-    style F fill:#143d5e,color:#f59e0b
-    style H fill:#0d2b4a,color:#3b82f6
-    style M fill:#22c55e,color:#fff
+    style Customer fill:#0a1628,color:#3b82f6
+    style Mechanic fill:#143d5e,color:#f59e0b
+    style Store fill:#047857,color:#fff
+    style DirectPay fill:#059669,color:#fff
 ```
 
-### AI Diagnostics Pipeline v7.0.1
+## PWA & Mobile Readiness (Capacitor.js)
 
-```mermaid
-flowchart TB
-    subgraph Input["User Telemetry"]
-        Start["Vehicle Data"] --> Symptoms["Natural Language Symptoms"]
-        Symptoms --> Context["Environmental Context"]
-    end
-
-    subgraph Engine["AI Diagnostic Engine v7.0.1"]
-        Context --> Pattern["Pattern Matching"]
-        Pattern --> Technical["Technical Boost (+55 pts)"]
-        Technical --> Scoring["Confidence Scoring"]
-    end
-
-    subgraph Output["Diagnostic Insight"]
-        Scoring --> Suggestion["Service Suggestion"]
-        Scoring --> Causes["Possible Root Causes"]
-        Scoring --> Urgency["Urgency Level"]
-    end
-
-    subgraph Finalize["Finalization"]
-        Suggestion --> Warning["Preliminary Assessment"]
-        Causes --> Warning
-        Urgency --> Warning
-        Warning --> Mechanic["In-Person Verification"]
-    end
-
-    style Start fill:#0a1628,color:#3b82f6
-    style Engine fill:#7c3aed,color:#fff
-    style Warning fill:#f59e0b,color:#000
-    style Mechanic fill:#22c55e,color:#fff
-```
-
-### Full Stack Ecosystem
-
-```mermaid
-graph TB
-    subgraph Frontend["Frontend - Vite 8 + React 19"]
-        UI["React 19 SPA"]
-        State["TanStack Query v5"]
-        FM["Framer Motion 12"]
-        Leaflet["React Leaflet 5"]
-        PWA["PWA / Glassmorphism UI"]
-    end
-
-    subgraph Realtime["Real-Time Layer"]
-        SIOClient["Socket.io Client 4"]
-        SIOServer["Socket.io Server 4"]
-    end
-
-    subgraph Backend["Backend - Express 5"]
-        API["Modular REST API"]
-        Auth["JWT + Bcrypt Security"]
-        Booking["Real-Time Dispatch"]
-        Diag["AI Engine v7.0.1"]
-    end
-
-    subgraph Data["Persistence Layer"]
-        SQLite["SQLite (better-sqlite3)"]
-        Users["Users & Profiles"]
-        Services["Service Catalog"]
-        Logs["Transaction Logs"]
-    end
-
-    UI --> State
-    UI --> FM
-    UI --> Leaflet
-    UI --> PWA
-    UI --> SIOClient
-    SIOClient --> SIOServer
-    SIOServer --> API
-    API --> Auth
-    API --> Booking
-    API --> Diag
-    API --> SQLite
-    SQLite --> Users
-    SQLite --> Services
-    SQLite --> Logs
-
-    style UI fill:#61DAFB,color:#000
-    style SIOServer fill:#010101,color:#fff
-    style API fill:#000,color:#fff
-    style SQLite fill:#003B57,color:#fff
-    style PWA fill:#5A0FC8,color:#fff
-```
-
-## Core Features (v7.0.1 ULTIMATE+)
-
-- **AI Diagnostic Engine v7.0.1 ULTIMATE+** — Advanced pattern matching with specialized support for EV/Hybrid systems (`svc-13`) and Engine Overhaul (`svc-9`).
-- **Real-Time GPS Ecosystem** — Instant mechanic tracking with smooth marker transitions and live ETA.
-- **Zero-Mock Architecture** — Strictly persistent data flowing through Express 5 and SQLite.
-- **Bilingual Interface** — Fully localized in Indonesian and English via `useLanguage`.
-- **Modern Tech Stack** — Built with the latest React 19, Vite 8, and Framer Motion 12 for extreme performance.
+- **PWA Ready**: Web app manifest (`public/manifest.webmanifest`), theme configuration, and Service Worker caching (`public/sw.js`).
+- **Capacitor.js Configured**: Native Android/iOS mobile deployment configuration (`capacitor.config.json`).
 
 ## Quick Start
 
@@ -174,43 +78,26 @@ graph TB
 - Node.js 22.x (LTS)
 - npm or bun
 
-### Installation
+### Installation & Database Initialization
 
 ```bash
 git clone https://github.com/mulkymalikuldhrs/oke-mekanik-mobile-service.git
 cd oke-mekanik-mobile-service
 npm install --legacy-peer-deps
-cp .env.example .env
+node server/db.js
 ```
 
-### Running
+### Running Development Server
 
 ```bash
 npm run dev
 ```
 
-## Project Structure
+### Production Build
 
+```bash
+npm run build
 ```
-oke-mekanik/
-├── src/
-│   ├── pages/            # View components (Index, Dashboard, Booking)
-│   ├── components/       # Reusable UI components
-│   ├── contexts/         # Global state (Auth, etc.)
-│   ├── hooks/            # Custom logic & Localization
-│   ├── lib/              # API Gateway & Utilities
-│   └── types/            # Centralized TypeScript definitions
-├── server/
-│   ├── controllers/      # Business Logic
-│   ├── routes/           # API Endpoints
-│   ├── middleware/       # Security & Error Handling
-│   └── db.js             # Database Schema & Seeding
-└── tests/                # Verification Suite
-```
-
-## Disclaimer
-
-AI diagnostics are preliminary assessments only. Always verify with an in-person mechanic inspection. Oke Mekanik assumes no liability for decisions based solely on AI suggestions.
 
 ## License
 
@@ -221,8 +108,3 @@ AI diagnostics are preliminary assessments only. Always verify with an in-person
 **Mulky Malikul Dhaher**
 - [GitHub](https://github.com/mulkymalikuldhrs)
 - [Email](mailto:mulkymalikuldhr@mail.com)
-
----
-
-<!-- FOOTER BANNER -->
-<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:0a1628,50:0d2b4a,100:143d5e&fontColor=3b82f6&descColor=f59e0b&height=120&section=footer&text=&fontSize=0" />
