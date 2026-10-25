@@ -2,6 +2,25 @@ import fetch from 'node-fetch';
 
 const API_BASE_URL = 'http://localhost:3001/api';
 
+async function getAuthToken() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: 'customer@example.com',
+        password: 'password123',
+        role: 'customer'
+      })
+    });
+    const data = await res.json();
+    return data.token;
+  } catch (err) {
+    console.error('Failed to authenticate:', err.message);
+    return null;
+  }
+}
+
 async function verifyBackend() {
   console.log('--- Starting Backend Verification ---');
 
@@ -18,6 +37,13 @@ async function verifyBackend() {
     console.error('❌ Health Check: ERROR', err.message);
   }
 
+  // Authenticate
+  const token = await getAuthToken();
+  if (!token) {
+    console.error('❌ Authentication failed for AI Diagnostic test');
+    process.exit(1);
+  }
+
   // 2. AI Diagnostic Logic Verification
   const testCases = [
     { problem: 'mesin mobil saya brebet dan mogok di jalan', expected: 'Tune Up' },
@@ -28,11 +54,15 @@ async function verifyBackend() {
   ];
 
   console.log('\n--- Verifying AI Diagnostic Engine ---');
+  let passed = true;
   for (const tc of testCases) {
     try {
       const aiRes = await fetch(`${API_BASE_URL}/ai/diagnose`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ problem: tc.problem })
       });
       const aiData = await aiRes.json();
@@ -40,13 +70,16 @@ async function verifyBackend() {
         console.log(`✅ AI Case "${tc.problem}": PASSED (Got: ${aiData.suggestion})`);
       } else {
         console.error(`❌ AI Case "${tc.problem}": FAILED (Expected: ${tc.expected}, Got: ${aiData.suggestion})`);
+        passed = false;
       }
     } catch (err) {
       console.error(`❌ AI Case "${tc.problem}": ERROR`, err.message);
+      passed = false;
     }
   }
 
   console.log('\n--- Backend Verification Complete ---');
+  if (!passed) process.exit(1);
 }
 
 verifyBackend();
