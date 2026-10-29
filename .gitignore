@@ -51,6 +51,7 @@ server/*.db-shm
 # Test & verification
 /verification/
 /screenshots/
+*.png
 test-results/
 coverage/
 
