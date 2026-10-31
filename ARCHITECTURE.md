@@ -15,12 +15,14 @@ Oke Mekanik is a decentralized mobile mechanic ecosystem designed for high-avail
 - **Chat System**: Low-latency binary protocol for instant communication.
 
 ### 3. Logic Layer (Express 5)
-- **Modular Controllers**: Decoupled business logic for AI, Bookings, and Payments.
+- **Modular Controllers**: Decoupled business logic for AI, Bookings, Payments, Sparepart Stores, and Products.
 - **AI Diagnostic Engine**: Proprietary pattern-matching algorithm for automotive triage.
+- **Marketplace Engine**: Haversine distance calculations and direct seller payment routing.
 
 ### 4. Data Layer (SQLite + WAL)
 - **Persistent Storage**: Write-Ahead Logging for high-concurrency performance.
-- **Relational Schema**: Optimized with indexes for geolocation and status queries.
+- **Relational Schema**: Optimized with indexes for geolocation, store management, product inventory, seller payment methods, and status queries.
+- **PWA & Mobile Native**: Service worker caching and Capacitor.js mobile runtime configuration.
 
 ## Branding standards
 - **Target**: Masterpiece v28.2 ULTIMATE+

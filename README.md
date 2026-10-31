@@ -163,6 +163,9 @@ graph TB
 ## Core Features (v7.0.1 ULTIMATE+)
 
 - **AI Diagnostic Engine v7.0.1 ULTIMATE+** — Advanced pattern matching with specialized support for EV/Hybrid systems (`svc-13`) and Engine Overhaul (`svc-9`).
+- **Sparepart Marketplace & Direct Seller Payments** — Nearby store discovery with Haversine geolocation, catalog browsing, seller payment methods (BCA, Mandiri, BRI, QRIS), and store management.
+- **Multi-Role Registration & Ecosystem** — Seamless onboarding for Customers, Mechanics, Workshops, and Sparepart Stores.
+- **PWA & Mobile Native Ready** — Progressive Web App with service worker caching (`sw.js`) and Capacitor.js mobile support (`com.okemekanik.app`).
 - **Real-Time GPS Ecosystem** — Instant mechanic tracking with smooth marker transitions and live ETA.
 - **Zero-Mock Architecture** — Strictly persistent data flowing through Express 5 and SQLite.
 - **Bilingual Interface** — Fully localized in Indonesian and English via `useLanguage`.

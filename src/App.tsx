@@ -19,6 +19,9 @@ import PaymentPage from "./pages/PaymentPage";
 import NotFound from "./pages/NotFound";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import StoreRegistration from "./pages/StoreRegistration";
+import StoreCatalogPage from "./pages/StoreCatalogPage";
+import StoreDashboard from "./pages/StoreDashboard";
 
 const queryClient = new QueryClient();
 
@@ -68,6 +71,7 @@ const App = () => (
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/store/catalog" element={<ErrorBoundary><StoreCatalogPage /></ErrorBoundary>} />
 
               {/* Protected customer routes */}
               <Route element={<RoleRoute allowedRoles={['customer', 'admin']} />}>
@@ -84,6 +88,12 @@ const App = () => (
                 <Route path="/workshop/dashboard" element={<ErrorBoundary><MechanicDashboard /></ErrorBoundary>} />
                 <Route path="/mechanic/registration" element={<ErrorBoundary><MechanicRegistration /></ErrorBoundary>} />
                 <Route path="/mechanic/chat/:id" element={<ErrorBoundary><ChatPage /></ErrorBoundary>} />
+              </Route>
+
+              {/* Protected store routes */}
+              <Route element={<RoleRoute allowedRoles={['store', 'admin']} />}>
+                <Route path="/store/registration" element={<ErrorBoundary><StoreRegistration /></ErrorBoundary>} />
+                <Route path="/store/dashboard" element={<ErrorBoundary><StoreDashboard /></ErrorBoundary>} />
               </Route>
 
               {/* Protected admin routes */}
