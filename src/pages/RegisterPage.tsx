@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Wrench, Building2, Car } from 'lucide-react';
+import { Wrench, Building2, Car, ShoppingBag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -47,6 +47,8 @@ const RegisterPage = () => {
         navigate('/mechanic/registration');
       } else if (selectedRole === 'workshop') {
         navigate('/mechanic/registration');
+      } else if (selectedRole === 'store') {
+        navigate('/store/registration');
       } else {
         navigate('/customer/dashboard');
       }
@@ -110,8 +112,8 @@ const RegisterPage = () => {
                     <Wrench className="h-6 w-6 text-orange-400" />
                   </div>
                   <div>
-                    <p className="font-bold text-orange-400">Mekanik</p>
-                    <p className="text-xs text-gray-500">Bergabung sebagai mitra mekanik keliling</p>
+                    <p className="font-bold text-orange-400">Mekanik Keliling</p>
+                    <p className="text-xs text-gray-500">Bergabung sebagai mitra mekanik independen</p>
                   </div>
                 </motion.button>
 
@@ -126,8 +128,24 @@ const RegisterPage = () => {
                     <Building2 className="h-6 w-6 text-purple-400" />
                   </div>
                   <div>
-                    <p className="font-bold text-purple-400">Bengkel / Workshop</p>
-                    <p className="text-xs text-gray-500">Daftarkan bengkel Anda sebagai mitra</p>
+                    <p className="font-bold text-purple-400">Bengkel Resmi / Workshop</p>
+                    <p className="text-xs text-gray-500">Daftarkan bengkel fisik & tim mekanik Anda</p>
+                  </div>
+                </motion.button>
+
+                {/* Store / Sparepart */}
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 transition-all text-left flex items-center gap-4"
+                  onClick={() => handleRoleSelect('store')}
+                >
+                  <div className="bg-emerald-500/20 p-3 rounded-xl">
+                    <ShoppingBag className="h-6 w-6 text-emerald-400" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-emerald-400">Toko Suku Cadang / Sparepart Store</p>
+                    <p className="text-xs text-gray-500">Jual sparepart & sertakan pembayaran rekening sendiri</p>
                   </div>
                 </motion.button>
               </div>
@@ -142,15 +160,16 @@ const RegisterPage = () => {
                   <Badge className={`${
                     selectedRole === 'customer' ? 'bg-blue-500/20 text-blue-400' :
                     selectedRole === 'mechanic' ? 'bg-orange-500/20 text-orange-400' :
+                    selectedRole === 'store' ? 'bg-emerald-500/20 text-emerald-400' :
                     'bg-purple-500/20 text-purple-400'
                   } border-0 text-xs`}>
-                    {selectedRole === 'customer' ? 'Pelanggan' : selectedRole === 'mechanic' ? 'Mekanik' : 'Bengkel'}
+                    {selectedRole === 'customer' ? 'Pelanggan' : selectedRole === 'mechanic' ? 'Mekanik' : selectedRole === 'store' ? 'Toko Sparepart' : 'Bengkel'}
                   </Badge>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-gray-300">{selectedRole === 'workshop' ? 'Nama Bengkel' : t('register.name')}</Label>
-                  <Input id="name" placeholder={selectedRole === 'workshop' ? 'Bengkel Sejahtera' : t('register.name_placeholder')} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white/5 border-white/10 text-white focus:border-blue-500/50" />
+                  <Label htmlFor="name" className="text-gray-300">{selectedRole === 'workshop' ? 'Nama Bengkel' : selectedRole === 'store' ? 'Nama Toko / Store' : t('register.name')}</Label>
+                  <Input id="name" placeholder={selectedRole === 'workshop' ? 'Bengkel Sejahtera' : selectedRole === 'store' ? 'Toko Sparepart Jaya' : t('register.name_placeholder')} value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required className="bg-white/5 border-white/10 text-white focus:border-blue-500/50" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-gray-300">{t('register.email')}</Label>
