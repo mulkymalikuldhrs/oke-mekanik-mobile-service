@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MapPin, Car, Clock, Star, Plus, History, AlertTriangle, LogOut, LoaderCircle, CheckCircle2, Phone, Navigation, Wrench, Zap, ShieldCheck, MessageSquare } from 'lucide-react';
+import { MapPin, Car, Clock, Star, Plus, History, AlertTriangle, LogOut, LoaderCircle, CheckCircle2, Phone, Navigation, Wrench, Zap, ShieldCheck, MessageSquare, ShoppingBag } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -182,6 +182,30 @@ const CustomerDashboard = () => {
               <Zap className="h-4 w-4 mr-2" /> SOS
             </Button>
           </div>
+        </motion.div>
+
+        {/* Marketplace Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-2xl bg-gradient-to-r from-emerald-900/40 via-black to-emerald-900/20 border border-emerald-500/30 flex items-center justify-between cursor-pointer hover:border-emerald-400 transition-all"
+          onClick={() => navigate('/store/catalog')}
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-emerald-500/20 p-3 rounded-xl border border-emerald-500/30">
+              <ShoppingBag className="h-6 w-6 text-emerald-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="font-bold text-white text-sm">Pasar Suku Cadang & Sparepart</p>
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-0 text-[10px]">Baru</Badge>
+              </div>
+              <p className="text-xs text-gray-400">Beli suku cadang langsung dari toko terdekat dengan pembayaran direct</p>
+            </div>
+          </div>
+          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs">
+            Beli
+          </Button>
         </motion.div>
 
         {/* Active Booking Status */}

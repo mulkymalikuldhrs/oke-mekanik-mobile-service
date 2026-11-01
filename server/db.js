@@ -17,7 +17,7 @@ db.exec(`
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    role TEXT NOT NULL CHECK(role IN ('customer', 'mechanic', 'workshop', 'admin')),
+    role TEXT NOT NULL CHECK(role IN ('customer', 'mechanic', 'workshop', 'store', 'admin')),
     phone TEXT,
     avatar TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -38,6 +38,50 @@ db.exec(`
     operating_hours TEXT DEFAULT '07:00-21:00',
     description TEXT,
     identity_number TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS stores (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    address TEXT,
+    lat REAL,
+    lng REAL,
+    phone TEXT,
+    rating REAL DEFAULT 4.8,
+    is_online INTEGER DEFAULT 1,
+    operating_hours TEXT DEFAULT '08:00-20:00',
+    description TEXT,
+    payment_info TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS products (
+    id TEXT PRIMARY KEY,
+    store_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    category TEXT DEFAULT 'sparepart',
+    price INTEGER NOT NULL,
+    stock INTEGER DEFAULT 10,
+    image TEXT,
+    description TEXT,
+    vehicle_compatibility TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(store_id) REFERENCES stores(id)
+  );
+
+  CREATE TABLE IF NOT EXISTS seller_payment_methods (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    store_id TEXT,
+    bank_name TEXT NOT NULL,
+    account_number TEXT NOT NULL,
+    account_holder TEXT NOT NULL,
+    qr_code_url TEXT,
+    is_active INTEGER DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id)
   );
@@ -148,6 +192,8 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_messages_booking_id ON messages(booking_id);
   CREATE INDEX IF NOT EXISTS idx_reviews_mechanic_id ON reviews(mechanic_id);
   CREATE INDEX IF NOT EXISTS idx_workshops_online ON workshops(is_online);
+  CREATE INDEX IF NOT EXISTS idx_stores_online ON stores(is_online);
+  CREATE INDEX IF NOT EXISTS idx_products_store ON products(store_id);
 
   -- Prevent duplicate reviews per booking
   CREATE UNIQUE INDEX IF NOT EXISTS idx_reviews_booking_id ON reviews(booking_id);
@@ -186,6 +232,10 @@ const seedData = async () => {
     insertUser.run('workshop-1-user', 'Bengkel Sejahtera', 'bengkel1@example.com', hashedPass, 'workshop', '081000111222');
     insertUser.run('workshop-2-user', 'Auto Service Pro', 'bengkel2@example.com', hashedPass, 'workshop', '081000333444');
 
+    // Store / Sparepart Sellers
+    insertUser.run('store-1-user', 'Toko Sparepart Jaya', 'store1@example.com', hashedPass, 'store', '082111222333');
+    insertUser.run('store-2-user', 'OtoPart Central', 'store2@example.com', hashedPass, 'store', '082444555666');
+
     // Admin
     insertUser.run('admin-1', 'Admin OkeMekanik', 'admin@okemekanik.com', hashedPass, 'admin', '081000000000');
 
@@ -193,6 +243,25 @@ const seedData = async () => {
     const insertWorkshop = db.prepare('INSERT INTO workshops (id, user_id, name, address, lat, lng, phone, speciality, rating, is_online, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     insertWorkshop.run('ws-1', 'workshop-1-user', 'Bengkel Sejahtera Motor', 'Jl. Raya Bogor No. 45, Jakarta Timur', -6.2350, 106.8550, '081000111222', 'Servis Umum, Tune Up, Ganti Oli', 4.8, 1, 'Bengkel terpercaya sejak 2005 dengan mekanik berpengalaman');
     insertWorkshop.run('ws-2', 'workshop-2-user', 'Auto Service Pro', 'Jl. Gatot Subroto No. 88, Jakarta Selatan', -6.2450, 106.8250, '081000333444', 'Kelistrikan, AC, Injeksi', 4.9, 1, 'Spesialis kendaraan injeksi dan kelistrikan modern');
+
+    // Seed Stores
+    const insertStore = db.prepare('INSERT INTO stores (id, user_id, name, address, lat, lng, phone, rating, is_online, description, payment_info) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    insertStore.run('store-1', 'store-1-user', 'Toko Sparepart Jaya Utama', 'Jl. Kebon Jeruk No. 12, Jakarta Barat', -6.1950, 106.7850, '082111222333', 4.9, 1, 'Pusat suku cadang original Honda, Yamaha, Toyota & Daihatsu', 'BCA: 8830123987 a.n Toko Jaya Utama');
+    insertStore.run('store-2', 'store-2-user', 'OtoPart Central EV & General', 'Jl. Sudirman No. 101, Jakarta Pusat', -6.2100, 106.8200, '082444555666', 5.0, 1, 'Menyediakan kampas rem, oli sintetis, aki gel, dan charger EV portable', 'Mandiri: 127000982312 a.n OtoPart Central');
+
+    // Seed Seller Payment Methods
+    const insertPaymentMethod = db.prepare('INSERT INTO seller_payment_methods (id, user_id, store_id, bank_name, account_number, account_holder, qr_code_url) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    insertPaymentMethod.run('pay-m-1', 'store-1-user', 'store-1', 'Bank Central Asia (BCA)', '8830123987', 'Toko Sparepart Jaya Utama', 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=BCA-8830123987');
+    insertPaymentMethod.run('pay-m-2', 'store-1-user', 'store-1', 'Bank Mandiri', '127000982312', 'Toko Sparepart Jaya Utama', null);
+    insertPaymentMethod.run('pay-m-3', 'store-2-user', 'store-2', 'Bank Rakyat Indonesia (BRI)', '002101000333502', 'OtoPart Central', null);
+
+    // Seed Products
+    const insertProduct = db.prepare('INSERT INTO products (id, store_id, name, category, price, stock, image, description, vehicle_compatibility) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    insertProduct.run('prod-1', 'store-1', 'Oli Mesin Motul 10W-40 Synthetic (1L)', 'Oli & Pelumas', 115000, 50, '🛢️', 'Oli mesin performa tinggi untuk mobil dan motor sport.', 'Universal');
+    insertProduct.run('prod-2', 'store-1', 'Kampas Rem Depan Honda Vario / Beat', 'Rem & Suspensi', 65000, 30, '🧱', 'Kampas rem original Honda Genuine Parts.', 'Honda Vario, Beat, Scoopy');
+    insertProduct.run('prod-3', 'store-1', 'Busi Iridium Denso IU27', 'Kelistrikan', 95000, 25, '⚡', 'Busi Iridium daya bakar presisi tinggi.', 'Motor Roda 2 / Mobil Injeksi');
+    insertProduct.run('prod-4', 'store-2', 'Aki GS Astra Hybrid NS60L', 'Aki & Baterai', 780000, 15, '🔋', 'Aki mobil tahan lama dengan performa starter prima.', 'Toyota Avanza, Honda Jazz, Suzuki Ertiga');
+    insertProduct.run('prod-5', 'store-2', 'Kabel Charger Portable EV Type 2 (16A)', 'EV / Hybrid Parts', 2450000, 5, '🔌', 'Kabel pengisian daya mobil listrik portable fast response.', 'Wuling EV, Hyundai Ioniq, Tesla Model 3');
 
     // Seed Mechanics (Jakarta locations - spread around the city)
     const insertMechanic = db.prepare('INSERT INTO mechanics (id, user_id, workshop_id, name, speciality, rating, price_per_hour, is_online, lat, lng, avatar, years_of_experience, phone, bio, vehicle_type, vehicle_plate, is_workshop) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
