@@ -217,7 +217,6 @@ export const bookingApi = {
     });
   },
 
-  // Auto-dispatch: system finds nearest mechanic
   autoDispatch: async (bookingData: {
     serviceId: string;
     vehicle: { brand: string; model: string; year: string; licensePlate: string };
@@ -231,7 +230,6 @@ export const bookingApi = {
     });
   },
 
-  // SOS Emergency booking
   sos: async (data: {
     location: { lat: number; lng: number; address?: string };
     vehicle?: { brand: string; model: string; year: string; licensePlate: string };
@@ -306,6 +304,78 @@ export const serviceApi = {
 
   getById: async (id: string): Promise<Service> => {
     return fetchApi(`/services/${id}`);
+  },
+};
+
+// Store & Marketplace API
+export const storeApi = {
+  getAll: async (): Promise<any[]> => {
+    return fetchApi('/stores');
+  },
+
+  getNearbyStores: async (lat?: number, lng?: number, radiusKm: number = 25): Promise<any[]> => {
+    const params = new URLSearchParams();
+    if (lat) params.append('lat', String(lat));
+    if (lng) params.append('lng', String(lng));
+    params.append('radius', String(radiusKm));
+    return fetchApi(`/stores/nearby?${params}`).catch(() => storeApi.getAll());
+  },
+
+  getStoreById: async (id: string): Promise<any> => {
+    return fetchApi(`/stores/${id}`);
+  },
+
+  registerStore: async (data: any): Promise<{ success: boolean; storeId: string }> => {
+    return fetchWithAuth('/stores/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  getPaymentMethods: async (storeId: string): Promise<any[]> => {
+    return fetchApi(`/stores/${storeId}/payments`);
+  },
+
+  addPaymentMethod: async (data: any): Promise<{ success: boolean; paymentMethodId: string }> => {
+    return fetchWithAuth('/stores/payments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+// Products / Sparepart API
+export const productApi = {
+  getProducts: async ({ category, search, storeId }: { category?: string; search?: string; storeId?: string }): Promise<any[]> => {
+    const params = new URLSearchParams();
+    if (category) params.append('category', category);
+    if (search) params.append('search', search);
+    if (storeId) params.append('storeId', storeId);
+    return fetchApi(`/products?${params}`);
+  },
+
+  getProductById: async (id: string): Promise<any> => {
+    return fetchApi(`/products/${id}`);
+  },
+
+  createProduct: async (data: any): Promise<{ success: boolean; productId: string }> => {
+    return fetchWithAuth('/products', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  updateProduct: async (id: string, data: any): Promise<{ success: boolean }> => {
+    return fetchWithAuth(`/products/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  deleteProduct: async (id: string): Promise<{ success: boolean }> => {
+    return fetchWithAuth(`/products/${id}`, {
+      method: 'DELETE',
+    });
   },
 };
 
