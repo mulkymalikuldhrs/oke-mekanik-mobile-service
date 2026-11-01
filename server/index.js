@@ -20,11 +20,17 @@ import messageRoutes from './routes/messageRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import storeRoutes from './routes/storeRoutes.js';
+import productRoutes from './routes/productRoutes.js';
 
 // Middleware Imports
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 const app = express();
+
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
+  : ['http://localhost:5173', 'http://localhost:8080'];
 
 // Security Hardening
 app.use(helmet());
@@ -40,7 +46,7 @@ app.use('/api/', limiter);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PATCH']
   }
 });
@@ -53,7 +59,7 @@ if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process
 }
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN?.split(',').map(s => s.trim()) || 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -98,7 +104,6 @@ io.on('connection', (socket) => {
   console.log(`[SOCKET] Client connected: ${socket.id}`);
 
   socket.on('join_booking', (bookingId) => {
-    // Only authenticated users can join booking rooms
     if (!socket.userId) {
       socket.emit('error', { message: 'Autentikasi diperlukan untuk bergabung dengan booking' });
       return;
@@ -112,8 +117,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('update_location', (data) => {
-    // Only mechanics can update location
-    if (!socket.userId || (socket.userRole !== 'mechanic' && socket.userRole !== 'workshop' && socket.userRole !== 'admin')) {
+    if (!socket.userId || (socket.userRole !== 'mechanic' && socket.userRole !== 'workshop' && socket.userRole !== 'admin' && socket.userRole !== 'store')) {
       return;
     }
     io.to(data.bookingId).emit('location_updated', {
@@ -124,7 +128,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('send_message', (data) => {
-    // Only authenticated users can send messages via socket
     if (!socket.userId) {
       return;
     }
@@ -142,7 +145,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    // Clean up disconnected users
     for (const [key, value] of connectedUsers.entries()) {
       if (value === socket.id) {
         connectedUsers.delete(key);
@@ -164,13 +166,17 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/stores', storeRoutes);
+app.use('/api/products', productRoutes);
 
 // Health Check with system stats
 app.get('/api/health', (req, res) => {
   const onlineMechanics = db.prepare('SELECT count(*) as count FROM mechanics WHERE is_online = 1').get().count;
   const activeBookings = db.prepare("SELECT count(*) as count FROM bookings WHERE status NOT IN ('completed', 'cancelled')").get().count;
   const totalUsers = db.prepare('SELECT count(*) as count FROM users').get().count;
-  
+  const totalStores = db.prepare('SELECT count(*) as count FROM stores').get().count;
+  const totalProducts = db.prepare('SELECT count(*) as count FROM products').get().count;
+
   res.json({
     status: 'ok',
     service: 'Oke Mekanik API',
@@ -181,6 +187,8 @@ app.get('/api/health', (req, res) => {
       onlineMechanics,
       activeBookings,
       totalUsers,
+      totalStores,
+      totalProducts,
       connectedSockets: io.sockets.sockets.size
     }
   });
@@ -194,7 +202,7 @@ httpServer.listen(PORT, () => {
   ╔══════════════════════════════════════════════════╗
   ║                                                  ║
   ║   🔧 OKE MEKANIK - Backend Server v7.0.1        ║
-  ║   "Uber untuk Mekanik/Bengkel"                   ║
+  ║   "Uber untuk Mekanik / Toko Sparepart"          ║
   ║                                                  ║
   ║   Server: http://localhost:${PORT}                 ║
   ║   API:    http://localhost:${PORT}/api/health      ║

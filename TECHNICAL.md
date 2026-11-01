@@ -47,6 +47,12 @@ All primary containers must use the `.glass-card` utility class:
 }
 ```
 
+### Marketplace & Multi-Role Architecture
+- **Multi-Role User Schema**: Supports `customer`, `mechanic`, `workshop`, and `store`.
+- **Sparepart Catalog**: Filterable by category, brand, and search term with real backend database persistence (`server/okemekanik.db`).
+- **Direct Seller Payment Gateway**: Real-time query of seller payment accounts (BCA, Mandiri, BRI, QRIS) for direct transaction settlement.
+- **PWA & Mobile Native**: PWA web manifest (`public/manifest.webmanifest`), offline service worker (`public/sw.js`), and Capacitor config (`capacitor.config.json`).
+
 ### Stack
 - **React 19 + Vite 8**: Cutting-edge performance.
 - **Socket.io**: Real-time location updates.
